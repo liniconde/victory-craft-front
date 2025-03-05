@@ -1,0 +1,34 @@
+/* ReservationsPage.css */
+.reservations-container {
+    padding: 20px;
+  }
+  
+  .reservations-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .reservations-table th,
+  .reservations-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .reservations-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  .actions-button {
+    margin: 5px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .actions-button:hover {
+    background-color: #45a049;
+  }
+  

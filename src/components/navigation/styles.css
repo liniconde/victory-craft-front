@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 📌 Contenedor del Navbar */
+.navbar .container {
+  @apply bg-[#50BB73] text-white shadow-md py-4 md:py-5 transition-all;
+  @apply flex justify-between items-center px-8 max-w-7xl mx-auto;
+}
+
+/* 📌 Botón de Menú (Móvil) */
+.navbar-toggler {
+  @apply text-white text-3xl md:hidden focus:outline-none transition-transform transform;
+}
+
+/* 📌 Enlaces del Navbar */
+.nav-link {
+  @apply text-black text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300;
+}
+
+/* 📌 FORZAR EL COLOR BLANCO */
+.nav-link,
+.navbar-brand,
+.nav-dropdown-item {
+  color: white;
+  /* 📌 Asegurar que el texto sea blanco */
+}
+
+/* 📌 Menú en Móvil */
+.navbar-menu {
+  @apply flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 text-center mt-4 md:mt-0;
+}
+
+/* 📌 Animación del menú en móviles */
+.navbar-menu.hidden {
+  @apply opacity-0 transform -translate-y-5 transition-all duration-300 ease-in-out;
+}
+
+.navbar-menu.block {
+  @apply opacity-100 transform translate-y-0 transition-all duration-300 ease-in-out;
+}
+
+/* 📌 Estilos del Dropdown */
+.navbar-dropdown-menu {
+  @apply absolute hidden bg-[#50BB73] text-white rounded-md shadow-lg mt-2 w-44 border border-green-600 group-hover:block;
+}
+
+/* 📌 Ítems del Dropdown */
+.nav-dropdown-item {
+  @apply block px-5 py-3 text-white hover:bg-green-600 hover:bg-opacity-90 transition duration-300 rounded-md;
+}
+
+/* 📌 Línea divisora en el Dropdown */
+.dropdown-divider {
+  @apply border-t border-gray-300 my-2;
+}
+/* 📌 Contenedor del Logo */
+.logo-container {
+  @apply flex items-center cursor-pointer;
+}
+
+/* 📌 Ajuste del tamaño del Logo */
+.logo {
+  @apply w-40 md:w-40 h-auto; /* 📌 Tamaño adecuado en desktop y móvil */
+  max-width: 100%;
+  display: block; /* 📌 Asegura que no tenga espacio extra */
+}

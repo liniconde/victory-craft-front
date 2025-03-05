@@ -1,58 +1,56 @@
-import React from "react";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import "./styles.css";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
+import "./styles.css";
 
-const AppNavbar: React.FC = () => {
+const NavigationBar: React.FC = () => {
   const { isAuthenticated } = useAuth();
-
-  const navigate = (path: string) => {
-    window.location.href = path;
-  };
+  const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
 
   return (
-    <Navbar expand="lg" className="navbar">
-      <Container>
-        <Navbar.Brand
+    <nav className="navbar">
+      <div className="container mx-auto flex justify-between items-center px-4 py-3">
+        {/* ✅ LOGO ÚNICO Y CORREGIDO */}
+        <img
+          src={Logo}
+          alt="Victory Craft Logo"
+          className="logo"
           onClick={() => navigate("/")}
-          style={{ cursor: "pointer" }}
-        >
-          FieldKing
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link onClick={() => navigate("/fields")}>Fields</Nav.Link>
-            <Nav.Link onClick={() => navigate("/reservations")}>
-              Reservations
-            </Nav.Link>
-            <Nav.Link onClick={() => navigate("/slots")}>Slots</Nav.Link>
-            {isAuthenticated && (
-              <Nav.Link onClick={() => navigate("/my-reservations")}>
-                My Reservations
-              </Nav.Link>
-            )}
-            <Nav.Link onClick={() => navigate("/users")}>Users</Nav.Link>
-            <NavDropdown title="More" id="basic-nav-dropdown">
-              <NavDropdown.Item onClick={() => navigate("/profile")}>
-                Profile
-              </NavDropdown.Item>
-              <NavDropdown.Item onClick={() => navigate("/settings")}>
-                Settings
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => navigate("/logout")}>
-                Logout
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        />
+
+        {/* Botón de menú en móviles */}
+        <button className="navbar-toggler" onClick={() => setIsOpen(!isOpen)}>
+          ☰
+        </button>
+
+        {/* Menú de navegación */}
+        <div className={`navbar-menu ${isOpen ? "block" : "hidden"} md:flex`}>
+          <span className="nav-link" onClick={() => navigate("/fields")}>
+            Fields
+          </span>
+          <span className="nav-link" onClick={() => navigate("/reservations")}>
+            Reservations
+          </span>
+          <span className="nav-link" onClick={() => navigate("/slots")}>
+            Slots
+          </span>
+          {isAuthenticated && (
+            <span
+              className="nav-link"
+              onClick={() => navigate("/my-reservations")}
+            >
+              My Reservations
+            </span>
+          )}
+          <span className="nav-link" onClick={() => navigate("/users")}>
+            Users
+          </span>
+        </div>
+      </div>
+    </nav>
   );
 };
 
-export default AppNavbar;
+export default NavigationBar;

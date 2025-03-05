@@ -1,0 +1,17 @@
+.fields-container {
+    padding: 1rem;
+  }
+  
+  .table {
+    margin-top: 1rem;
+  }
+  
+  .table img {
+    max-width: 100px;
+    max-height: 75px;
+  }
+  
+  .btn {
+    margin-right: 0.5rem;
+  }
+  

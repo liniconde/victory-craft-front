@@ -1,0 +1,16 @@
+/* ImageTable.css */
+.table img {
+    border-radius: 50%; /* Hace las imágenes redondas */
+    width: 50px; /* Tamaño de las imágenes */
+    height: 50px; /* Tamaño de las imágenes */
+    object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
+  }
+  
+  .card {
+    /* Agrega sombra y borde redondeado al contenedor de la tabla */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.25rem;
+  }
+  
+  /* Clases adicionales para estilos específicos pueden ir aquí */
+  

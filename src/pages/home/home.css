@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 📌 Contenedor principal con animación de fondo */
+.home-container {
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-image: url("../../assets/03.V.jpg, ../../assets/04.V.jpg");
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background-image 1s ease-in-out; /* 🔄 Transición suave de la imagen */
+}
+
+/* 📌 Animación para el texto */
+.animated-text {
+  color: white; /* Texto en blanco */
+  font-size: 2rem;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 2s ease-in-out forwards;
+}
+
+/* 📌 Definición de la animación fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 📌 Contenedor de imágenes adicionales */
+.home-images {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* 📌 Estilo de las imágenes */
+.home-image {
+  width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.home-image:hover {
+  transform: scale(1.05); /* 📌 Efecto de zoom al pasar el mouse */
+}
