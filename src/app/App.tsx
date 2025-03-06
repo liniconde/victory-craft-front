@@ -17,6 +17,7 @@ import Login from "../components/login/Login";
 import { LoadingProvider } from "../hooks/useLoading";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
 import Home from "../pages/home/Home";
+import MapComponent from "../pages/map/MapComponent";
 
 const App = () => {
   const dtaMock = {
@@ -53,6 +54,7 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
+            <Route path="/map" element={<MapComponent concerts={[]} selectedConcert={null} />} />
             <Route
               path="/"
               element={

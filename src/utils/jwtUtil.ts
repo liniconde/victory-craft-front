@@ -18,8 +18,3 @@ export const getDecodedToken = (token: string): DecodedToken | null => {
     return null;
   }
 };
-
-// 📌 Función para cerrar sesión
-export const logout = () => {
-  localStorage.removeItem("token");
-};
