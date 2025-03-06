@@ -12,6 +12,12 @@ interface AuthResponse {
   token: string;
 }
 
+export interface User {
+  _id: string;
+  username: string;
+  email: string;
+}
+
 // 📌 Función para hacer login y almacenar el token
 export const loginUser = async (
   email: string,

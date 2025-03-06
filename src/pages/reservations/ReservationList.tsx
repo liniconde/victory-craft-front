@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../utils/api";
-import { getReservations, Reservation } from "../../services/reservation/reservationService";
+import {
+  getReservations,
+  removeReservation,
+  Reservation,
+} from "../../services/reservation/reservationService";
 
 const ReservationList: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const navigate = useNavigate();
-  
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -22,16 +24,16 @@ const ReservationList: React.FC = () => {
     fetchReservations(); // 🔹 Llamar a la función asíncrona
   }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     // Delete the reservation by ID
-    api
-      .delete(`/reservations/${id}`)
-      .then(() =>
-        setReservations(
-          reservations.filter((reservation) => reservation._id !== id)
-        )
-      )
-      .catch((error) => console.error("Error deleting reservation:", error));
+    try {
+      await removeReservation(id);
+      setReservations(
+        reservations.filter((reservation) => reservation._id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting reservation:", error);
+    }
   };
 
   return (
@@ -55,9 +57,9 @@ const ReservationList: React.FC = () => {
         <tbody>
           {reservations.map((reservation) => (
             <tr key={reservation._id}>
-              <td>{reservation.userId}</td>
-              <td>{reservation.fieldId}</td>
-              <td>{reservation.slotId}</td>
+              <td>{reservation.user._id}</td>
+              <td>{reservation.field._id}</td>
+              <td>{reservation.slot._id}</td>
               <td>
                 <button
                   onClick={() =>

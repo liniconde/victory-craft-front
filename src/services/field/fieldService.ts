@@ -1,4 +1,5 @@
 import { api } from "../../utils/api";
+import { Slot } from "../slot/slotService";
 
 const API_FIELDS_URL = "/fields";
 
@@ -17,3 +18,16 @@ export const getFields = async (): Promise<Field[]> => {
     throw error;
   }
 };
+
+
+export const getFieldSlots = async (id: string): Promise<Slot[]> => {
+    try {
+      const response = await api.get<Slot[]>
+      (`${API_FIELDS_URL}/${id}/slots`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting slots", error);
+      throw error;
+    }
+  };
+  

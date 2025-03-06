@@ -6,6 +6,12 @@ import FieldSelector from "../../fields/components/FieldSelector";
 import "./index.css";
 import { useAuth } from "../../../context/AuthContext";
 import { api } from "../../../utils/api";
+import {
+  getReservation,
+  getReservations,
+} from "../../../services/reservation/reservationService";
+import { Slot } from "../../../services/slot/slotService";
+import { getFieldSlots } from "../../../services/field/fieldService";
 
 export enum ReservationFormEnum {
   CREATE = "create",
@@ -14,14 +20,6 @@ export enum ReservationFormEnum {
 
 interface ReservationFormProps {
   mode: ReservationFormEnum.CREATE | ReservationFormEnum.EDIT;
-}
-
-interface Slot {
-  _id: string;
-  fieldId: string;
-  startTime: string;
-  endTime: string;
-  isAvailable: boolean;
 }
 
 const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
@@ -33,26 +31,31 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   const { userId } = useAuth();
 
-  useEffect(() => {
-    if (mode === "edit" && id) {
-      api
-        .get(`/reservations/${id}`)
-        .then((response) => {
-          const reservation = response.data;
-          setFieldId(reservation.fieldId);
-          setSelectedSlot(reservation.slotId);
-        })
-        .catch((error) => console.error("Error fetching reservation:", error));
+  const fetchReservation = async (reservationId: string | undefined) => {
+    if (mode === "edit" && reservationId) {
+      try {
+        const reservation = await getReservation(reservationId);
+        setFieldId(reservation.field!._id);
+        setSelectedSlot(reservation.slot);
+      } catch (error) {
+        console.error("Error fetching reservation:", error);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchReservation(id);
   }, [mode, id]);
 
-  const handleFieldSelect = (fieldId: string) => {
+  const handleFieldSelect = async (fieldId: string) => {
     setFieldId(fieldId);
     // Fetch slots for the selected field
-    api
-      .get(`/fields/${fieldId}/slots`)
-      .then((response) => setSlots(response.data))
-      .catch((error) => console.error("Error fetching slots:", error));
+    try {
+      const slots = await getFieldSlots(fieldId);
+      setSlots(slots);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+    }
   };
 
   const handleSlotSelect = (slot: Slot) => {
