@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./FieldForm.css"; // Se mantiene el archivo CSS
 import { api } from "../../../utils/api";
 import { useAuth } from "../../../context/AuthContext";
+import { getS3UploadImageUrl } from "../../../services/field/fieldService";
+
+const BUCKET_NAME = `victory-craft`;
 
 // 📌 Tipado de las props del componente
 interface FieldFormProps {
@@ -17,6 +20,7 @@ interface Field {
   location: string;
   pricePerHour: number;
   imageUrl: string;
+  imageS3Key: string;
   owner: string;
 }
 
@@ -24,6 +28,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const { id } = useParams<{ id: string }>();
+  const BUCKET_URL = `https://${BUCKET_NAME}.s3.amazonaws.com/`;
 
   const [fieldData, setFieldData] = useState<Field>({
     name: "",
@@ -31,8 +36,12 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
     location: "",
     pricePerHour: 0,
     imageUrl: "",
+    imageS3Key: "",
     owner: userId || "",
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && id) {
@@ -47,24 +56,58 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
-
     setFieldData((prevState) => ({
       ...prevState,
       [name]: name === "pricePerHour" ? parseFloat(value) || 0 : value,
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Manejar la selección del archivo
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImageFile(event.target.files[0]);
+    }
+  };
+
+  // 📤 Subir la imagen al backend y a S3
+  const uploadImageToS3 = async (): Promise<{
+    imageUrl: string;
+    imageS3Key: string;
+  } | null> => {
+    if (!imageFile) return null;
+    try {
+      setIsUploading(true);
+      const data = await getS3UploadImageUrl(imageFile, userId!);
+      setIsUploading(false);
+      return { imageUrl: data.s3Url, imageS3Key: data.objectKey };
+    } catch (error) {
+      console.error("❌ Error uploading image:", error);
+      setIsUploading(false);
+      return null;
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (imageFile) {
+      const imageObject = await uploadImageToS3();
+      console.log("image iobjectt", imageObject);
+      if (imageObject) {
+        fieldData.imageUrl = imageObject.imageUrl;
+        fieldData.imageS3Key = imageObject.imageS3Key;
+      }
+    }
+
+    const fieldPayload = { ...fieldData };
 
     if (mode === "create") {
       api
-        .post("/fields", fieldData)
+        .post("/fields", fieldPayload)
         .then(() => navigate("/fields"))
         .catch((error) => console.error("Error creating field:", error));
     } else if (id) {
       api
-        .put(`/fields/${id}`, fieldData)
+        .put(`/fields/${id}`, fieldPayload)
         .then(() => navigate("/fields"))
         .catch((error) => console.error("Error updating field:", error));
     }
@@ -138,19 +181,21 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           />
         </div>
 
-        {/* Image URL Field */}
+        {/* File Upload */}
         <div>
-          <label htmlFor="imageUrl" className="field-form-label">
-            Image URL
+          <label htmlFor="imageFile" className="field-form-label">
+            Upload Image
           </label>
           <input
-            id="imageUrl"
-            name="imageUrl"
-            value={fieldData.imageUrl}
-            onChange={handleChange}
+            id="imageFile"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
             className="field-form-input"
           />
         </div>
+
+        {isUploading && <p className="text-blue-500">Uploading image...</p>}
 
         {/* Submit Button */}
         <button type="submit" className="field-form-button">

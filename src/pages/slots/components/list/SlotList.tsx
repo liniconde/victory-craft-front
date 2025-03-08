@@ -16,12 +16,6 @@ const SlotList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch slots from the API
-    api
-      .get("/slots")
-      .then((response) => setSlots(response.data))
-      .catch((error) => console.error("Error fetching slots:", error));
-
     // Fetch fields from the API
     api
       .get("/fields")
@@ -45,7 +39,7 @@ const SlotList: React.FC = () => {
     setShowModal(false);
     // Fetch slots for the selected field
     api
-      .get(`/slots?fieldId=${field._id}`)
+      .get(`/fields/${field._id}/slots`)
       .then((response) => setSlots(response.data))
       .catch((error) => console.error("Error fetching slots:", error));
   };

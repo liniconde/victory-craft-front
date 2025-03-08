@@ -8,6 +8,8 @@ export const api = axios.create({
   baseURL: "http://localhost:5001", // Cambia esto a la URL de tu API
 });
 
+export const s3Api = axios.create();
+
 // 📌 Funciones para obtener URLs base
 export function getBaseURL(path: string = ""): string {
   return `https://dmag5.pc.ac.upc.edu/api/${path}`;
