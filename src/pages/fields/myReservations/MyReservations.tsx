@@ -2,32 +2,26 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Container } from "react-bootstrap";
 import { api } from "../../../utils/api";
 import { useAuth } from "../../../context/AuthContext";
+import {
+  getReservation,
+  getReservations,
+  Reservation,
+} from "../../../services/reservation/reservationService";
 
 const MyReservations: React.FC = () => {
   const { userId } = useAuth(); // Obtener el userId del AuthContext
   const [reservations, setReservations] = useState<Reservation[]>([]);
 
-  interface Reservation {
-    id: string;
-    field: {
-      name: string;
-    };
-    slot: {
-      startTime: string;
-      endTime: string;
-    };
-  }
-
-  useEffect(() => {
+  const fetchReservations = async () => {
     if (userId) {
       // Fetch reservations for the logged-in user
-      api
-        .get(`/reservations/user/${userId}`)
-        .then((response) => {
-          setReservations(response.data);
-        })
-        .catch((error) => console.error("Error fetching reservations:", error));
+      const reservations = await getReservations();
+      setReservations(reservations);
     }
+  };
+
+  useEffect(() => {
+    fetchReservations();
   }, [userId]);
 
   const handleCancelReservation = (reservationId: string) => {
@@ -36,7 +30,9 @@ const MyReservations: React.FC = () => {
       .then(() => {
         // Filter out the canceled reservation from the state
         setReservations(
-          reservations.filter((reservation) => reservation.id !== reservationId)
+          reservations.filter(
+            (reservation) => reservation._id !== reservationId
+          )
         );
       })
       .catch((error) => console.error("Error canceling reservation:", error));
@@ -56,18 +52,18 @@ const MyReservations: React.FC = () => {
         </thead>
         <tbody>
           {reservations.map((reservation) => (
-            <tr key={reservation.id}>
-              <td>{reservation.field.name}</td>
+            <tr key={reservation._id}>
+              <td>{reservation.slot.field?.name}</td>
               <td>
-                {reservation.slot.startTime} - {reservation.slot.endTime}
+                {reservation.slot?.startTime} - {reservation.slot?.endTime}
               </td>
               <td>
-                {new Date(reservation.slot.startTime).toLocaleDateString()}
+                {new Date(reservation.slot?.startTime).toLocaleDateString()}
               </td>
               <td>
                 <Button
                   variant="danger"
-                  onClick={() => handleCancelReservation(reservation.id)}
+                  onClick={() => handleCancelReservation(reservation._id)}
                 >
                   Cancel
                 </Button>

@@ -9,7 +9,7 @@ export interface Reservation {
   _id: string;
   user: User;
   slot: Slot;
-  field: Field;
+  field?: Field;
 }
 
 // 📌 Función para hacer login y almacenar el token

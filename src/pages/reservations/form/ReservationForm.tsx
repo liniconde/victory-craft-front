@@ -64,7 +64,11 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   };
 
   const handleConfirmReservation = () => {
-    const reservationData = { userId, fieldId, slotId: selectedSlot?._id };
+    const reservationData = {
+      user: userId,
+      field: fieldId,
+      slot: selectedSlot?._id,
+    };
 
     if (mode === "create") {
       api
