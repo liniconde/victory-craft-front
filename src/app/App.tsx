@@ -25,7 +25,7 @@ const MyReservations = lazy(
   () => import("../pages/fields/myReservations/MyReservations")
 );
 const Login = lazy(() => import("../components/login/Login"));
-const Home = lazy(() => import("../pages/Home/Home"));
+const Home = lazy(() => import("../pages/home/Home"));
 const MapComponent = lazy(() => import("../pages/map/MapComponent"));
 const Register = lazy(() => import("../components/register/Register"));
 
