@@ -12,55 +12,90 @@ const NavigationBar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <div className="container mx-auto flex justify-between items-center px-4 py-3">
-        {/* ✅ LOGO ÚNICO Y CORREGIDO */}
-        <img
-          src={Logo}
-          alt="Victory Craft Logo"
-          className="logo"
-          onClick={() => navigate("/")}
-        />
+      <img
+        src={Logo}
+        alt="Victory Craft Logo"
+        className="logo cursor-pointer"
+        onClick={() => navigate("/")}
+      />
+      <div className="navbar-items">
+        {/* ✅ LOGO CON PUNTERO */}
 
-        {/* Botón de menú en móviles */}
-        <button className="navbar-toggler" onClick={() => setIsOpen(!isOpen)}>
+        {/* 🔹 Botón de menú en móviles */}
+        <button
+          className="navbar-toggler md:hidden"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           ☰
         </button>
 
-        {/* Menú de navegación */}
-        <div className={`navbar-menu ${isOpen ? "block" : "hidden"} md:flex`}>
-          <span className="nav-link" onClick={() => navigate("/fields")}>
-            Fields
-          </span>
-          <span className="nav-link" onClick={() => navigate("/reservations")}>
-            Reservations
-          </span>
-          <span className="nav-link" onClick={() => navigate("/slots")}>
-            Slots
-          </span>
-          <span className="nav-link" onClick={() => navigate("/map")}>
+        {/* 🔹 Menú de navegación */}
+        <div
+          className={`navbar-menu ${
+            isOpen ? "block" : "hidden"
+          } md:flex md:space-x-6 w-full md:w-auto md:items-center text-center md:text-left`}
+        >
+          {/* 🔹 Pestañas accesibles para todos */}
+          <span
+            className="nav-link block md:inline-block"
+            onClick={() => navigate("/map")}
+          >
             Fields Map
           </span>
+
+          {/* 🔹 Pestañas solo para usuarios autenticados */}
           {isAuthenticated && (
-            <span
-              className="nav-link"
-              onClick={() => navigate("/my-reservations")}
-            >
-              My Reservations
-            </span>
+            <>
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/fields")}
+              >
+                Fields
+              </span>
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/reservations")}
+              >
+                Reservations
+              </span>
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/slots")}
+              >
+                Slots
+              </span>
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/my-reservations")}
+              >
+                My Reservations
+              </span>
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/users")}
+              >
+                Users
+              </span>
+
+              {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
+              <Button
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition"
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+              >
+                Logout
+              </Button>
+            </>
           )}
-          <span className="nav-link" onClick={() => navigate("/users")}>
-            Users
-          </span>
-          {isAuthenticated && (
-            <Button
-              className="logo"
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
+          {!isAuthenticated && (
+            <span
+              className="nav-link block md:inline-block"
+              onClick={() => navigate("/users")}
             >
-              Logout
-            </Button>
+              Users
+            </span>
           )}
         </div>
       </div>

@@ -34,3 +34,21 @@ export const loginUser = async (
     throw error;
   }
 };
+
+// 📌 Interfaz para los datos de registro
+interface RegisterData {
+    username: string;
+    email: string;
+    password: string;
+    role: string; // Puede ser "player" o "admin"
+  }
+
+  export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {
+    try {
+      const response = await api.post<AuthResponse>(`${API_USERS_URL}/register`, userData);
+      return response.data;
+    } catch (error) {
+      console.error("Error en el registro:", error);
+      throw error;
+    }
+  };

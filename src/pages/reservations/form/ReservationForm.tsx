@@ -6,10 +6,7 @@ import FieldSelector from "../../fields/components/FieldSelector";
 import "./index.css";
 import { useAuth } from "../../../context/AuthContext";
 import { api } from "../../../utils/api";
-import {
-  getReservation,
-  getReservations,
-} from "../../../services/reservation/reservationService";
+import { getReservation } from "../../../services/reservation/reservationService";
 import { Slot } from "../../../services/slot/slotService";
 import { getFieldSlots } from "../../../services/field/fieldService";
 

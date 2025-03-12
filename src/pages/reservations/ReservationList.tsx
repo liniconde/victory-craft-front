@@ -58,7 +58,7 @@ const ReservationList: React.FC = () => {
           {reservations.map((reservation) => (
             <tr key={reservation._id}>
               <td>{reservation.user._id}</td>
-              <td>{reservation.field._id}</td>
+              <td>{reservation.field?._id}</td>
               <td>{reservation.slot._id}</td>
               <td>
                 <button

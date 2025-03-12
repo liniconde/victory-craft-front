@@ -5,7 +5,7 @@ const IMAGES_BUCKET = "images-tfm2";
 
 // 📌 Tipado para la API principal
 export const api = axios.create({
-  baseURL: "http://localhost:5001", // Cambia esto a la URL de tu API
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001", // Cambia esto a la URL de tu API
 });
 
 export const s3Api = axios.create();

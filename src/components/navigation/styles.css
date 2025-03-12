@@ -1,11 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* 📌 Contenedor del Navbar */
+.navbar {
+  @apply w-full fixed top-0 left-0 bg-[#50BB73] text-white shadow-md z-50;
+  @apply w-full text-white shadow-md py-2 md:py-5 transition-all;
+  @apply flex justify-between items-center mx-auto;
+}
+
 .navbar .container {
-  @apply bg-[#50BB73] text-white shadow-md py-4 md:py-5 transition-all;
-  @apply flex justify-between items-center px-8 max-w-7xl mx-auto;
+  @apply w-full text-white shadow-md py-2 md:py-5 transition-all;
+  @apply flex justify-between items-center mx-auto;
+}
+
+.navbar-items {
+  @apply mx-auto flex justify-between items-center;
 }
 
 /* 📌 Botón de Menú (Móvil) */
@@ -61,7 +67,8 @@
 
 /* 📌 Ajuste del tamaño del Logo */
 .logo {
-  @apply w-40 md:w-40 h-auto; /* 📌 Tamaño adecuado en desktop y móvil */
+  @apply w-[10vw] md:w-[13vw] h-auto; /* 🔹 Aumenta un 50% respecto a los valores actuales */
   max-width: 100%;
-  display: block; /* 📌 Asegura que no tenga espacio extra */
+  display: block;
+  margin-left: 5vw;
 }

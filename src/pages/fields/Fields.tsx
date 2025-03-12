@@ -1,11 +1,10 @@
-import React from 'react';
-import FieldForm from './form/FieldForm';
+import FieldForm from "./form/FieldForm";
 
 const Fields = () => {
   return (
     <div>
       <h1>Create Field</h1>
-      <FieldForm mode={'create'} />
+      <FieldForm mode={"create"} />
     </div>
   );
 };

@@ -2,34 +2,38 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl, { LngLatLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./MapComponent.css";
+import FieldCards from "./../map/FieldCards";
 
 const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 mapboxgl.accessToken = mapboxToken || "";
 const INITIAL_CENTER: LngLatLike = [2.1734, 41.3851];
 const INITIAL_ZOOM = 10;
 
-interface Concert {
+interface Field {
   _id: string;
   name: string;
   location: { latitude: number; longitude: number; venue: string };
+  pricePerHour: number;
+  imageUrl: string;
 }
 
 interface Props {
-  concerts: Concert[];
-  selectedConcert: Concert | null;
+  fields: Field[];
+  selectedField: Field | null;
 }
 
-const MapComponent: React.FC<Props> = ({ concerts, selectedConcert }) => {
+const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]); // Almacenar marcadores para limpiarlos luego
 
   const [center, setCenter] = useState(INITIAL_CENTER);
   const [zoom, setZoom] = useState(INITIAL_ZOOM);
+  const [_, setSelectedFieldState] = useState<Field | null>(null);
 
   console.log("MapToken ->", mapboxgl.accessToken, mapboxToken);
 
-  console.log("MapToken -> concerts", mapboxgl.accessToken);
+  console.log("MapToken -> fields", mapboxgl.accessToken);
 
   // Inicializar el mapa solo una vez
   useEffect(() => {
@@ -60,6 +64,11 @@ const MapComponent: React.FC<Props> = ({ concerts, selectedConcert }) => {
       if (mapCenter && mapZoom) {
         setCenter([mapCenter.lng, mapCenter.lat]);
         setZoom(mapZoom);
+
+        if (mapCenter && mapZoom) {
+          setCenter([mapCenter.lng, mapCenter.lat]);
+          setZoom(mapZoom);
+        }
       }
     });
 
@@ -79,46 +88,48 @@ const MapComponent: React.FC<Props> = ({ concerts, selectedConcert }) => {
     markersRef.current?.forEach((marker) => marker.remove());
     markersRef.current = [];
 
-    concerts.forEach((concert) => {
+    fields.forEach((field) => {
       if (
-        !concert.location ||
-        !concert.location.latitude ||
-        !concert.location.longitude
+        !field.location ||
+        !field.location.latitude ||
+        !field.location.longitude
       ) {
-        console.warn(`Ubicación inválida para ${concert.name}`);
+        console.warn(`Ubicación inválida para ${field.name}`);
         return;
       }
 
       if (!mapRef.current) return;
       const marker = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([concert.location?.longitude, concert.location?.latitude])
-        .setPopup(new mapboxgl.Popup().setText(concert.name))
+        .setLngLat([field.location?.longitude, field.location?.latitude])
+        .setPopup(new mapboxgl.Popup().setText(field.name))
         ?.addTo(mapRef.current);
 
       markersRef.current?.push(marker);
     });
-  }, [concerts]);
+  }, [fields]);
 
   // Mover el mapa si se selecciona un concierto
   useEffect(() => {
-    if (!mapRef.current || !selectedConcert) return;
+    if (!mapRef.current) return;
+
+    // const long = selectedFieldState ? selectedFieldState.location.longitude : INITIAL_CENTER[0];
+    // const lat = selectedFieldState ? selectedFieldState.location.latitude : INITIAL_CENTER[1]
 
     mapRef.current?.flyTo({
-      center: [
-        selectedConcert.location.longitude,
-        selectedConcert.location.latitude,
-      ],
+      center: [INITIAL_CENTER[0], INITIAL_CENTER[1]],
       zoom: 15,
       essential: true,
     });
-  }, [selectedConcert]);
+  }, [selectedField]);
 
   return (
-    <div
-      id="map-container"
-      ref={mapContainerRef}
-      className="w-full h-96 rounded-lg shadow-lg"
-    />
+    <div className="map-container">
+      {/* 📌 Contenedor del Mapa */}
+      <div ref={mapContainerRef} className="mapbox-map" />
+
+      {/* 📌 Tarjetas de las canchas */}
+      <FieldCards fields={fields} onSelectField={setSelectedFieldState} />
+    </div>
   );
 };
 

@@ -5,7 +5,7 @@ import { api } from "../../../utils/api";
 import { useAuth } from "../../../context/AuthContext";
 import { getS3UploadImageUrl } from "../../../services/field/fieldService";
 
-const BUCKET_NAME = `victory-craft`;
+// const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || `victory-craft`;
 
 // 📌 Tipado de las props del componente
 interface FieldFormProps {
@@ -28,7 +28,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const BUCKET_URL = `https://${BUCKET_NAME}.s3.amazonaws.com/`;
+  // const BUCKET_URL = `https://${BUCKET_NAME}.s3.amazonaws.com/`;
 
   const [fieldData, setFieldData] = useState<Field>({
     name: "",

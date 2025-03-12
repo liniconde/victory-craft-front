@@ -3,7 +3,6 @@ import { Table, Button, Container } from "react-bootstrap";
 import { api } from "../../../utils/api";
 import { useAuth } from "../../../context/AuthContext";
 import {
-  getReservation,
   getReservations,
   Reservation,
 } from "../../../services/reservation/reservationService";

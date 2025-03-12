@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Button, Image } from "react-bootstrap";
-import "./styles.css";
 import { api } from "../../../utils/api";
 
 interface Field {
@@ -18,7 +16,6 @@ const FieldList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch fields from the API
     api
       .get("/fields")
       .then((response) => setFields(response.data))
@@ -26,7 +23,6 @@ const FieldList: React.FC = () => {
   }, []);
 
   const handleDelete = (id: string) => {
-    // Delete the field by ID
     api
       .delete(`/fields/${id}`)
       .then(() => setFields(fields.filter((field) => field._id !== id)))
@@ -34,55 +30,61 @@ const FieldList: React.FC = () => {
   };
 
   return (
-    <div className="fields-container">
-      <h1>Fields</h1>
-      <Button variant="primary" onClick={() => navigate("/fields/new")}>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
+        Available Fields
+      </h1>
+
+      <button
+        className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+        onClick={() => navigate("/fields/new")}
+      >
         Add New Field
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Location</th>
-            <th>Price Per Hour</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {fields.map((field) => (
-            <tr key={field._id}>
-              <td>
-                {field.imageUrl ? (
-                  <Image src={field.imageUrl} rounded width={100} height={75} />
-                ) : (
-                  <div>No Image</div>
-                )}
-              </td>
-              <td>{field.name}</td>
-              <td>{field.type}</td>
-              <td>{field.location}</td>
-              <td>${field.pricePerHour.toFixed(2)}</td>
-              <td>
-                <Button
-                  variant="warning"
-                  className="me-2"
+      </button>
+
+      {/* 📌 Se cambió el grid de 4 columnas a 3 columnas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {fields.map((field) => (
+          <div
+            key={field._id}
+            className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
+          >
+            <img
+              src={field.imageUrl || "https://via.placeholder.com/300"}
+              alt={field.name}
+              className="w-full h-56 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {field.name}
+              </h2>
+              <p className="text-gray-600 text-sm">
+                {field.type.toUpperCase()}
+              </p>
+              <p className="text-gray-500 text-sm">{field.location}</p>
+              <p className="text-green-600 font-bold mt-2">
+                ${field.pricePerHour} / hour
+              </p>
+
+              {/* 📌 Se ajustaron los botones para mayor armonía visual */}
+              <div className="flex justify-between gap-4 mt-4">
+                <button
+                  className="px-4 py-2  text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                   onClick={() => navigate(`/fields/edit/${field._id}`)}
                 >
                   Edit
-                </Button>
-                <Button
-                  variant="danger"
+                </button>
+                <button
+                  className="px-4 py-2  text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                   onClick={() => handleDelete(field._id)}
                 >
                   Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

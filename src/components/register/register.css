@@ -1,0 +1,41 @@
+/* 📌 Contenedor principal */
+.register-container {
+  @apply min-h-screen flex items-center justify-center bg-cover bg-center;
+  background-size: cover;
+  background-position: center;
+}
+
+/* 📌 Caja de registro */
+.register-box {
+  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-8 max-w-md w-full;
+}
+
+/* 📌 Título */
+.register-title {
+  @apply text-2xl font-semibold text-white text-center mb-6;
+}
+
+/* 📌 Formulario */
+.register-form {
+  @apply space-y-4;
+}
+
+/* 📌 Etiquetas */
+.register-label {
+  @apply block font-medium text-gray-700;
+}
+
+/* 📌 Inputs */
+.register-input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+/* 📌 Botón */
+.register-button {
+  @apply w-full bg-[#235A2C] hover:bg-[#235A2C] text-white font-bold py-2 px-4 rounded-lg transition duration-300;
+}
+
+/* 📌 Mensaje de error */
+.error-message {
+  @apply text-red-500 text-center mt-2;
+}

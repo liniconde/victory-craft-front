@@ -1,11 +1,9 @@
-import React from 'react';
-import ReservationForm, { ReservationFormEnum } from './form/ReservationForm';
-
+import ReservationForm, { ReservationFormEnum } from "./form/ReservationForm";
 
 const Reservations = () => {
   return (
     <div>
-      <ReservationForm mode={ReservationFormEnum.CREATE}/>
+      <ReservationForm mode={ReservationFormEnum.CREATE} />
     </div>
   );
 };
