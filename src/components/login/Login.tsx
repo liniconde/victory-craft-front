@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./index.css"; // 📌 Importamos los estilos desde un archivo CSS externo
-import Imagen1 from "../../assets/01.V.webp"; // 📌 Importamos la imagen de fondo
+import Video from "../../assets/VC.3D.mp4"; // 📌 Importamos la imagen de fondo
 import { loginUser } from "../../services/user/userService";
 
 const Login: React.FC = () => {
@@ -31,14 +31,16 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div
-      className="login-container min-h-screen"
-      style={{ backgroundImage: `url(${Imagen1})` }}
-    >
+    <div className="login-container">
+      {/* 📌 Video de fondo */}
+      <video autoPlay loop muted className="background-video">
+        <source src={Video} type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+
       <div className="login-box">
         <h2 className="login-title">Iniciar Sesión</h2>
         <form onSubmit={handleLogin} className="login-form">
-          {/* Usuario */}
           <div>
             <label htmlFor="username" className="login-label">
               Usuario
@@ -52,7 +54,6 @@ const Login: React.FC = () => {
               placeholder="Ingresa tu usuario"
             />
           </div>
-          {/* Contraseña */}
           <div>
             <label htmlFor="password" className="login-label">
               Contraseña
@@ -66,14 +67,11 @@ const Login: React.FC = () => {
               placeholder="Ingresa tu contraseña"
             />
           </div>
-          {/* Botón de Login */}
           <button type="submit" className="login-button">
             Iniciar Sesión
           </button>
-          {/* Mensaje de error */}
           {error && <p className="error-message">{error}</p>}
         </form>
-        {/* 📌 Enlace al registro */}
         <p className="register-link">
           ¿No tienes una cuenta?{" "}
           <span

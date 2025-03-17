@@ -1,15 +1,24 @@
-
+/* 📌 Estilos para el video de fondo */
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Hace que el video cubra toda la pantalla */
+  z-index: -1; /* Envía el video al fondo */
+}
 
 /* Contenedor principal */
 .login-container {
-  @apply min-h-screen flex items-center justify-center bg-cover bg-center;
+  @apply flex items-center justify-end bg-cover bg-center mt-72 -mr-32;
   background-size: cover;
   background-position: center;
 }
 
 /* Caja de login */
 .login-box {
-  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-8 max-w-md w-full;
+  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-10 max-w-md w-full;
 }
 
 /* Título */
@@ -24,7 +33,7 @@
 
 /* Etiquetas */
 .login-label {
-  @apply block font-medium text-gray-700;
+  @apply block font-medium text-white;
 }
 
 /* Inputs */

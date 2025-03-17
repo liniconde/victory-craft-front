@@ -1,29 +1,36 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../services/user/userService"; // 📌 Importamos el servicio para registrar usuarios
-import "./register.css"; // 📌 Estilos separados en CSS
+import { registerUser } from "../../services/user/userService";
+import "./register.css";
+import Video from "../../assets/VC.3D.2.mp4";
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("player"); // 📌 Por defecto es un jugador
+  const [role, setRole] = useState<string>("player");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validación simple antes de enviar la solicitud
-    if (!username || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       setError("Todos los campos son obligatorios");
       return;
     }
 
     try {
-      const response = await registerUser({ username, email, password, role });
+      const response = await registerUser({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+      });
       console.log("Registro exitoso:", response);
-      navigate("/login"); // 📌 Redirigir al login después del registro exitoso
+      navigate("/login");
     } catch (error) {
       console.error("Error al registrar:", error);
       setError("Error en el registro. Intenta nuevamente.");
@@ -32,25 +39,44 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-container">
+      {/* 📌 Video de fondo */}
+      <video autoPlay loop muted className="background-video">
+        <source src={Video} type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+
+      {/* 📌 Formulario de Registro */}
       <div className="register-box">
         <h2 className="register-title">Crear Cuenta</h2>
         <form onSubmit={handleRegister} className="register-form">
-          {/* Usuario */}
           <div>
-            <label htmlFor="username" className="register-label">
-              Usuario
+            <label htmlFor="firstName" className="register-label">
+              Nombre
             </label>
             <input
-              id="username"
+              id="firstName"
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="register-input"
-              placeholder="Ingresa tu usuario"
+              placeholder="Ingresa tu nombre"
             />
           </div>
 
-          {/* Email */}
+          <div>
+            <label htmlFor="lastName" className="register-label">
+              Apellido
+            </label>
+            <input
+              id="lastName"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="register-input"
+              placeholder="Ingresa tu apellido"
+            />
+          </div>
+
           <div>
             <label htmlFor="email" className="register-label">
               Correo Electrónico
@@ -65,7 +91,6 @@ const Register: React.FC = () => {
             />
           </div>
 
-          {/* Contraseña */}
           <div>
             <label htmlFor="password" className="register-label">
               Contraseña
@@ -80,7 +105,6 @@ const Register: React.FC = () => {
             />
           </div>
 
-          {/* Selección de rol */}
           <div>
             <label htmlFor="role" className="register-label">
               Tipo de usuario
@@ -96,12 +120,10 @@ const Register: React.FC = () => {
             </select>
           </div>
 
-          {/* Botón de Registro */}
           <button type="submit" className="register-button">
             Registrarse
           </button>
 
-          {/* Mensaje de error */}
           {error && <p className="error-message">{error}</p>}
         </form>
       </div>

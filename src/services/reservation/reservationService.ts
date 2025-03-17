@@ -1,7 +1,7 @@
 import { api } from "../../utils/api";
-import { Field } from "../field/fieldService";
-import { Slot } from "../slot/slotService";
+import { Slot } from "../../interfaces/SlotInterfaces";
 import { User } from "../user/userService";
+import { Field } from "../../interfaces/FieldInterfaces";
 
 const API_RESERVATIONS_URL = "/reservations";
 

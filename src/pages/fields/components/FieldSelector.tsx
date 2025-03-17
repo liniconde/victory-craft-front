@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Field, getFields } from "../../../services/field/fieldService";
+import { getFields } from "../../../services/field/fieldService";
+import { Field } from "../../../interfaces/FieldInterfaces";
 
 interface FieldSelectorProps {
   onFieldSelect: (fieldId: string) => void;

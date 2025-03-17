@@ -2,20 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl, { LngLatLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./MapComponent.css";
-import FieldCards from "./../map/FieldCards";
+import { Field } from "../../../interfaces/FieldInterfaces";
 
 const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 mapboxgl.accessToken = mapboxToken || "";
 const INITIAL_CENTER: LngLatLike = [2.1734, 41.3851];
 const INITIAL_ZOOM = 10;
-
-interface Field {
-  _id: string;
-  name: string;
-  location: { latitude: number; longitude: number; venue: string };
-  pricePerHour: number;
-  imageUrl: string;
-}
 
 interface Props {
   fields: Field[];
@@ -29,7 +21,6 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
 
   const [center, setCenter] = useState(INITIAL_CENTER);
   const [zoom, setZoom] = useState(INITIAL_ZOOM);
-  const [_, setSelectedFieldState] = useState<Field | null>(null);
 
   console.log("MapToken ->", mapboxgl.accessToken, mapboxToken);
 
@@ -89,18 +80,14 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
     markersRef.current = [];
 
     fields.forEach((field) => {
-      if (
-        !field.location ||
-        !field.location.latitude ||
-        !field.location.longitude
-      ) {
+      if (!field.location || !field.location.lat || !field.location.long) {
         console.warn(`Ubicación inválida para ${field.name}`);
         return;
       }
 
       if (!mapRef.current) return;
       const marker = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([field.location?.longitude, field.location?.latitude])
+        .setLngLat([field.location?.long, field.location?.lat])
         .setPopup(new mapboxgl.Popup().setText(field.name))
         ?.addTo(mapRef.current);
 
@@ -110,13 +97,13 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
 
   // Mover el mapa si se selecciona un concierto
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !selectedField) return;
 
     // const long = selectedFieldState ? selectedFieldState.location.longitude : INITIAL_CENTER[0];
     // const lat = selectedFieldState ? selectedFieldState.location.latitude : INITIAL_CENTER[1]
 
     mapRef.current?.flyTo({
-      center: [INITIAL_CENTER[0], INITIAL_CENTER[1]],
+      center: [selectedField.location.long, selectedField.location.lat],
       zoom: 15,
       essential: true,
     });
@@ -126,9 +113,6 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
     <div className="map-container">
       {/* 📌 Contenedor del Mapa */}
       <div ref={mapContainerRef} className="mapbox-map" />
-
-      {/* 📌 Tarjetas de las canchas */}
-      <FieldCards fields={fields} onSelectField={setSelectedFieldState} />
     </div>
   );
 };

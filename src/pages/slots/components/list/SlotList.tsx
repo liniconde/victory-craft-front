@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import "./styles.css";
 import { api } from "../../../../utils/api";
-import { Slot } from "../../../../services/slot/slotService";
-import { Field } from "../../../../services/field/fieldService";
+import { Slot } from "../../../../interfaces/SlotInterfaces";
+import { Field } from "../../../../interfaces/FieldInterfaces";
 
 const SlotList: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);

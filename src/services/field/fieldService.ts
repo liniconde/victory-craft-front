@@ -1,13 +1,9 @@
 import axios from "axios";
 import { api, s3Api } from "../../utils/api";
-import { Slot } from "../slot/slotService";
+import { Slot } from "../../interfaces/SlotInterfaces";
+import { Field } from "../../interfaces/FieldInterfaces";
 
 const API_FIELDS_URL = "/fields";
-
-export interface Field {
-  _id: string;
-  name: string;
-}
 
 export interface S3UploadObject {
   s3Url: string;

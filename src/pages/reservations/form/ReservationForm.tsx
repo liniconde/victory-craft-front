@@ -7,7 +7,7 @@ import "./index.css";
 import { useAuth } from "../../../context/AuthContext";
 import { api } from "../../../utils/api";
 import { getReservation } from "../../../services/reservation/reservationService";
-import { Slot } from "../../../services/slot/slotService";
+import { Slot } from "../../../interfaces/SlotInterfaces";
 import { getFieldSlots } from "../../../services/field/fieldService";
 
 export enum ReservationFormEnum {

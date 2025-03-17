@@ -1,38 +1,53 @@
+/* 📌 Estilos para el video de fondo */
+.background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2; /* ✅ Envía el video al fondo */
+}
+
 /* 📌 Contenedor principal */
 .register-container {
-  @apply min-h-screen flex items-center justify-center bg-cover bg-center;
+  @apply h-2/3 flex items-center justify-end bg-cover bg-center;
   background-size: cover;
   background-position: center;
+  position: relative; /* ✅ Asegura que el video y el contenido se alineen bien */
+  padding: 1rem; /* ✅ Agrega espacio alrededor */
 }
 
 /* 📌 Caja de registro */
 .register-box {
-  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-8 max-w-md w-full;
+  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-10 max-w-lg w-full;
+  position: relative;
+  z-index: 1; /* ✅ Mantiene el formulario sobre el video */
 }
 
 /* 📌 Título */
 .register-title {
-  @apply text-2xl font-semibold text-white text-center mb-6;
+  @apply text-3xl font-bold text-white text-center mb-6;
 }
 
 /* 📌 Formulario */
 .register-form {
-  @apply space-y-4;
+  @apply space-y-5;
 }
 
 /* 📌 Etiquetas */
 .register-label {
-  @apply block font-medium text-gray-700;
+  @apply block font-medium text-white;
 }
 
 /* 📌 Inputs */
 .register-input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply w-full px-4 py-3 border border-gray-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-black;
 }
 
 /* 📌 Botón */
 .register-button {
-  @apply w-full bg-[#235A2C] hover:bg-[#235A2C] text-white font-bold py-2 px-4 rounded-lg transition duration-300;
+  @apply w-full bg-[#235A2C] hover:bg-[#1E4E2D] text-white font-bold py-3 px-4 rounded-lg transition duration-300;
 }
 
 /* 📌 Mensaje de error */

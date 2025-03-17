@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
+import MapComponent from "../map/MapComponent";
+import { Field } from "../../../interfaces/FieldInterfaces";
 
-interface Field {
-  _id: string;
-  name: string;
-  type: string;
-  location: string;
-  pricePerHour: number;
-  imageUrl: string;
-}
+interface FieldListProps {}
 
-const FieldList: React.FC = () => {
+const FieldList: React.FC<FieldListProps> = () => {
+  // ✅ Ahora acepta la prop
   const [fields, setFields] = useState<Field[]>([]);
   const navigate = useNavigate();
+  const [selectedField, setSelectedField] = useState<Field | null>(null);
 
   useEffect(() => {
     api
@@ -42,12 +39,12 @@ const FieldList: React.FC = () => {
         Add New Field
       </button>
 
-      {/* 📌 Se cambió el grid de 4 columnas a 3 columnas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {fields.map((field) => (
           <div
             key={field._id}
             className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
+            onClick={() => setSelectedField(field)}
           >
             <img
               src={field.imageUrl || "https://via.placeholder.com/300"}
@@ -61,7 +58,7 @@ const FieldList: React.FC = () => {
               <p className="text-gray-600 text-sm">
                 {field.type.toUpperCase()}
               </p>
-              <p className="text-gray-500 text-sm">{field.location}</p>
+              <p className="text-gray-500 text-sm">{field.location?.name}</p>
               <p className="text-green-600 font-bold mt-2">
                 ${field.pricePerHour} / hour
               </p>
@@ -70,13 +67,19 @@ const FieldList: React.FC = () => {
               <div className="flex justify-between gap-4 mt-4">
                 <button
                   className="px-4 py-2  text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
-                  onClick={() => navigate(`/fields/edit/${field._id}`)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // ✅ Evita que el clic en "Edit" seleccione la cancha
+                    navigate(`/fields/edit/${field._id}`);
+                  }}
                 >
                   Edit
                 </button>
                 <button
                   className="px-4 py-2  text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                  onClick={() => handleDelete(field._id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // ✅ Evita que el clic en "Delete" seleccione la cancha
+                    handleDelete(field._id);
+                  }}
                 >
                   Delete
                 </button>
@@ -85,6 +88,7 @@ const FieldList: React.FC = () => {
           </div>
         ))}
       </div>
+      <MapComponent fields={fields} selectedField={selectedField} />
     </div>
   );
 };
