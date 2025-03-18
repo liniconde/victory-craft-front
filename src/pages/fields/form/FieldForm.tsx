@@ -4,6 +4,8 @@ import "./FieldForm.css"; // Se mantiene el archivo CSS
 import { api } from "../../../utils/api";
 import { useAuth } from "../../../context/AuthContext";
 import { getS3UploadImageUrl } from "../../../services/field/fieldService";
+import PersonalizedMapComponent from "../../../components/personalizedMap/PersonalizedMapComponent";
+import { FieldLocation } from "../../../interfaces/FieldInterfaces";
 
 // const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || `victory-craft`;
 
@@ -17,7 +19,7 @@ interface Field {
   id?: string;
   name: string;
   type: "football" | "padel" | "tennis";
-  location: string;
+  location: FieldLocation;
   pricePerHour: number;
   imageUrl: string;
   imageS3Key: string;
@@ -33,7 +35,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   const [fieldData, setFieldData] = useState<Field>({
     name: "",
     type: "football",
-    location: "",
+    location: { name: "", lat: 2.1734, long: 41.3851 },
     pricePerHour: 0,
     imageUrl: "",
     imageS3Key: "",
@@ -42,6 +44,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<FieldLocation>({ name: "", lat: 2.1734, long: 41.3851 });
 
   useEffect(() => {
     if (mode === "edit" && id) {
@@ -160,7 +163,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           <input
             id="location"
             name="location"
-            value={fieldData.location}
+            value={fieldData.location.name}
             onChange={handleChange}
             className="field-form-input"
           />
@@ -194,6 +197,10 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
             className="field-form-input"
           />
         </div>
+        <PersonalizedMapComponent
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+        />
 
         {isUploading && <p className="text-blue-500">Uploading image...</p>}
 
