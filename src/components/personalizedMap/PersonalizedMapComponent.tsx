@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl, { LngLatLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import "./MapComponent.css";
-import { Field } from "../../../interfaces/FieldInterfaces";
+import "./PersonalizedMapComponent.css";
+import { FieldLocation } from "../../interfaces/FieldInterfaces";
 
 const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 mapboxgl.accessToken = mapboxToken || "";
@@ -10,11 +10,11 @@ const INITIAL_CENTER: LngLatLike = [2.1734, 41.3851];
 const INITIAL_ZOOM = 10;
 
 interface Props {
-  fields: Field[];
-  selectedField: Field | null;
+  selectedLocation: FieldLocation;
+  setSelectedLocation: React.Dispatch<React.SetStateAction<FieldLocation>>;
 }
 
-const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
+const PersonalizedMapComponent: React.FC<Props> = ({ selectedLocation }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]); // Almacenar marcadores para limpiarlos luego
@@ -63,45 +63,60 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
       }
     });
 
+    /* new mapboxgl.Marker().setLngLat([2.15899, 41.38879]).addTo(mapRef.current);
+
+    new mapboxgl.Marker({ color: "black", rotation: 45 })
+      .setLngLat([2.1734, 41.3851])
+      .addTo(mapRef.current);*/
   }, []);
+
+  // Actualizar marcadores cuando cambian los conciertos
 
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // Eliminar marcadores anteriores
     markersRef.current?.forEach((marker) => marker.remove());
     markersRef.current = [];
 
-    fields.forEach((field) => {
-      if (!field.location || !field.location.lat || !field.location.long) {
-        console.warn(`Ubicación inválida para ${field.name}`);
-        return;
-      }
+    if (
+      !selectedLocation ||
+      !selectedLocation?.lat ||
+      !selectedLocation?.long
+    ) {
+      console.warn(`Ubicación inválida para ${selectedLocation?.name}`);
+      return;
+    }
 
-      if (!mapRef.current) return;
-      const marker = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([field.location?.long, field.location?.lat])
-        .setPopup(new mapboxgl.Popup().setText(field.name))
-        ?.addTo(mapRef.current);
+    if (!mapRef.current) return;
+    const marker = new mapboxgl.Marker({ color: "red" })
+      .setLngLat([selectedLocation?.lat, selectedLocation?.long])
+      .setPopup(new mapboxgl.Popup().setText(selectedLocation.name))
+      ?.addTo(mapRef.current);
 
-      markersRef.current?.push(marker);
-    });
-  }, [fields]);
+    markersRef.current?.push(marker);
+  }, [selectedLocation]);
 
   // Mover el mapa si se selecciona un concierto
   useEffect(() => {
-    if (!mapRef.current || !selectedField) return;
+    if (!mapRef.current || !selectedLocation) return;
+
+    // const long = selectedFieldState ? selectedFieldState.location.longitude : INITIAL_CENTER[0];
+    // const lat = selectedFieldState ? selectedFieldState.location.latitude : INITIAL_CENTER[1]
+
     mapRef.current?.flyTo({
-      center: [selectedField.location.long, selectedField.location.lat],
+      center: [selectedLocation.lat, selectedLocation.long],
       zoom: 15,
       essential: true,
     });
-  }, [selectedField]);
+  }, [selectedLocation]);
 
   return (
     <div className="map-container">
+      {/* 📌 Contenedor del Mapa */}
       <div ref={mapContainerRef} className="mapbox-map" />
     </div>
   );
 };
 
-export default MapComponent;
+export default PersonalizedMapComponent;
