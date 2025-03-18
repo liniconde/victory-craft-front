@@ -55,6 +55,7 @@ const AppRoutes = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<Home />} />
+            <Route path="/fields" element={<FieldsList />} />
 
             {/* ✅ Rutas Privadas (Requieren autenticación) */}
             <Route

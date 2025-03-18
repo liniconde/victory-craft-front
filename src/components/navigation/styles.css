@@ -11,7 +11,7 @@
 }
 
 .navbar-items {
-  @apply mx-auto flex justify-between items-center;
+  @apply flex justify-end items-center w-full pr-10 md:pr-16;
 }
 
 /* 📌 Botón de Menú (Móvil) */
@@ -21,7 +21,7 @@
 
 /* 📌 Enlaces del Navbar */
 .nav-link {
-  @apply text-black text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300;
+  @apply text-black text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300 mr-6 md:mr-10;
 }
 
 /* 📌 FORZAR EL COLOR BLANCO */
@@ -34,7 +34,7 @@
 
 /* 📌 Menú en Móvil */
 .navbar-menu {
-  @apply flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 text-center mt-4 md:mt-0;
+  @apply flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 text-right md:text-right mr-8 md:mr-14;
 }
 
 /* 📌 Animación del menú en móviles */

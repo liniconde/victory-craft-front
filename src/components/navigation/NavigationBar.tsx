@@ -38,20 +38,14 @@ const NavigationBar: React.FC = () => {
           {/* 🔹 Pestañas accesibles para todos */}
           <span
             className="nav-link block md:inline-block"
-            onClick={() => navigate("/map")}
+            onClick={() => navigate("/fields")}
           >
-            Fields Map
+            Fields
           </span>
 
           {/* 🔹 Pestañas solo para usuarios autenticados */}
           {isAuthenticated && (
             <>
-              <span
-                className="nav-link block md:inline-block"
-                onClick={() => navigate("/fields")}
-              >
-                Fields
-              </span>
               <span
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/reservations")}
