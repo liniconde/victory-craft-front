@@ -4,9 +4,7 @@ import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
 import { Field } from "../../../interfaces/FieldInterfaces";
 
-interface FieldListProps {}
-
-const FieldList: React.FC<FieldListProps> = () => {
+const FieldList: React.FC = () => {
   // ✅ Ahora acepta la prop
   const [fields, setFields] = useState<Field[]>([]);
   const navigate = useNavigate();

@@ -5,9 +5,8 @@ export interface Field {
   location: {
     lat: number;
     long: number;
-    name: string,
+    name: string;
   };
   pricePerHour: number;
   imageUrl: string;
 }
-
