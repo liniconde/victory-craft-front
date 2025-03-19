@@ -6,7 +6,7 @@ import "./styles.css";
 import { Button } from "react-bootstrap";
 
 const NavigationBar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, role } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ const NavigationBar: React.FC = () => {
           >
             Fields
           </span>
-
+          
           {/* 🔹 Pestañas solo para usuarios autenticados */}
           {isAuthenticated && (
             <>
@@ -57,18 +57,6 @@ const NavigationBar: React.FC = () => {
                 onClick={() => navigate("/slots")}
               >
                 Slots
-              </span>
-              <span
-                className="nav-link block md:inline-block"
-                onClick={() => navigate("/my-reservations")}
-              >
-                My Reservations
-              </span>
-              <span
-                className="nav-link block md:inline-block"
-                onClick={() => navigate("/users")}
-              >
-                Users
               </span>
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}

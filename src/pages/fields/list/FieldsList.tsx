@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
 import { Field } from "../../../interfaces/FieldInterfaces";
+import ReservationsList from "../reservationsList/ReservationsList"; // Ya tiene sus estilos importados internamente
+import CustomModal from "../reservationsList/CustomModal";
+import { useAuth } from "../../../context/AuthContext"; // ✅ Importamos el contexto de autenticación
 
 const FieldList: React.FC = () => {
-  // ✅ Ahora acepta la prop
   const [fields, setFields] = useState<Field[]>([]);
   const navigate = useNavigate();
   const [selectedField, setSelectedField] = useState<Field | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     api
@@ -24,25 +27,33 @@ const FieldList: React.FC = () => {
       .catch((error) => console.error("Error deleting field:", error));
   };
 
+  const { role } = useAuth(); // ✅ Obtenemos el rol del usuario
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
         Available Fields
       </h1>
 
-      <button
-        className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-        onClick={() => navigate("/fields/new")}
-      >
-        Add New Field
-      </button>
+      {/* ✅ Solo los administradores pueden ver este botón */}
+      {role === "admin" && (
+        <button
+          className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+          onClick={() => navigate("/fields/new")}
+        >
+          Add New Field
+        </button>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {fields.map((field) => (
           <div
             key={field._id}
             className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
-            onClick={() => setSelectedField(field)}
+            onClick={() => {
+              setSelectedField(field);
+              setShowModal(true);
+            }}
           >
             <img
               src={field.imageUrl || "https://via.placeholder.com/300"}
@@ -61,32 +72,59 @@ const FieldList: React.FC = () => {
                 ${field.pricePerHour} / hour
               </p>
 
-              {/* 📌 Se ajustaron los botones para mayor armonía visual */}
+              {/* 📌 Sección de botones según el rol */}
               <div className="flex justify-between gap-4 mt-4">
-                <button
-                  className="px-4 py-2  text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
-                  onClick={(e) => {
-                    e.stopPropagation(); // ✅ Evita que el clic en "Edit" seleccione la cancha
-                    navigate(`/fields/edit/${field._id}`);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="px-4 py-2  text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                  onClick={(e) => {
-                    e.stopPropagation(); // ✅ Evita que el clic en "Delete" seleccione la cancha
-                    handleDelete(field._id);
-                  }}
-                >
-                  Delete
-                </button>
+                {role === "user" ? (
+                  <button
+                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedField(field);
+                      setShowModal(true); // ✅ Abre el modal para ver las reservas
+                    }}
+                  >
+                    Reserve
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="px-4 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/fields/edit/${field._id}`);
+                      }}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(field._id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* ✅ Mueve el MapComponent fuera del bucle */}
       <MapComponent fields={fields} selectedField={selectedField} />
+
+      {/* ✅ Modal con ReservationsList */}
+      <CustomModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`Reservations for ${selectedField?.name}`}
+      >
+        {selectedField && <ReservationsList fieldId={selectedField._id} />}
+      </CustomModal>
     </div>
   );
 };

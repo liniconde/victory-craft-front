@@ -12,3 +12,4 @@ export interface FieldLocation {
   lat: number;
   long: number;
 }
+

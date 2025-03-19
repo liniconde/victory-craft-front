@@ -28,6 +28,7 @@ const Register: React.FC = () => {
         email,
         password,
         role,
+        username: email
       });
       console.log("Registro exitoso:", response);
       navigate("/login");

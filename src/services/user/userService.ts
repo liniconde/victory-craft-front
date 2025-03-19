@@ -8,6 +8,7 @@ interface AuthResponse {
     _id: string;
     username: string;
     email: string;
+    role: string;
   };
   token: string;
 }
@@ -42,6 +43,7 @@ interface RegisterData {
   role: string;
   firstName: string;
   lastName: string;
+  username: string;
   // Puede ser "player" o "admin"
 }
 
