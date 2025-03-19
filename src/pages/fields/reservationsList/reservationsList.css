@@ -1,0 +1,84 @@
+/* Contenedor principal */
+.reservations-container {
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.reservations-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+/* Cada ítem de reserva */
+.reservation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: background 0.3s ease-in-out;
+}
+
+.reservation-item:hover {
+  background: #eef2ff;
+}
+
+/* Detalles de reserva */
+.reservation-details {
+  display: flex;
+  flex-direction: column;
+  color: #555;
+}
+
+/* Hora de la reserva */
+.reservation-time {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Botón de cancelar */
+.cancel-btn {
+  background-color: #dc3545;
+  border: none;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+.cancel-btn:hover {
+  background-color: #bb2d3b;
+}
+
+/* Si no hay reservas */
+.no-reservations {
+  text-align: center;
+  color: #777;
+  font-size: 1rem;
+  padding: 12px;
+  background: #f1f1f1;
+}
+
+/* Footer con el botón "Reservar Más" */
+.reservations-footer {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.book-more-btn {
+  background-color: #007bff;
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease-in-out;
+}
+
+.book-more-btn:hover {
+  background-color: #0056b3;
+}

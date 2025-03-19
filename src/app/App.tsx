@@ -23,9 +23,6 @@ const ReservationForm = lazy(
 );
 import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
-const MyReservations = lazy(
-  () => import("../pages/fields/myReservations/MyReservations")
-);
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
 const Home = lazy(() => import("../pages/home/Home"));
@@ -55,6 +52,7 @@ const AppRoutes = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<Home />} />
+            <Route path="/fields" element={<FieldsList />} />
 
             {/* ✅ Rutas Privadas (Requieren autenticación) */}
             <Route
@@ -78,14 +76,6 @@ const AppRoutes = () => {
               element={
                 <PrivateRoute>
                   <Reservations />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/my-reservations"
-              element={
-                <PrivateRoute>
-                  <MyReservations />
                 </PrivateRoute>
               }
             />

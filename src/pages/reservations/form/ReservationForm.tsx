@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Table, Button, Modal } from "react-bootstrap";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import FieldSelector from "../../fields/components/FieldSelector";
 import "./index.css";
 import { useAuth } from "../../../context/AuthContext";
@@ -24,6 +24,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [currentWeek, setCurrentWeek] = useState<Moment>(
+    moment().startOf("week")
+  ); // ✅ Estado para la semana actual
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { userId } = useAuth();
@@ -80,9 +84,18 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     }
   };
 
-  const startOfWeek = moment().startOf("week");
+  // ✅ Funciones para cambiar de semana
+  const handlePreviousWeek = () => {
+    setCurrentWeek((prevWeek) => prevWeek.clone().subtract(1, "week"));
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeek((prevWeek) => prevWeek.clone().add(1, "week"));
+  };
+
+  // ✅ Calcular los días de la semana según el estado actual
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
-    startOfWeek.clone().add(i, "days")
+    currentWeek.clone().add(i, "days")
   );
 
   return (
@@ -90,6 +103,30 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
       <h1>{mode === "create" ? "Create Reservation" : "Edit Reservation"}</h1>
 
       <FieldSelector onFieldSelect={handleFieldSelect} />
+
+      {/* ✅ SOLO SE MUESTRAN LOS BOTONES SI UN FIELD ESTÁ SELECCIONADO */}
+      {fieldId && (
+        <div className="flex justify-between my-4 items-center">
+          <Button
+            variant="secondary"
+            onClick={handlePreviousWeek}
+            className="text-sm px-3 py-2"
+          >
+            ← Semana Anterior
+          </Button>
+          <h2 className="text-lg font-semibold my-4">
+            Semana del {currentWeek.format("MMM D")} al{" "}
+            {currentWeek.clone().add(6, "days").format("MMM D")}
+          </h2>
+          <Button
+            variant="secondary"
+            onClick={handleNextWeek}
+            className="text-sm px-3 py-2"
+          >
+            Semana Siguiente →
+          </Button>
+        </div>
+      )}
 
       {fieldId && (
         <Table bordered hover>

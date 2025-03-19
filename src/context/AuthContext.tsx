@@ -17,6 +17,7 @@ interface AuthContextType {
   userId: string | null;
   email: string | null;
   exp: number;
+  role: string | null;
 }
 
 // 📌 Crear contexto con valores iniciales
@@ -45,6 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [exp, setExp] = useState<number>(0);
   const [token, setToken] = useState<string>("");
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const storageToken = localStorage.getItem("token");
@@ -64,6 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       setUserId(localStorage.getItem("userId"));
       setEmail(localStorage.getItem("email"));
+      setRole(localStorage.getItem("role"));
       setExp(
         localStorage.getItem("exp")
           ? parseInt(localStorage.getItem("exp") || "0")
@@ -80,10 +83,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Token decoded:", decoded);
       localStorage.setItem("userId", decoded?.id || "");
       localStorage.setItem("email", decoded?.email || "");
+      localStorage.setItem("role", decoded?.role || "");
       localStorage.setItem("exp", decoded?.exp ? decoded?.exp + "" : "0");
       setUserId(decoded?.id || "");
       setEmail(decoded?.id || "");
       setExp(decoded?.exp || 0);
+      setRole(decoded?.role || "");
     }
     setToken(newToken);
     setIsAuthenticated(true);
@@ -110,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userId,
     email,
     exp,
+    role,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
