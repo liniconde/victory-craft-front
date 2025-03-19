@@ -31,11 +31,16 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   const { userId } = useAuth();
   const { id } = useParams<{ id: string }>();
   // const BUCKET_URL = `https://${BUCKET_NAME}.s3.amazonaws.com/`;
+  const defaultLocation: FieldLocation = {
+    name: "",
+    lat: 2.1734,
+    long: 41.3851,
+  };
 
   const [fieldData, setFieldData] = useState<Field>({
     name: "",
     type: "football",
-    location: { name: "", lat: 2.1734, long: 41.3851 },
+    location: defaultLocation,
     pricePerHour: 0,
     imageUrl: "",
     imageS3Key: "",
@@ -44,13 +49,17 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<FieldLocation>({ name: "", lat: 2.1734, long: 41.3851 });
+  const [selectedLocation, setSelectedLocation] =
+    useState<FieldLocation>(defaultLocation);
 
   useEffect(() => {
     if (mode === "edit" && id) {
       api
         .get<Field>(`/fields/${id}`)
-        .then((response) => setFieldData(response.data))
+        .then((response) => {
+          setFieldData(response.data);
+          setSelectedLocation(response.data.location || defaultLocation);
+        })
         .catch((error) => console.error("Error fetching field:", error));
     }
   }, [mode, id]);
@@ -101,7 +110,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
       }
     }
 
-    const fieldPayload = { ...fieldData };
+    const fieldPayload = { ...fieldData, location: selectedLocation };
 
     if (mode === "create") {
       api

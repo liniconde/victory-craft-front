@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import mapboxgl, { LngLatLike } from "mapbox-gl";
+import mapboxgl, { LngLatLike, MapMouseEvent } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./PersonalizedMapComponent.css";
 import { FieldLocation } from "../../interfaces/FieldInterfaces";
@@ -14,17 +14,18 @@ interface Props {
   setSelectedLocation: React.Dispatch<React.SetStateAction<FieldLocation>>;
 }
 
-const PersonalizedMapComponent: React.FC<Props> = ({ selectedLocation }) => {
+const PersonalizedMapComponent: React.FC<Props> = ({
+  selectedLocation,
+  setSelectedLocation,
+}) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]); // Almacenar marcadores para limpiarlos luego
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
 
-  const [center, setCenter] = useState(INITIAL_CENTER);
-  const [zoom, setZoom] = useState(INITIAL_ZOOM);
+  const [center] = useState(INITIAL_CENTER);
+  const [zoom] = useState(INITIAL_ZOOM);
 
   console.log("MapToken ->", mapboxgl.accessToken, mapboxToken);
-
-  console.log("MapToken -> fields", mapboxgl.accessToken);
 
   // Inicializar el mapa solo una vez
   useEffect(() => {
@@ -33,8 +34,6 @@ const PersonalizedMapComponent: React.FC<Props> = ({ selectedLocation }) => {
       return;
     }
 
-    console.log("Creating map...");
-
     if (!mapRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current!,
@@ -42,70 +41,60 @@ const PersonalizedMapComponent: React.FC<Props> = ({ selectedLocation }) => {
         center: center,
         zoom: zoom,
       });
-    }
 
-    mapRef.current?.on("move", () => {
-      // get the current center coordinates and zoom level from the map
-      const mapCenter = mapRef.current?.getCenter();
-      const mapZoom = mapRef.current?.getZoom();
+      // 📌 Escuchar clics en el mapa y actualizar la ubicación
+      mapRef.current.on("click", (e: MapMouseEvent) => {
+        const newLocation = {
+          lat: e.lngLat.lat,
+          long: e.lngLat.lng,
+          name: "Cancha nueva",
+        };
+        setSelectedLocation(newLocation);
 
-      // console.log("Map moved", mapCenter, mapZoom);
-
-      // update state
-      if (mapCenter && mapZoom) {
-        setCenter([mapCenter.lng, mapCenter.lat]);
-        setZoom(mapZoom);
-
-        if (mapCenter && mapZoom) {
-          setCenter([mapCenter.lng, mapCenter.lat]);
-          setZoom(mapZoom);
+        // 📌 Mueve el marcador a la nueva ubicación
+        if (markerRef.current) {
+          markerRef.current.setLngLat([newLocation.long, newLocation.lat]);
+        } else {
+          markerRef.current = new mapboxgl.Marker({ color: "red" })
+            .setLngLat([newLocation.long, newLocation.lat])
+            .setPopup(new mapboxgl.Popup().setText(newLocation.name))
+            .addTo(mapRef.current!);
         }
-      }
-    });
 
-    /* new mapboxgl.Marker().setLngLat([2.15899, 41.38879]).addTo(mapRef.current);
-
-    new mapboxgl.Marker({ color: "black", rotation: 45 })
-      .setLngLat([2.1734, 41.3851])
-      .addTo(mapRef.current);*/
+        // 📌 Hacer zoom hacia la nueva ubicación
+        mapRef.current?.flyTo({
+          center: [newLocation.long, newLocation.lat],
+          zoom: 15,
+        });
+      });
+    }
   }, []);
 
-  // Actualizar marcadores cuando cambian los conciertos
-
+  // 📌 Si `selectedLocation` cambia, actualizar el marcador
   useEffect(() => {
-    if (!mapRef.current) return;
-
-    // Eliminar marcadores anteriores
-    markersRef.current?.forEach((marker) => marker.remove());
-    markersRef.current = [];
-
     if (
+      !mapRef.current ||
       !selectedLocation ||
-      !selectedLocation?.lat ||
-      !selectedLocation?.long
-    ) {
-      console.warn(`Ubicación inválida para ${selectedLocation?.name}`);
+      !selectedLocation.lat ||
+      !selectedLocation.long
+    )
       return;
+
+    if (!markerRef.current) {
+      markerRef.current = new mapboxgl.Marker({ color: "red" })
+        .setLngLat([selectedLocation.long, selectedLocation.lat])
+        .setPopup(new mapboxgl.Popup().setText(selectedLocation.name))
+        .addTo(mapRef.current);
+    } else {
+      markerRef.current.setLngLat([
+        selectedLocation.long,
+        selectedLocation.lat,
+      ]);
+      markerRef.current.getPopup()?.setText(selectedLocation.name);
     }
 
-    if (!mapRef.current) return;
-    const marker = new mapboxgl.Marker({ color: "red" })
-      .setLngLat([selectedLocation?.lat, selectedLocation?.long])
-      .setPopup(new mapboxgl.Popup().setText(selectedLocation.name))
-      ?.addTo(mapRef.current);
-
-    markersRef.current?.push(marker);
-  }, [selectedLocation]);
-
-  // Mover el mapa si se selecciona un concierto
-  useEffect(() => {
-    if (!mapRef.current || !selectedLocation) return;
-
-    // const long = selectedFieldState ? selectedFieldState.location.longitude : INITIAL_CENTER[0];
-    // const lat = selectedFieldState ? selectedFieldState.location.latitude : INITIAL_CENTER[1]
-
     mapRef.current?.flyTo({
-      center: [selectedLocation.lat, selectedLocation.long],
+      center: [selectedLocation.long, selectedLocation.lat],
       zoom: 15,
       essential: true,
     });
@@ -113,7 +102,6 @@ const PersonalizedMapComponent: React.FC<Props> = ({ selectedLocation }) => {
 
   return (
     <div className="map-container">
-      {/* 📌 Contenedor del Mapa */}
       <div ref={mapContainerRef} className="mapbox-map" />
     </div>
   );
