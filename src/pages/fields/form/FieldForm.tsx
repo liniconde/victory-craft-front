@@ -33,8 +33,8 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   // const BUCKET_URL = `https://${BUCKET_NAME}.s3.amazonaws.com/`;
   const defaultLocation: FieldLocation = {
     name: "",
-    lat: 2.1734,
-    long: 41.3851,
+    lat: 41.3851,
+    long: 2.1734,
   };
 
   const [fieldData, setFieldData] = useState<Field>({
@@ -126,98 +126,106 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   };
 
   return (
-    <div className="field-form-container bg-white shadow-lg rounded-lg p-6">
+    <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
         {mode === "create" ? "Create a New Field" : "Edit Field"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="grid gap-4">
-        {/* Name Field */}
-        <div>
-          <label htmlFor="name" className="field-form-label">
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            value={fieldData.name}
-            onChange={handleChange}
-            className="field-form-input"
+      {/* Contenedor principal en grid */}
+      <div className="field-form-container">
+        {/* 📝 Sección del formulario */}
+        <form onSubmit={handleSubmit} className="field-form">
+          {/* Name Field */}
+          <div>
+            <label htmlFor="name" className="field-form-label">
+              Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              value={fieldData.name}
+              onChange={handleChange}
+              className="field-form-input"
+            />
+          </div>
+
+          {/* Type Select */}
+          <div>
+            <label htmlFor="type" className="field-form-label">
+              Type
+            </label>
+            <select
+              id="type"
+              name="type"
+              value={fieldData.type}
+              onChange={handleChange}
+              className="field-form-input"
+            >
+              <option value="football">Football</option>
+              <option value="padel">Padel</option>
+              <option value="tennis">Tennis</option>
+            </select>
+          </div>
+
+          {/* Location Field */}
+          <div>
+            <label htmlFor="location" className="field-form-label">
+              Location
+            </label>
+            <input
+              id="location"
+              name="location"
+              value={fieldData.location.name}
+              onChange={handleChange}
+              className="field-form-input"
+            />
+          </div>
+
+          {/* Price Per Hour Field */}
+          <div>
+            <label htmlFor="pricePerHour" className="field-form-label">
+              Price Per Hour ($)
+            </label>
+            <input
+              id="pricePerHour"
+              name="pricePerHour"
+              type="number"
+              value={fieldData.pricePerHour}
+              onChange={handleChange}
+              className="field-form-input"
+            />
+          </div>
+
+          {/* File Upload */}
+          <div>
+            <label htmlFor="imageFile" className="field-form-label">
+              Upload Image
+            </label>
+            <input
+              id="imageFile"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="field-form-input"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button type="submit" className="field-form-button">
+            {mode === "create" ? "Create Field" : "Update Field"}
+          </button>
+
+          {isUploading && <p className="text-blue-500">Uploading image...</p>}
+        </form>
+
+        {/* 🗺 Sección del mapa */}
+        <div className="map-container-form">
+          <PersonalizedMapComponent
+            selectedLocation={selectedLocation}
+            setSelectedLocation={setSelectedLocation}
           />
         </div>
-
-        {/* Type Select */}
-        <div>
-          <label htmlFor="type" className="field-form-label">
-            Type
-          </label>
-          <select
-            id="type"
-            name="type"
-            value={fieldData.type}
-            onChange={handleChange}
-            className="field-form-input"
-          >
-            <option value="football">Football</option>
-            <option value="padel">Padel</option>
-            <option value="tennis">Tennis</option>
-          </select>
-        </div>
-
-        {/* Location Field */}
-        <div>
-          <label htmlFor="location" className="field-form-label">
-            Location
-          </label>
-          <input
-            id="location"
-            name="location"
-            value={fieldData.location.name}
-            onChange={handleChange}
-            className="field-form-input"
-          />
-        </div>
-
-        {/* Price Per Hour Field */}
-        <div>
-          <label htmlFor="pricePerHour" className="field-form-label">
-            Price Per Hour ($)
-          </label>
-          <input
-            id="pricePerHour"
-            name="pricePerHour"
-            type="number"
-            value={fieldData.pricePerHour}
-            onChange={handleChange}
-            className="field-form-input"
-          />
-        </div>
-
-        {/* File Upload */}
-        <div>
-          <label htmlFor="imageFile" className="field-form-label">
-            Upload Image
-          </label>
-          <input
-            id="imageFile"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="field-form-input"
-          />
-        </div>
-        <PersonalizedMapComponent
-          selectedLocation={selectedLocation}
-          setSelectedLocation={setSelectedLocation}
-        />
-
-        {isUploading && <p className="text-blue-500">Uploading image...</p>}
-
-        {/* Submit Button */}
-        <button type="submit" className="field-form-button">
-          {mode === "create" ? "Create Field" : "Update Field"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

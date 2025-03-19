@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl, { LngLatLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./MapComponent.css";
@@ -17,14 +17,10 @@ interface Props {
 const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]); // Almacenar marcadores para limpiarlos luego
+  const markersRef = useRef<mapboxgl.Marker[]>([]); // Almacena los marcadores para limpiar después
 
   const [center, setCenter] = useState(INITIAL_CENTER);
   const [zoom, setZoom] = useState(INITIAL_ZOOM);
-
-  console.log("MapToken ->", mapboxgl.accessToken, mapboxToken);
-
-  console.log("MapToken -> fields", mapboxgl.accessToken);
 
   // Inicializar el mapa solo una vez
   useEffect(() => {
@@ -33,8 +29,6 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
       return;
     }
 
-    console.log("Creating map...");
-
     if (!mapRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current!,
@@ -42,59 +36,55 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
         center: center,
         zoom: zoom,
       });
-    }
 
-    mapRef.current?.on("move", () => {
-      // get the current center coordinates and zoom level from the map
-      const mapCenter = mapRef.current?.getCenter();
-      const mapZoom = mapRef.current?.getZoom();
-
-      // console.log("Map moved", mapCenter, mapZoom);
-
-      // update state
-      if (mapCenter && mapZoom) {
-        setCenter([mapCenter.lng, mapCenter.lat]);
-        setZoom(mapZoom);
+      mapRef.current.on("move", () => {
+        const mapCenter = mapRef.current?.getCenter();
+        const mapZoom = mapRef.current?.getZoom();
 
         if (mapCenter && mapZoom) {
           setCenter([mapCenter.lng, mapCenter.lat]);
           setZoom(mapZoom);
         }
-      }
-    });
-
+      });
+    }
   }, []);
 
-  useEffect(() => {
+  // Función para agregar marcadores, memoizada para evitar repintados innecesarios
+  const updateMarkers = useCallback(() => {
     if (!mapRef.current) return;
 
-    markersRef.current?.forEach((marker) => marker.remove());
+    // Eliminar marcadores existentes
+    markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
+    // Agregar nuevos marcadores
     fields.forEach((field) => {
-      if (!field.location || !field.location.lat || !field.location.long) {
-        console.warn(`Ubicación inválida para ${field.name}`);
+      if (!field.location || !field.location.lat || !field.location.long)
         return;
-      }
 
-      if (!mapRef.current) return;
       const marker = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([field.location?.long, field.location?.lat])
+        .setLngLat([field.location.long, field.location.lat])
         .setPopup(new mapboxgl.Popup().setText(field.name))
-        ?.addTo(mapRef.current);
+        .addTo(mapRef.current!);
 
-      markersRef.current?.push(marker);
+      markersRef.current.push(marker);
     });
   }, [fields]);
 
-  // Mover el mapa si se selecciona un concierto
+  // Llamamos a `updateMarkers` solo cuando `fields` cambia
   useEffect(() => {
-    if (!mapRef.current || !selectedField) return;
-    mapRef.current?.flyTo({
-      center: [selectedField.location.long, selectedField.location.lat],
-      zoom: 15,
-      essential: true,
-    });
+    updateMarkers();
+  }, [updateMarkers]);
+
+  // Mover el mapa si se selecciona una cancha
+  useEffect(() => {
+    if (mapRef.current && selectedField) {
+      mapRef.current.flyTo({
+        center: [selectedField.location.long, selectedField.location.lat],
+        zoom: 15,
+        essential: true,
+      });
+    }
   }, [selectedField]);
 
   return (

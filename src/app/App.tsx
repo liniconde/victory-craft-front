@@ -26,6 +26,9 @@ const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
 const Home = lazy(() => import("../pages/home/Home"));
+const ReservationsList = lazy(
+  () => import("../pages/fields/reservationsList/ReservationsList")
+);
 
 // 📌 Componente para mostrar la pantalla de carga mientras se cargan los componentes
 const LoadingScreen = () => (
@@ -92,6 +95,14 @@ const AppRoutes = () => {
               element={
                 <PrivateRoute>
                   <FieldForm mode="edit" />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/:id/reservations/"
+              element={
+                <PrivateRoute>
+                  <ReservationsList />
                 </PrivateRoute>
               }
             />

@@ -25,7 +25,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // 📌 Hook para usar el contexto
 export const useAuth = (): AuthContextType => {
-  console.log("entro acaaaa");
   const context = useContext(AuthContext);
   if (!context) {
     console.log("useAuth debe usarse dentro de un AuthProvider");

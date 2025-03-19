@@ -3,15 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
 import { Field } from "../../../interfaces/FieldInterfaces";
-import ReservationsList from "../reservationsList/ReservationsList"; // Ya tiene sus estilos importados internamente
-import CustomModal from "../reservationsList/CustomModal";
 import { useAuth } from "../../../context/AuthContext"; // ✅ Importamos el contexto de autenticación
 
 const FieldList: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
   const navigate = useNavigate();
   const [selectedField, setSelectedField] = useState<Field | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     api
@@ -52,7 +49,6 @@ const FieldList: React.FC = () => {
             className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
             onClick={() => {
               setSelectedField(field);
-              setShowModal(true);
             }}
           >
             <img
@@ -80,7 +76,7 @@ const FieldList: React.FC = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedField(field);
-                      setShowModal(true); // ✅ Abre el modal para ver las reservas
+                      navigate(`/fields/${field._id}/reservations/`);
                     }}
                   >
                     Reserve
@@ -116,15 +112,6 @@ const FieldList: React.FC = () => {
 
       {/* ✅ Mueve el MapComponent fuera del bucle */}
       <MapComponent fields={fields} selectedField={selectedField} />
-
-      {/* ✅ Modal con ReservationsList */}
-      <CustomModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        title={`Reservations for ${selectedField?.name}`}
-      >
-        {selectedField && <ReservationsList fieldId={selectedField._id} />}
-      </CustomModal>
     </div>
   );
 };
