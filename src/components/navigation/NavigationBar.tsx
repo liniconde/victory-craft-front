@@ -6,7 +6,7 @@ import "./styles.css";
 import { Button } from "react-bootstrap";
 
 const NavigationBar: React.FC = () => {
-  const { isAuthenticated, logout, role } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ const NavigationBar: React.FC = () => {
           >
             Fields
           </span>
-          
+
           {/* 🔹 Pestañas solo para usuarios autenticados */}
           {isAuthenticated && (
             <>
