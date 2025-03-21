@@ -29,6 +29,10 @@ const Home = lazy(() => import("../pages/home/Home"));
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
+const FieldVideosPageList = lazy(
+  () => import("../pages/videos/FieldVideosPage")
+);
+const FieldVideosForm = lazy(() => import("../pages/videos/form/VideoForm"));
 
 // 📌 Componente para mostrar la pantalla de carga mientras se cargan los componentes
 const LoadingScreen = () => (
@@ -103,6 +107,30 @@ const AppRoutes = () => {
               element={
                 <PrivateRoute>
                   <ReservationsList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/videos/"
+              element={
+                <PrivateRoute>
+                  <FieldVideosPageList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/:fieldId/videos/create"
+              element={
+                <PrivateRoute>
+                  <FieldVideosForm mode="create" />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/:fieldId/videos/:videoId/edit"
+              element={
+                <PrivateRoute>
+                  <FieldVideosForm mode="create" />
                 </PrivateRoute>
               }
             />

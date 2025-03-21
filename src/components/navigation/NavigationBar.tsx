@@ -59,6 +59,13 @@ const NavigationBar: React.FC = () => {
                 Slots
               </span>
 
+              <span
+                className="nav-link block md:inline-block"
+                onClick={() => navigate("/fields/videos")}
+              >
+                Videos
+              </span>
+
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
               <Button
                 className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition"

@@ -3,7 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../../utils/api";
 import "./VideoForm.css";
 import { Video } from "../../../interfaces/VideoInterfaces";
-import { getVideo } from "../../../services/video/videoService";
+import {
+  getVideo,
+  S3UploadObject,
+  uploadVideoS3,
+} from "../../../services/video/videoService";
 
 interface VideoUploadFormProps {
   mode: "create" | "edit";
@@ -11,9 +15,14 @@ interface VideoUploadFormProps {
 
 const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   const navigate = useNavigate();
-  const { videoId } = useParams<{ videoId: string }>();
+  const { videoId, fieldId } = useParams<{
+    videoId: string;
+    fieldId: string;
+  }>();
 
   const [videoData, setVideoData] = useState<Video>({
+    _id: "",
+    videoUrl: "",
     fieldId: "",
     s3Key: "",
   });
@@ -45,26 +54,16 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   };
 
   // 📤 Subir el video a S3 y obtener la URL firmada
-  const uploadVideoToS3 = async (): Promise<{ s3Key: string } | null> => {
+  const uploadVideoToS3 = async (): Promise<S3UploadObject | null> => {
     if (!videoFile) return null;
 
     try {
       setIsUploading(true);
-      const fileType = videoFile.name.split(".").pop();
 
-      // 1️⃣ Solicitar una URL firmada para subir el video
-      const res = await api.get(`/videos/upload?videoId=${videoId || ""}&fileType=${fileType}`);
-      const { uploadUrl, objectKey } = res.data;
-
-      // 2️⃣ Subir el video a S3
-      await fetch(uploadUrl, {
-        method: "PUT",
-        body: videoFile,
-        headers: { "Content-Type": `video/${fileType}` },
-      });
+      const response = await uploadVideoS3(videoFile);
 
       setIsUploading(false);
-      return { s3Key: objectKey };
+      return response;
     } catch (error) {
       console.error("❌ Error uploading video:", error);
       setIsUploading(false);
@@ -81,19 +80,31 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     }
 
     const videoObject = await uploadVideoToS3();
+    console.log("image iobjectt", videoObject);
     if (videoObject) {
-      videoData.s3Key = videoObject.s3Key;
+      videoData.s3Key = videoObject.objectKey;
+      videoData.videoUrl = videoObject.uploadUrl;
+      videoData.fieldId = fieldId!;
+    } else {
+      alert("Error uploading File");
+      return;
     }
 
     if (mode === "create") {
       api
         .post("/videos", videoData)
-        .then(() => navigate(`/videos/${videoData.fieldId}`))
+        .then(() => {
+          navigate(`/fields/videos/`);
+          alert("Video uploaded Succesfully");
+        })
         .catch((error) => console.error("Error creating video:", error));
     } else if (videoId) {
       api
         .put(`/videos/${videoId}`, videoData)
-        .then(() => navigate(`/videos/${videoData.fieldId}`))
+        .then(() => {
+          navigate(`/fields/videos/`);
+          alert("Video updated Succesfully");
+        })
         .catch((error) => console.error("Error updating video:", error));
     }
   };

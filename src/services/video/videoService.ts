@@ -58,21 +58,37 @@ export const uploadVideoS3 = async (
   videoFile: File
 ): Promise<S3UploadObject> => {
   try {
-    const data: S3UploadObject = await api.post("/videos/upload", {
+    console.log("videofile", videoFile.name, videoFile.size);
+    const fileType = videoFile.name.split(".").pop();
+
+    const response = await api.post("/videos/upload", {
       objectKey: videoFile.name,
+      fileType,
     });
 
-    await axios.put(data.uploadUrl, {
+    const data: S3UploadObject = response.data;
+
+    console.log("dataa", data)
+
+    await axios.put(data.uploadUrl, videoFile, {
       method: "PUT",
       headers: { "Content-Type": videoFile.type },
-      body: {
-        imageFile: videoFile,
-      },
     });
 
     return data;
   } catch (error) {
     console.error("Error uploading video", error);
+    throw error;
+  }
+};
+
+// 📌 Función para hacer login y almacenar el token
+export const createVideo = async (videoId: string): Promise<Video> => {
+  try {
+    const response = await api.get<Video>(`videos/${videoId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting Field videos:", error);
     throw error;
   }
 };

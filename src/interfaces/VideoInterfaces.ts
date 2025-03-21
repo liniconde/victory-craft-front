@@ -1,6 +1,6 @@
 // 📌 Tipado del objeto Video
 export interface Video {
-  id?: string;
+  _id: string;
   fieldId: string;
   s3Key: string;
   videoUrl?: string;
