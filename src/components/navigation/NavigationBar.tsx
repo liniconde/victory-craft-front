@@ -67,7 +67,7 @@ const NavigationBar: React.FC = () => {
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
               <button
-                className="px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900 transition"
+                className="px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900 transition md:pr-4"
                 onClick={() => {
                   logout();
                   navigate("/");

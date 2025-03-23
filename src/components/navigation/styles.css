@@ -11,21 +11,23 @@
 }
 
 .navbar-items {
-  @apply flex items-center gap-x-6 md:gap-x-10;
+  @apply flex items-center gap-x-6 md:gap-x-10 mr-28 mt-6;
 }
 
 /* 📌 Botón de Menú (Móvil) */
 .navbar-toggler {
-  @apply text-white text-3xl md:hidden focus:outline-none transition-transform transform;
+  @apply bg-transparent text-white text-3xl md:hidden focus:outline-none transition-transform transform;
 }
 
 /* 📌 Enlaces del Navbar */
 .nav-link {
-  @apply text-white text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300;
+  @apply text-white text-lg font-medium px-4 py-2 text-center hover:text-[#235A2C] transition duration-300 cursor-default;
 }
 
 /* 📌 FORZAR EL COLOR BLANCO */
-.nav-link,
+.nav-link {
+  @apply text-white text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300;
+}
 .navbar-brand,
 .nav-dropdown-item {
   color: white;
@@ -34,7 +36,7 @@
 
 /* 📌 Menú en Móvil */
 .navbar-menu {
-  @apply flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-6 text-right md:text-right mr-8 md:mr-14;
+  @apply flex-col items-center text-center space-y-4 mt-4 w-full md:space-y-0 md:flex-row md:items-center md:justify-end md:w-auto md:mt-0 md:ml-auto;
 }
 
 /* 📌 Animación del menú en móviles */
@@ -62,7 +64,7 @@
 }
 /* 📌 Contenedor del Logo */
 .logo-container {
-  @apply flex items-center cursor-pointer;
+  @apply w-full md:w-auto flex justify-center md:justify-start ml-0;
 }
 
 /* 📌 Ajuste del tamaño del Logo */
