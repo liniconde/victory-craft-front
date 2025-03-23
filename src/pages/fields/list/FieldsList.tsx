@@ -4,6 +4,7 @@ import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
 import { Field } from "../../../interfaces/FieldInterfaces";
 import { useAuth } from "../../../context/AuthContext";
+import "./FieldList.css";
 
 const FieldList: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
@@ -81,13 +82,15 @@ const FieldList: React.FC = () => {
               alt={field.name}
               className="w-full h-56 object-cover"
             />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800">
+            <div className="field-card">
+              <h2 className="field-card-title text-xl font-semibold text-gray-800">
                 {field.name}
               </h2>
-              <p className="text-gray-600 text-sm">{field.type.toUpperCase()}</p>
+              <p className="text-gray-600 text-sm">
+                {field.type.toUpperCase()}
+              </p>
               <p className="text-gray-500 text-sm">{field.location?.name}</p>
-              <p className="text-green-600 font-bold mt-2">
+              <p className="field-card-price field-card-sub">
                 ${field.pricePerHour} / hour
               </p>
 
@@ -95,7 +98,7 @@ const FieldList: React.FC = () => {
               <div className="flex justify-between gap-4 mt-4">
                 {role === "user" ? (
                   <button
-                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/fields/${field._id}/reservations/`);
@@ -106,7 +109,7 @@ const FieldList: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      className="px-4 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/fields/edit/${field._id}`);
@@ -116,7 +119,7 @@ const FieldList: React.FC = () => {
                     </button>
 
                     <button
-                      className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                      className="px-2 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(field._id);
@@ -133,7 +136,9 @@ const FieldList: React.FC = () => {
       </div>
 
       {/* ✅ Mueve el MapComponent fuera del bucle */}
-      <MapComponent fields={filteredFields} selectedField={selectedField} />
+      <div className="mt-12">
+        <MapComponent fields={filteredFields} selectedField={selectedField} />
+      </div>
     </div>
   );
 };

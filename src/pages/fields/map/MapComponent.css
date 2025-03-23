@@ -1,6 +1,9 @@
-#map-container {
-  height: 100%;
+.map-container {
   width: 100%;
+  margin-top: 3rem; /* Espacio entre tarjetas y mapa */
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* similar a shadow-lg */
 }
 
 .sidebar {
@@ -27,9 +30,10 @@
 }
 
 .mapbox-map {
-  height: 80vh;
-  width: 60vw;
-  margin-left: 2vw;
-  margin-top: 2vw;
-  margin-bottom: 2vw;
+  height: 60vh;
+  width: 100vw;
+  margin: 0 auto;
+  margin-bottom: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }

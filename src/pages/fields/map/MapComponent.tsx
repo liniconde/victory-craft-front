@@ -88,7 +88,7 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
   }, [selectedField]);
 
   return (
-    <div className="map-container">
+    <div className="map-container ">
       <div ref={mapContainerRef} className="mapbox-map" />
     </div>
   );
