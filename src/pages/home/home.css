@@ -4,21 +4,24 @@
 
 /* 📌 Contenedor principal con imagen de fondo dinámico */
 .home-container {
-  @apply w-full h-screen flex flex-col items-center justify-center text-center relative;
+  @apply w-full h-screen flex flex-col items-start justify-center pl-28 pr-10 pb-16 relative;
   background-position: center;
   background-repeat: no-repeat;
   transition: background-image 2s ease-in-out;
 }
 
-/* ✅ Capa oscura para mejorar la legibilidad del texto */
-.overlay {
-  @apply absolute top-0 left-0 w-full h-full bg-black bg-opacity-0 z-10;
-}
-
 /* 📌 Animación para el texto */
 .animated-text {
-  @apply text-white text-2xl md:text-3xl font-bold z-10 opacity-0;
+  @apply text-white text-2xl md:text-3xl font-bold z-20 opacity-0;
   animation: fadeIn 2s ease-in-out forwards;
+}
+
+h1.animated-text {
+  @apply text-2xl md:text-3xl font-bold mb-10;
+}
+
+p.animated-text {
+  @apply text-base md:text-2xl font-normal leading-relaxed max-w-xl;
 }
 
 /* 📌 Definición de la animación fadeIn */

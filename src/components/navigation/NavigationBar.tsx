@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
 import "./styles.css";
-import { Button } from "react-bootstrap";
 
 const NavigationBar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -67,15 +66,15 @@ const NavigationBar: React.FC = () => {
               </span>
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
-              <Button
-                className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 transition"
+              <button
+                className="px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900 transition"
                 onClick={() => {
                   logout();
                   navigate("/");
                 }}
               >
                 Logout
-              </Button>
+              </button>
             </>
           )}
           {!isAuthenticated && (
