@@ -30,7 +30,7 @@ const CustomModal: React.FC<ModalProps> = ({ show, onClose, title, children }) =
             onClick={onClose}
             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
           >
-            Close
+            Cerrar
           </button>
         </div>
       </div>

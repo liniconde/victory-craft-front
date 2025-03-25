@@ -10,17 +10,19 @@ const FieldList: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
-  const [filterType, setFilterType] = useState<string>("all"); // Estado para filtrar por tipo
+  const [filterType, setFilterType] = useState<string>("all");
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   const navigate = useNavigate();
-  const { role } = useAuth(); // ✅ Obtenemos el rol del usuario
+  const { role } = useAuth();
 
   useEffect(() => {
     api
       .get("/fields")
       .then((response) => {
         setFields(response.data);
-        setFilteredFields(response.data); // Inicialmente mostramos todas las canchas
+        setFilteredFields(response.data);
       })
       .catch((error) => console.error("Error fetching fields:", error));
   }, []);
@@ -33,6 +35,25 @@ const FieldList: React.FC = () => {
     }
   }, [filterType, fields]);
 
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 100
+      ) {
+        setVisibleCount((prev) => prev + 6);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleDelete = (id: string) => {
     api
       .delete(`/fields/${id}`)
@@ -40,13 +61,19 @@ const FieldList: React.FC = () => {
       .catch((error) => console.error("Error deleting field:", error));
   };
 
+  const getGridColumns = () => {
+    if (windowWidth < 640) return "grid-cols-1";
+    return filteredFields.length % 2 === 0 ? "grid-cols-4" : "grid-cols-3";
+  };
+
+  const visibleFields = filteredFields.slice(0, visibleCount);
+
   return (
     <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
         Available Fields
       </h1>
 
-      {/* ✅ Solo los administradores pueden ver este botón */}
       {role === "admin" && (
         <button
           className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
@@ -56,7 +83,6 @@ const FieldList: React.FC = () => {
         </button>
       )}
 
-      {/* 🔍 Filtro por tipo de cancha */}
       <div className="mb-6 flex justify-center">
         <select
           className="px-4 py-2 border rounded-lg shadow-sm text-gray-700"
@@ -70,11 +96,11 @@ const FieldList: React.FC = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {filteredFields.map((field) => (
+      <div className={`grid gap-6 ${getGridColumns()}`}>
+        {visibleFields.map((field) => (
           <div
             key={field._id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
+            className="bg-white rounded-lg shadow-lg h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
             onClick={() => setSelectedField(field)}
           >
             <img
@@ -83,9 +109,7 @@ const FieldList: React.FC = () => {
               className="w-full h-56 object-cover"
             />
             <div className="field-card">
-              <h2 className="field-card-title text-xl font-semibold text-gray-800">
-                {field.name}
-              </h2>
+              <h2 className="field-card-title">{field.name}</h2>
               <p className="text-gray-600 text-sm">
                 {field.type.toUpperCase()}
               </p>
@@ -94,7 +118,6 @@ const FieldList: React.FC = () => {
                 ${field.pricePerHour} / hour
               </p>
 
-              {/* 📌 Sección de botones según el rol */}
               <div className="flex justify-between gap-4 mt-4">
                 {role === "user" ? (
                   <button
@@ -109,23 +132,23 @@ const FieldList: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      className="px-0 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/fields/edit/${field._id}`);
                       }}
                     >
-                      Edit
+                      Editar
                     </button>
 
                     <button
-                      className="px-2 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                      className="px-0 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(field._id);
                       }}
                     >
-                      Delete
+                      Borrar
                     </button>
                   </>
                 )}
@@ -135,7 +158,6 @@ const FieldList: React.FC = () => {
         ))}
       </div>
 
-      {/* ✅ Mueve el MapComponent fuera del bucle */}
       <div className="mt-12">
         <MapComponent fields={filteredFields} selectedField={selectedField} />
       </div>

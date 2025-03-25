@@ -11,7 +11,7 @@
 
 /* 📌 Contenedor principal */
 .register-container {
-  @apply h-2/3 flex items-center justify-end bg-cover bg-center;
+  @apply h-2/3 flex items-center justify-end bg-cover bg-center mr-24;
   background-size: cover;
   background-position: center;
   position: relative; /* ✅ Asegura que el video y el contenido se alineen bien */
@@ -52,5 +52,6 @@
 
 /* 📌 Mensaje de error */
 .error-message {
-  @apply text-red-500 text-center mt-2;
+  @apply text-white text-center mt-2;
 }
+

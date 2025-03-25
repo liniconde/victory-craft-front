@@ -138,7 +138,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="field-form-label">
-              Name
+              Nombre
             </label>
             <input
               id="name"
@@ -152,7 +152,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           {/* Type Select */}
           <div>
             <label htmlFor="type" className="field-form-label">
-              Type
+              Tipo
             </label>
             <select
               id="type"
@@ -170,7 +170,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           {/* Location Field */}
           <div>
             <label htmlFor="location" className="field-form-label">
-              Location
+              Locación
             </label>
             <input
               id="location"
@@ -184,7 +184,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           {/* Price Per Hour Field */}
           <div>
             <label htmlFor="pricePerHour" className="field-form-label">
-              Price Per Hour ($)
+              Precio por hora ($)
             </label>
             <input
               id="pricePerHour"
@@ -199,7 +199,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           {/* File Upload */}
           <div>
             <label htmlFor="imageFile" className="field-form-label">
-              Upload Image
+              Cargar Imagen
             </label>
             <input
               id="imageFile"
@@ -215,7 +215,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
             {mode === "create" ? "Create Field" : "Update Field"}
           </button>
 
-          {isUploading && <p className="text-blue-500">Uploading image...</p>}
+          {isUploading && <p className="text-[#50BB73]">Cargando imagen...</p>}
         </form>
 
         {/* 🗺 Sección del mapa */}

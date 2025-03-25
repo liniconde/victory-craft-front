@@ -43,20 +43,20 @@ const ReservationsList: React.FC = () => {
               <div className="reservation-details">
                 <h2>{reservation.slot.field?.name}</h2>
                 <p>
-                  Date:{" "}
+                  Fecha:{" "}
                   {new Date(reservation.slot.startTime).toLocaleDateString()}
                 </p>
                 <p>
-                  Time: {reservation.slot.startTime} -{" "}
+                  Tiempo: {reservation.slot.startTime} -{" "}
                   {reservation.slot.endTime}
                 </p>
-                <p>Location: {reservation.slot.field?.location?.name}</p>
+                <p>Locación: {reservation.slot.field?.location?.name}</p>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p className="no-reservations">No reservations yet.</p>
+        <p className="no-reservations">No hay reservaciones ahora.</p>
       )}
 
       <button className="back-btn" onClick={() => navigate("/")}>

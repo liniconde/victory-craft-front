@@ -38,20 +38,20 @@ const ReservationList: React.FC = () => {
 
   return (
     <div className="reservations-container">
-      <h1>Reservations</h1>
+      <h1>Reservaciones</h1>
       <button
         className="actions-button"
         onClick={() => navigate("/reservations/new")}
       >
-        Add New Reservation
+        Añadir nueva reservación
       </button>
       <table>
         <thead>
           <tr>
-            <th>User ID</th>
-            <th>Field ID</th>
+            <th>Usuario ID</th>
+            <th>Cancha ID</th>
             <th>Slot ID</th>
-            <th>Actions</th>
+            <th>Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -66,10 +66,10 @@ const ReservationList: React.FC = () => {
                     navigate(`/reservations/edit/${reservation._id}`)
                   }
                 >
-                  Edit
+                  Editar
                 </button>
                 <button onClick={() => handleDelete(reservation._id)}>
-                  Delete
+                  Borrar
                 </button>
               </td>
             </tr>

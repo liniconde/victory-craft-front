@@ -1,10 +1,10 @@
-import React from 'react';
-import UserForm from '../components/user/UserForm';
+import React from "react";
+import UserForm from "../components/user/UserForm";
 
 const Users: React.FC = () => {
   return (
     <div>
-      <h1>Create User</h1>
+      <h1>Crear Usuario</h1>
       <UserForm />
     </div>
   );

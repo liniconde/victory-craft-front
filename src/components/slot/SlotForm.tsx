@@ -60,7 +60,7 @@ const SlotForm: React.FC = () => {
         onChange={() => setIsAvailable(!isAvailable)}
       />
       <label>Is Available</label>
-      <button type="submit">Create Slot</button>
+      <button type="submit">Crear disponibilidad</button>
     </form>
   );
 };

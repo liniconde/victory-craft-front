@@ -11,14 +11,14 @@
 
 /* Contenedor principal */
 .login-container {
-  @apply flex items-center justify-end bg-cover bg-center mt-72 -mr-32;
+  @apply flex items-center justify-end bg-cover bg-center mt-72;
   background-size: cover;
   background-position: center;
 }
 
 /* Caja de login */
 .login-box {
-  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-10 max-w-md w-full;
+  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-10 max-w-md w-full mr-24;
 }
 
 /* Título */
@@ -48,5 +48,5 @@
 
 /* Mensaje de error */
 .error-message {
-  @apply text-red-500 text-center mt-2;
+  @apply text-white mt-2;
 }

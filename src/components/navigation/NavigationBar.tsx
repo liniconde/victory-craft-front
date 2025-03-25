@@ -39,7 +39,7 @@ const NavigationBar: React.FC = () => {
             className="nav-link block md:inline-block"
             onClick={() => navigate("/fields")}
           >
-            Fields
+            Canchas
           </span>
 
           {/* 🔹 Pestañas solo para usuarios autenticados */}
@@ -49,20 +49,20 @@ const NavigationBar: React.FC = () => {
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/reservations")}
               >
-                Reservations
+                Reservaciones
               </span>
               <span
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/slots")}
               >
-                Slots
+                Disponibilidad
               </span>
 
               <span
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/fields/videos")}
               >
-                Videos
+                Vídeos
               </span>
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
@@ -82,7 +82,7 @@ const NavigationBar: React.FC = () => {
               className="nav-link block md:inline-block"
               onClick={() => navigate("/users")}
             >
-              Users
+              Usuarios
             </span>
           )}
         </div>

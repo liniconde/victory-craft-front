@@ -65,7 +65,7 @@ const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
         </div>
 
         <div>
-          <label className="slot-form-label">End Time</label>
+          <label className="slot-form-label">Fin del tiempo</label>
           <input
             type="datetime-local"
             value={endTime}
@@ -77,7 +77,7 @@ const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
 
         <button
           type="submit"
-          className="slot-form-button hover:scale-105 transition-transform duration-300"
+          className="slot-form-button hover:scale-105 transition-transform duration-300 mx-auto block mt-4"
         >
           {mode === "create" ? "Create Slot" : "Update Slot"}
         </button>
