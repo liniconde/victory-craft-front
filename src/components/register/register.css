@@ -50,6 +50,10 @@
   @apply w-full bg-[#235A2C] hover:bg-[#1E4E2D] text-white font-bold py-3 px-4 rounded-lg transition duration-300;
 }
 
+.login-button {
+  @apply w-full bg-[#50BB73] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-lg transition duration-300;
+}
+
 /* 📌 Mensaje de error */
 .error-message {
   @apply text-white text-center mt-2;

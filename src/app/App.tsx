@@ -48,10 +48,8 @@ const AppRoutes = () => {
   return (
     <>
       {/* ✅ Solo muestra el NavigationBar si NO estamos en /login o /register */}
-      {location.pathname !== "/login" && location.pathname !== "/register" && (
-        <NavigationBar />
-      )}
-
+      (
+      <NavigationBar />)
       <div className="page-container">
         <Suspense fallback={<LoadingScreen />}>
           <Routes>

@@ -50,3 +50,11 @@
 .error-message {
   @apply text-white mt-2;
 }
+
+.register-text {
+  @apply text-[#82C451] cursor-pointer hover:underline;
+}
+
+.register-link {
+  @apply flex gap-4 justify-center pt-8;
+}

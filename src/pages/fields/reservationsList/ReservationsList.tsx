@@ -26,7 +26,7 @@ const ReservationsList: React.FC = () => {
 
   return (
     <div className="reservations-page-container">
-      <h1 className="reservations-title">My Reservations</h1>
+      <h1 className="reservations-title">Mis reservas</h1>
 
       {reservations.length > 0 ? (
         <div className="reservations-list">

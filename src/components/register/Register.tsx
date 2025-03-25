@@ -9,7 +9,7 @@ const Register: React.FC = () => {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("player");
+  const [role, setRole] = useState<string>("user");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const Register: React.FC = () => {
         email,
         password,
         role,
-        username: email
+        username: email,
       });
       console.log("Registro exitoso:", response);
       navigate("/login");
@@ -116,13 +116,17 @@ const Register: React.FC = () => {
               onChange={(e) => setRole(e.target.value)}
               className="register-input"
             >
-              <option value="player">Jugador</option>
+              <option value="user">Jugador</option>
               <option value="admin">Administrador</option>
             </select>
           </div>
 
           <button type="submit" className="register-button">
             Registrarse
+          </button>
+
+          <button className="login-button" onClick={() => navigate("/login")}>
+            Volver al login{" "}
           </button>
 
           {error && <p className="error-message">{error}</p>}

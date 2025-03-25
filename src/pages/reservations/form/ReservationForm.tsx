@@ -100,7 +100,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   return (
     <div>
-      <h1>{mode === "create" ? "Create Reservation" : "Edit Reservation"}</h1>
+      <h1>{mode === "create" ? "Crear Reservación" : "Editar Reservación"}</h1>
 
       <FieldSelector onFieldSelect={handleFieldSelect} />
 
@@ -165,9 +165,9 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
       <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Reservation</Modal.Title>
+          <Modal.Title>Confirmar Reservacion</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to reserve this slot?</Modal.Body>
+        <Modal.Body>Esta seguro que quiere reservar este campo?</Modal.Body>
         <Modal.Footer>
           <Button
             variant="secondary"

@@ -73,11 +73,8 @@ const Login: React.FC = () => {
           {error && <p className="error-message">{error}</p>}
         </form>
         <p className="register-link text-white">
-          ¿No tienes una cuenta?{" "}
-          <span
-            onClick={() => navigate("/register")}
-            className="text-[#82C451] cursor-pointer hover:underline"
-          >
+          <span>¿No tienes una cuenta?</span>
+          <span onClick={() => navigate("/register")} className="register-text">
             Regístrate aquí
           </span>
         </p>

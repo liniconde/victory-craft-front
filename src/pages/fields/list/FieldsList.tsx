@@ -71,7 +71,7 @@ const FieldList: React.FC = () => {
   return (
     <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
-        Available Fields
+        Canchas Disponibles
       </h1>
 
       {role === "admin" && (
@@ -79,7 +79,7 @@ const FieldList: React.FC = () => {
           className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
           onClick={() => navigate("/fields/new")}
         >
-          Add New Field
+          Agregar nueva cancha
         </button>
       )}
 
@@ -89,8 +89,8 @@ const FieldList: React.FC = () => {
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
-          <option value="all">All Fields</option>
-          <option value="football">Football</option>
+          <option value="all">Todas las canchas</option>
+          <option value="football">Futbol</option>
           <option value="padel">Padel</option>
           <option value="tennis">Tennis</option>
         </select>
@@ -115,7 +115,7 @@ const FieldList: React.FC = () => {
               </p>
               <p className="text-gray-500 text-sm">{field.location?.name}</p>
               <p className="field-card-price field-card-sub">
-                ${field.pricePerHour} / hour
+                ${field.pricePerHour} / hora
               </p>
 
               <div className="flex justify-between gap-4 mt-4">
@@ -127,7 +127,7 @@ const FieldList: React.FC = () => {
                       navigate(`/fields/${field._id}/reservations/`);
                     }}
                   >
-                    Reserve
+                    Reserva
                   </button>
                 ) : (
                   <>
