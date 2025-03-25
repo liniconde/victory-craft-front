@@ -13,7 +13,7 @@ const FieldVideosPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // Obtener las canchas
+  // Obtener las campos
   useEffect(() => {
     const fetchFields = async () => {
       try {
@@ -27,7 +27,7 @@ const FieldVideosPage: React.FC = () => {
     fetchFields();
   }, []);
 
-  // Obtener los videos de la cancha seleccionada
+  // Obtener los videos de la campo seleccionada
   useEffect(() => {
     const fetchVideos = async () => {
       if (!selectedFieldId) return;
@@ -60,7 +60,7 @@ const FieldVideosPage: React.FC = () => {
         🎥 View Field Videos
       </h2>
 
-      {/* Selector de cancha */}
+      {/* Selector de campo */}
       <div className="mb-6">
         <label htmlFor="field" className="block text-sm font-medium mb-1">
           Select a field:

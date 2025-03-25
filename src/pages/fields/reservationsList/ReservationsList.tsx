@@ -60,7 +60,7 @@ const ReservationsList: React.FC = () => {
       )}
 
       <button className="back-btn" onClick={() => navigate("/")}>
-        Back to Fields
+        Volver a los campos
       </button>
     </div>
   );

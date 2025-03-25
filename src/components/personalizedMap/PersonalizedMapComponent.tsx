@@ -47,7 +47,7 @@ const PersonalizedMapComponent: React.FC<Props> = ({
         const newLocation = {
           lat: e.lngLat.lat,
           long: e.lngLat.lng,
-          name: "Cancha nueva",
+          name: "Campo nueva",
         };
         setSelectedLocation(newLocation);
 

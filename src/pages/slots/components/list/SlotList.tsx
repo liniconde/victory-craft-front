@@ -49,14 +49,14 @@ const SlotList: React.FC = () => {
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-        Disponibilidad por Cancha
+        Disponibilidad por Campo
       </h1>
 
-      {/* 🔍 Buscar y seleccionar cancha */}
+      {/* 🔍 Buscar y seleccionar campo */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <input
           type="text"
-          placeholder="Buscar cancha..."
+          placeholder="Buscar campo..."
           value={searchTerm}
           onChange={handleSearchChange}
           className="w-full sm:w-1/2 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#50BB73]"
@@ -100,7 +100,7 @@ const SlotList: React.FC = () => {
             />
             <div className="p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                {slot.field?.name || "Cancha"}
+                {slot.field?.name || "Campo"}
               </h3>
               <p className="text-sm text-gray-600">
                 <strong>Inicio:</strong>{" "}

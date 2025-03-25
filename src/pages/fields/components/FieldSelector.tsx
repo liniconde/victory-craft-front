@@ -39,14 +39,14 @@ const FieldSelector: React.FC<FieldSelectorProps> = ({ onFieldSelect }) => {
         className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
         onClick={() => setShowModal(true)}
       >
-        Select Field
+        Seleccionar campo
       </button>
 
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <div className="flex justify-between items-center border-b pb-2">
-              <h2 className="text-lg font-semibold">Select Field</h2>
+              <h2 className="text-lg font-semibold">Seleccionar Campo</h2>
               <button
                 onClick={() => setShowModal(false)}
                 className="text-gray-600 hover:text-gray-900"

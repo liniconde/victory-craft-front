@@ -38,11 +38,11 @@ const Home: React.FC = () => {
   const cardItems = [
     {
       url: Fútbol1,
-      title: "Cancha de fútbol",
+      title: "Campo de fútbol",
     },
     {
       url: fútbol2,
-      title: "Nuestras canchas",
+      title: "Nuestras campos",
     },
     {
       url: fútbol3,
@@ -74,7 +74,7 @@ const Home: React.FC = () => {
     },
     {
       url: padel3,
-      title: "Nuestras canchas",
+      title: "Nuestras campos",
     },
   ];
 
@@ -91,7 +91,7 @@ const Home: React.FC = () => {
         <h1 className="animated-text">Bienvenido a Victory Craft</h1>
         <p className="animated-text">
           En Victory Craft, puedes reservar
-          <br /> las mejores canchas de <br />
+          <br /> las mejores campos de <br />
           fútbol y pádel de la ciudad.
         </p>
       </div>
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
         <Carousel items={cardItems} />
 
         <p className="text-black text-center text-2xl font-medium mt-10">
-          En Victory Craft te conectamos con las mejores canchas de pádel, tenis
+          En Victory Craft te conectamos con las mejores campos de pádel, tenis
           y fútbol de la ciudad. <br />
           Elige, agenda y juega: sin complicaciones, sin llamadas, sin esperas.
         </p>

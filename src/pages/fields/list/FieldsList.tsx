@@ -71,7 +71,7 @@ const FieldList: React.FC = () => {
   return (
     <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
-        Canchas Disponibles
+        Campos Disponibles
       </h1>
 
       {role === "admin" && (
@@ -79,7 +79,7 @@ const FieldList: React.FC = () => {
           className="mb-6 px-5 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
           onClick={() => navigate("/fields/new")}
         >
-          Agregar nueva cancha
+          Agregar nueva campo
         </button>
       )}
 
@@ -89,7 +89,7 @@ const FieldList: React.FC = () => {
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
-          <option value="all">Todas las canchas</option>
+          <option value="all">Todas las campos</option>
           <option value="football">Futbol</option>
           <option value="padel">Padel</option>
           <option value="tennis">Tennis</option>

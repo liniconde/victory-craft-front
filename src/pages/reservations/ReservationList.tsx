@@ -38,18 +38,18 @@ const ReservationList: React.FC = () => {
 
   return (
     <div className="reservations-container">
-      <h1>Reservaciones</h1>
+      <h1>Reservas</h1>
       <button
         className="actions-button"
         onClick={() => navigate("/reservations/new")}
       >
-        Añadir nueva reservación
+        Añadir nueva reserva
       </button>
       <table>
         <thead>
           <tr>
             <th>Usuario ID</th>
-            <th>Cancha ID</th>
+            <th>Campo ID</th>
             <th>Slot ID</th>
             <th>Acción</th>
           </tr>

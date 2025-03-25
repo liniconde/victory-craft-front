@@ -76,7 +76,7 @@ const MapComponent: React.FC<Props> = ({ fields, selectedField }) => {
     updateMarkers();
   }, [updateMarkers]);
 
-  // Mover el mapa si se selecciona una cancha
+  // Mover el mapa si se selecciona una campo
   useEffect(() => {
     if (mapRef.current && selectedField) {
       mapRef.current.flyTo({

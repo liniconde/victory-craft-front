@@ -1,18 +1,18 @@
-## 🏟️ **Reserva de Canchas Deportivas** 🏃⚽
+## 🏟️ **Reserva de Campos Deportivas** 🏃⚽
 
-📍 **Descubre, reserva y gestiona fácilmente tus canchas deportivas favoritas.**Este proyecto permite a los usuarios explorar diferentes canchas disponibles, reservarlas en línea, visualizar su historial de reservas y gestionar sus datos de manera eficiente.
+📍 **Descubre, reserva y gestiona fácilmente tus campos deportivas favoritas.**Este proyecto permite a los usuarios explorar diferentes campos disponibles, reservarlas en línea, visualizar su historial de reservas y gestionar sus datos de manera eficiente.
 
 ---
 
 ## 📌 **🔗 Demo en Producción**
 
-👉 [Reserva de Canchas - Vercel](https://victory-craft-front.vercel.app/)
+👉 [Reserva de Campos - Vercel](https://victory-craft-front.vercel.app/)
 
 ---
 
 ## 📌 **🚀 Características**
 
-👉 **Mapa Interactivo:** Muestra todas las canchas con su ubicación exacta.👉 **Filtrado por Tipo:** Filtra las canchas por tipo (fútbol, pádel, tenis).👉 **Historial de Reservas:** Consulta todas tus reservas pasadas y futuras.👉 **CRUD de Canchas:** Permite a los administradores agregar, editar y eliminar canchas.👉 **Interfaz Responsiva:** Adaptado para escritorio y dispositivos móviles.
+👉 **Mapa Interactivo:** Muestra todas las campos con su ubicación exacta.👉 **Filtrado por Tipo:** Filtra las campos por tipo (fútbol, pádel, tenis).👉 **Historial de Reservas:** Consulta todas tus reservas pasadas y futuras.👉 **CRUD de Campos:** Permite a los administradores agregar, editar y eliminar campos.👉 **Interfaz Responsiva:** Adaptado para escritorio y dispositivos móviles.
 
 ---
 

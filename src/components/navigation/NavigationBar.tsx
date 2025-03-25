@@ -39,7 +39,7 @@ const NavigationBar: React.FC = () => {
             className="nav-link block md:inline-block"
             onClick={() => navigate("/fields")}
           >
-            Canchas
+            Campos
           </span>
 
           {/* 🔹 Pestañas solo para usuarios autenticados */}
@@ -49,7 +49,7 @@ const NavigationBar: React.FC = () => {
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/reservations")}
               >
-                Reservaciones
+                Reservas
               </span>
               <span
                 className="nav-link block md:inline-block"
