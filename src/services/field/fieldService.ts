@@ -22,6 +22,19 @@ export const getFields = async (): Promise<Field[]> => {
   }
 };
 
+// 📌 Función para hacer login y almacenar el token
+export const getFieldsbyUserId = async (userId: string): Promise<Field[]> => {
+  try {
+    const response = await api.get<Field[]>(
+      `${API_FIELDS_URL}/users/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo Fields:", error);
+    throw error;
+  }
+};
+
 export const getFieldSlots = async (id: string): Promise<Slot[]> => {
   try {
     const response = await api.get<Slot[]>(`${API_FIELDS_URL}/${id}/slots`);

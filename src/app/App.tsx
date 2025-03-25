@@ -2,7 +2,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
@@ -43,7 +42,6 @@ const LoadingScreen = () => (
 
 // 📌 Componente para manejar las rutas
 const AppRoutes = () => {
-  const location = useLocation(); // 📌 Obtiene la ruta actual
 
   return (
     <>

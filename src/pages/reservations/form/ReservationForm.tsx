@@ -30,7 +30,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { userId } = useAuth();
+  const { userId, isAdmin } = useAuth();
 
   const fetchReservation = async (reservationId: string | undefined) => {
     if (mode === "edit" && reservationId) {
@@ -100,7 +100,9 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   return (
     <div>
-      <h1>{mode === "create" ? "Crear Reserva" : "Editar Reserva"}</h1>
+      {isAdmin && (
+        <h1>{mode === "create" ? "Crear Reserva" : "Editar Reserva"}</h1>
+      )}
 
       <FieldSelector onFieldSelect={handleFieldSelect} />
 

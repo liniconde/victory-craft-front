@@ -9,6 +9,7 @@ const Register: React.FC = () => {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<string>("user");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ const Register: React.FC = () => {
       setError("Error en el registro. Intenta nuevamente.");
     }
   };
+
+  const passwordNotValidated = password !== confirmPassword;
 
   return (
     <div className="register-container">
@@ -106,6 +109,20 @@ const Register: React.FC = () => {
             />
           </div>
 
+          <div className="mt-4">
+            <label htmlFor="confirmPassword" className="register-label">
+              Confirmar contraseña
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="register-input"
+              placeholder="Repite tu contraseña"
+            />
+          </div>
+
           <div>
             <label htmlFor="role" className="register-label">
               Tipo de usuario
@@ -121,7 +138,23 @@ const Register: React.FC = () => {
             </select>
           </div>
 
-          <button type="submit" className="register-button">
+          {passwordNotValidated && (
+            <div>
+              <p className="error-message">
+                Los password no coinciden
+              </p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className={`register-button ${
+              passwordNotValidated
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+            disabled={passwordNotValidated}
+          >
             Registrarse
           </button>
 

@@ -18,6 +18,7 @@ interface AuthContextType {
   email: string | null;
   exp: number;
   role: string | null;
+  isAdmin: boolean;
 }
 
 // 📌 Crear contexto con valores iniciales
@@ -105,6 +106,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthReady(true);
   };
 
+  const isAdmin = role === "admin";
+
   const value: AuthContextType = {
     isAuthenticated,
     login,
@@ -115,6 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     email,
     exp,
     role,
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

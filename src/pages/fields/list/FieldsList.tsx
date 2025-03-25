@@ -5,6 +5,10 @@ import MapComponent from "../map/MapComponent";
 import { Field } from "../../../interfaces/FieldInterfaces";
 import { useAuth } from "../../../context/AuthContext";
 import "./FieldList.css";
+import {
+  getFields,
+  getFieldsbyUserId,
+} from "../../../services/field/fieldService";
 
 const FieldList: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
@@ -15,16 +19,22 @@ const FieldList: React.FC = () => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role, isAdmin, userId } = useAuth();
 
   useEffect(() => {
-    api
-      .get("/fields")
-      .then((response) => {
-        setFields(response.data);
-        setFilteredFields(response.data);
-      })
-      .catch((error) => console.error("Error fetching fields:", error));
+    const getFieldsAsync = async () => {
+      try {
+        const fields =
+          isAdmin && userId
+            ? await getFieldsbyUserId(userId!)
+            : await getFields();
+        setFields(fields);
+        setFilteredFields(fields);
+      } catch (error) {
+        console.error("Error fetching fields:", error);
+      }
+    };
+    getFieldsAsync();
   }, []);
 
   useEffect(() => {
