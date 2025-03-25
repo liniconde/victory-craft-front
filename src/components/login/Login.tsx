@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./index.css"; // 📌 Importamos los estilos desde un archivo CSS externo
-import Video from "../../assets/VC.3D.mp4"; // 📌 Importamos la imagen de fondo
+import Video from "../../assets/Animación VictoryC.mp4"; // 📌 Importamos la imagen de fondo
 import { loginUser } from "../../services/user/userService";
 
 const Login: React.FC = () => {
