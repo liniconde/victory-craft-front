@@ -4,7 +4,10 @@ import { api } from "../../../../utils/api";
 import { Slot } from "../../../../interfaces/SlotInterfaces";
 import { Field } from "../../../../interfaces/FieldInterfaces";
 import { useAuth } from "../../../../context/AuthContext";
-import { getFieldsbyUserId } from "../../../../services/field/fieldService";
+import {
+  getFields,
+  getFieldsbyUserId,
+} from "../../../../services/field/fieldService";
 
 const SlotList: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -24,7 +27,9 @@ const SlotList: React.FC = () => {
 
   const fetchFields = async () => {
     if (userId) {
-      const fieldsData = await getFieldsbyUserId(userId);
+      const fieldsData = isAdmin
+        ? await getFieldsbyUserId(userId)
+        : await getFields();
       return fieldsData || [];
     }
   };
