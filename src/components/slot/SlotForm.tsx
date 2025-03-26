@@ -21,6 +21,7 @@ const SlotForm: React.FC = () => {
       alert("Slot created!");
     } catch (error) {
       console.error(error);
+      alert("Error: " + error);
     }
   };
 

@@ -38,3 +38,19 @@
 .page-container {
   margin-top: 10vh !important; /* Ajusta este valor según la altura del navbar */
 }
+
+.delete-button {
+  @apply bg-red-600 text-white hover:bg-red-700 py-2 px-5 rounded-md transition duration-300;
+}
+
+.cancel-button {
+  @apply bg-red-600 text-white hover:bg-red-700 py-2 px-5 rounded-md transition duration-300;
+}
+
+.slot-form-button {
+  @apply bg-[#50BB73] hover:bg-green-800 text-white font-semibold py-2 px-5 rounded-md transition duration-300;
+}
+
+.submit-button {
+  @apply slot-form-button hover:scale-105 transition-transform duration-300 mx-auto block mt-4;
+}

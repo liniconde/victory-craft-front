@@ -55,7 +55,7 @@ const NavigationBar: React.FC = () => {
                 className="nav-link block md:inline-block"
                 onClick={() => navigate("/slots")}
               >
-                Disponibilidad
+                Partidos
               </span>
 
               <span

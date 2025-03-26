@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../../utils/api";
 import { Slot } from "../../../../interfaces/SlotInterfaces";
 import { Field } from "../../../../interfaces/FieldInterfaces";
+import { useAuth } from "../../../../context/AuthContext";
+import { getFieldsbyUserId } from "../../../../services/field/fieldService";
 
 const SlotList: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -12,15 +14,41 @@ const SlotList: React.FC = () => {
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
 
   const navigate = useNavigate();
+  const { isAdmin, userId } = useAuth();
+
+  const getFieldsSlots = async (fieldId: string) => {
+    console.log("heyy");
+    const slots = await api.get(`/fields/${fieldId}/slots`);
+    return slots.data || [];
+  };
+
+  const fetchFields = async () => {
+    if (userId) {
+      const fieldsData = await getFieldsbyUserId(userId);
+      return fieldsData || [];
+    }
+  };
 
   useEffect(() => {
-    api
-      .get("/fields")
-      .then((response) => {
-        setFields(response.data);
-        setFilteredFields(response.data);
-      })
-      .catch((error) => console.error("Error fetching fields:", error));
+    const populateFieldsAndSlots = async () => {
+      const fieldsData = await fetchFields();
+      if (fieldsData) {
+        setFields(fieldsData);
+        setFilteredFields(fieldsData);
+
+        const allSlots = await Promise.all(
+          fieldsData.map((field) => {
+            console.log("field", field);
+            return getFieldsSlots(field._id);
+          })
+        );
+        if (allSlots?.length) {
+          setSlots(allSlots.flat());
+        }
+      }
+    };
+
+    populateFieldsAndSlots();
   }, []);
 
   const handleDelete = (id: string) => {
@@ -110,7 +138,8 @@ const SlotList: React.FC = () => {
                 <strong>Fin:</strong> {new Date(slot.endTime).toLocaleString()}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Precio:</strong> ${slot.value.toFixed(2)}
+                <strong>Precio:</strong> $
+                {slot.value || slot.field?.pricePerHour.toFixed(2)}
               </p>
               <p
                 className={`text-sm font-semibold mt-1 ${
