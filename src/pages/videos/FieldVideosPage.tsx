@@ -57,13 +57,13 @@ const FieldVideosPage: React.FC = () => {
   return (
     <div className="max-w-screen-lg mx-auto px-8 py-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-        🎥 View Field Videos
+        🎥 Ver partidos
       </h2>
 
       {/* Selector de campo */}
       <div className="mb-6">
         <label htmlFor="field" className="block text-sm font-medium mb-1">
-          Select a field:
+          Seleccciona un campo:
         </label>
         <select
           id="field"
@@ -74,7 +74,7 @@ const FieldVideosPage: React.FC = () => {
           }}
           className="w-full border border-gray-300 rounded px-4 py-2"
         >
-          <option value="">-- Select a field --</option>
+          <option value="">-- Selecciona un campo --</option>
           {fields.map((field) => (
             <option key={field._id} value={field._id}>
               {field.name} ({field.type})
@@ -90,7 +90,7 @@ const FieldVideosPage: React.FC = () => {
             onClick={handleUploadNewVideo}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
-            ➕ Upload New Video
+            ➕ Sube un nuevo video
           </button>
         </div>
       )}
@@ -99,7 +99,7 @@ const FieldVideosPage: React.FC = () => {
       {selectedFieldId && (
         <div className="space-y-6">
           {videos.length === 0 ? (
-            <p className="text-gray-500">No videos available for this field.</p>
+            <p className="text-gray-500">No hay videos disponibles para este campo.</p>
           ) : (
             videos.map((video) => (
               <div
@@ -115,7 +115,7 @@ const FieldVideosPage: React.FC = () => {
                   onClick={() => handlePlayVideo(video)}
                   className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
-                  ▶ Play
+                  ▶ Reproducir
                 </button>
               </div>
             ))
@@ -126,7 +126,7 @@ const FieldVideosPage: React.FC = () => {
       {/* Reproductor de video */}
       {activeVideoUrl && (
         <div className="mt-10">
-          <h3 className="text-lg font-semibold mb-2">Now Playing</h3>
+          <h3 className="text-lg font-semibold mb-2">Reproduciendo ahora</h3>
           <video controls width="100%" className="rounded shadow">
             <source src={activeVideoUrl} type="video/mp4" />
             Your browser does not support the video tag.

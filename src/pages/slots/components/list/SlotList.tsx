@@ -114,7 +114,7 @@ const SlotList: React.FC = () => {
             onClick={() => navigate(`/slots/new/${selectedField._id}`)}
             className="bg-[#50BB73] text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-800 transition"
           >
-            Crear nuevo turno
+            Crear nuevo partido
           </button>
         </div>
       )}

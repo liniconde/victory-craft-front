@@ -101,7 +101,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   return (
     <div>
       {isAdmin && (
-        <h1>{mode === "create" ? "Crear Reserva" : "Editar Reserva"}</h1>
+        <h1>{mode === "create" ? "Nueva Reserva" : "Editar Reserva"}</h1>
       )}
 
       <FieldSelector onFieldSelect={handleFieldSelect} />

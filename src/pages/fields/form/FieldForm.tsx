@@ -128,7 +128,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   return (
     <div className="max-w-screen-2xl mx-auto px-8 py-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-        {mode === "create" ? "Create a New Field" : "Edit Field"}
+        {mode === "create" ? "Crear un nuevo campo" : "Editar Campo"}
       </h2>
 
       {/* Contenedor principal en grid */}
@@ -212,7 +212,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
 
           {/* Submit Button */}
           <button type="submit" className="field-form-button">
-            {mode === "create" ? "Create Field" : "Update Field"}
+            {mode === "create" ? "Crear Campo" : "Actualizar Campo"}
           </button>
 
           {isUploading && <p className="text-[#50BB73]">Cargando imagen...</p>}
