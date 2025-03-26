@@ -1,29 +1,30 @@
 /* 📌 Estilos para el video de fondo */
-.background-video {
+.background-image {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover; /* Hace que el video cubra toda la pantalla */
-  z-index: -1; /* Envía el video al fondo */
+  height: 100%; /* puede ser -1 solo si estás segura que el contenedor del login tiene z-10 o más */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none; /* ✅ Esto hace que NO bloquee clics */
 }
+
+/*relative w-full h-screen flex items-center justify-center overflow-hidden/*
 
 /* Contenedor principal */
 .login-container {
-  @apply flex items-center justify-end bg-cover bg-center mt-72;
-  background-size: cover;
-  background-position: center;
+  @apply flex items-center justify-center h-screen w-screen relative z-50 px-4;
 }
 
 /* Caja de login */
 .login-box {
-  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-10 max-w-md w-full mr-24;
+  @apply bg-gradient-to-r from-[#50BB73] to-[#0E0E0E] shadow-lg rounded-xl p-6 sm:p-8 md:p-10 max-w-md w-full relative z-50;
 }
 
 /* Título */
 .login-title {
-  @apply text-2xl font-semibold text-white text-center mb-6;
+  @apply text-xl sm:text-2xl font-semibold text-white text-center mb-6;
 }
 
 /* Formulario */

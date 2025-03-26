@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/user/userService";
 import "./register.css";
-import Video from "../../assets/VC.3D.2.mp4";
+import Fondo from "../../assets/pexels-todd-trapani-488382-2339377.jpg";
+import Fondo1 from "../../assets/pexels-pixabay-274506.jpg";
 
 const Register: React.FC = () => {
   const [firstName, setFirstName] = useState<string>("");
@@ -13,6 +14,18 @@ const Register: React.FC = () => {
   const [role, setRole] = useState<string>("user");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+
+  // Slideshow de imágenes
+  const backgrounds = [Fondo, Fondo1];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentBackground = backgrounds[currentIndex];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 5000); // Cambia cada 5 segundos
+    return () => clearInterval(interval);
+  }, []);
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,13 +56,16 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-container">
-      {/* 📌 Video de fondo */}
-      <video autoPlay loop muted className="background-video">
-        <source src={Video} type="video/mp4" />
-        Tu navegador no soporta el video.
-      </video>
+      <div
+        className="background-fade absolute"
+        style={{
+          backgroundImage: `url(${currentBackground})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          transition: "background-image 1s ease-in-out",
+        }}
+      />
 
-      {/* 📌 Formulario de Registro */}
       <div className="register-box">
         <h2 className="register-title">Crear Cuenta</h2>
         <form onSubmit={handleRegister} className="register-form">
@@ -140,18 +156,14 @@ const Register: React.FC = () => {
 
           {passwordNotValidated && (
             <div>
-              <p className="error-message">
-                Los password no coinciden
-              </p>
+              <p className="error-message">Los password no coinciden</p>
             </div>
           )}
 
           <button
             type="submit"
             className={`register-button ${
-              passwordNotValidated
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+              passwordNotValidated ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={passwordNotValidated}
           >

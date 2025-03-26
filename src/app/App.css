@@ -1,8 +1,11 @@
+html,
+body,
 #root {
-  width: 100%;
   height: 100%;
-  padding: 0;
+  width: 100%;
   margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .logo:hover {
@@ -36,7 +39,10 @@
 }
 
 .page-container {
-  margin-top: 10vh !important; /* Ajusta este valor según la altura del navbar */
+  height: calc(100vh - 10vh); /* Asumiendo que tu navbar ocupa 10vh */
+  width: 100vw; /* Ancho total de la ventana */
+  margin-top: 10vh; /* Empuja el contenido debajo del navbar */
+  overflow-x: hidden;
 }
 
 .delete-button {
