@@ -99,24 +99,42 @@ const FieldVideosPage: React.FC = () => {
       {selectedFieldId && (
         <div className="space-y-6">
           {videos.length === 0 ? (
-            <p className="text-gray-500">No hay videos disponibles para este campo.</p>
+            <p className="text-gray-500">
+              No hay videos disponibles para este campo.
+            </p>
           ) : (
             videos.map((video) => (
               <div
                 key={video._id}
-                className="p-4 border border-gray-200 rounded shadow-sm flex justify-between items-center"
+                className={`p-4 border rounded-lg shadow-sm transition hover:shadow-md bg-white flex items-center gap-4 ${
+                  activeVideoUrl === video.videoUrl
+                    ? "border-blue-500 ring-1 ring-blue-300"
+                    : ""
+                }`}
               >
-                <div>
-                  <p className="text-sm text-gray-600">Video: {video._id}</p>
-                  <p className="text-sm text-gray-600">Name: {video.s3Key}</p>
-                  <p className="text-xs text-gray-400">Match ID: {"N/A"}</p>
+                {/* Información del video - ocupa 5/6 del espacio */}
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-gray-800 mb-1">
+                    🎬 Video ID:{" "}
+                    <span className="font-normal">{video._id}</span>
+                  </p>
+                  <p className="text-sm text-gray-600 mb-1">
+                    📁 Archivo:{" "}
+                    <span className="text-gray-700">{video.s3Key}</span>
+                  </p>
+                  <p className="text-xs text-gray-400">🆔 Match ID: N/A</p>
                 </div>
-                <button
-                  onClick={() => handlePlayVideo(video)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                  ▶ Reproducir
-                </button>
+
+                {/* Botón reproducir - ocupa 1/6 del espacio */}
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={() => handlePlayVideo(video)}
+                    className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-full hover:bg-blue-700 transition text-sm shadow-sm"
+                  >
+                    <span className="text-base">▶</span>
+                    <span>Play</span>
+                  </button>
+                </div>
               </div>
             ))
           )}
@@ -127,7 +145,12 @@ const FieldVideosPage: React.FC = () => {
       {activeVideoUrl && (
         <div className="mt-10">
           <h3 className="text-lg font-semibold mb-2">Reproduciendo ahora</h3>
-          <video controls width="100%" className="rounded shadow">
+          <video
+            key={activeVideoUrl}
+            controls
+            width="100%"
+            className="rounded shadow"
+          >
             <source src={activeVideoUrl} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
