@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Table, Button, Modal } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import moment, { Moment } from "moment";
 import FieldSelector from "../../fields/components/FieldSelector";
 import "./index.css";
