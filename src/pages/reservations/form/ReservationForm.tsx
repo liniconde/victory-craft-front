@@ -74,8 +74,25 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     if (mode === "create") {
       api
         .post("/reservations", reservationData)
-        .then(() => navigate("/reservations"))
-        .catch((error) => console.error("Error creating reservation:", error));
+        .then(() => console.log("reserva creada correctamente"))
+        .catch((error) => {
+          console.error("Error creating reservation:", error);
+          alert("Error: " + error);
+        });
+
+      api
+        .put(`/slots/${selectedSlot?._id}`, {
+          ...selectedSlot,
+          isAvailable: false,
+        })
+        .then(() => {
+          setShowConfirmModal(false);
+          handleFieldSelect(fieldId);
+        })
+        .catch((error) => {
+          console.error("Error updating slot:", error);
+          alert("Error: " + error);
+        });
     } else {
       api
         .put(`/reservations/${id}`, reservationData)
@@ -93,7 +110,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     setCurrentWeek((prevWeek) => prevWeek.clone().add(1, "week"));
   };
 
-  // ✅ Calcular los días de la semana según el estado actual
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     currentWeek.clone().add(i, "days")
   );
@@ -106,7 +122,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
       <FieldSelector onFieldSelect={handleFieldSelect} />
 
-      {/* ✅ SOLO SE MUESTRAN LOS BOTONES SI UN FIELD ESTÁ SELECCIONADO */}
       {fieldId && (
         <div className="flex justify-between my-4 items-center">
           <Button
@@ -150,7 +165,12 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
                     .map((slot) => (
                       <Button
                         key={slot._id}
-                        variant={slot.isAvailable ? "success" : "secondary"}
+                        className={`w-full mb-2 py-2 text-sm font-medium rounded-lg transition 
+                        ${
+                          slot.isAvailable
+                            ? "bg-[#50BB73] hover:bg-green-800 text-white"
+                            : "bg-red-500 text-white cursor-not-allowed opacity-70"
+                        }`}
                         disabled={!slot.isAvailable}
                         onClick={() => handleSlotSelect(slot)}
                       >
@@ -165,23 +185,42 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
         </Table>
       )}
 
-      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Reservacion</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Esta seguro que quiere reservar este campo?</Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowConfirmModal(false)}
-          >
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleConfirmReservation}>
-            Confirm
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md animate-fade-in-up">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">
+                Confirmar Reservación
+              </h2>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-gray-700 mb-6">
+              ¿Estás segura/o que deseas reservar este campo?
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-600 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmReservation}
+                className="px-4 py-2 bg-[#50BB73] text-white rounded-lg hover:bg-green-800 transition"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
