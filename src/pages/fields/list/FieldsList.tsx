@@ -130,15 +130,26 @@ const FieldList: React.FC = () => {
 
               <div className="flex justify-between gap-4 mt-4">
                 {role === "user" ? (
-                  <button
-                    className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/fields/${field._id}/reservations/`);
-                    }}
-                  >
-                    Reserva
-                  </button>
+                  <>
+                    <button
+                      className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/fields/${field._id}/reservations/`);
+                      }}
+                    >
+                      Ver mis reservas
+                    </button>
+                    <button
+                      className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/reservations/${field._id}`);
+                      }}
+                    >
+                      Reservar cancha
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button

@@ -28,7 +28,10 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     moment().startOf("week")
   ); // ✅ Estado para la semana actual
 
-  const { id } = useParams<{ id: string }>();
+  const { id, fieldId: fieldIdParam } = useParams<{
+    id: string;
+    fieldId: string;
+  }>();
   const navigate = useNavigate();
   const { userId, isAdmin } = useAuth();
 
@@ -46,7 +49,11 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   useEffect(() => {
     fetchReservation(id);
-  }, [mode, id]);
+  }, [mode, id, fieldIdParam]);
+
+  useEffect(() => {
+    if (fieldIdParam) handleFieldSelect(fieldIdParam);
+  }, [fieldIdParam]);
 
   const handleFieldSelect = async (fieldId: string) => {
     setFieldId(fieldId);

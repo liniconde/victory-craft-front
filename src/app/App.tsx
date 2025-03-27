@@ -83,6 +83,14 @@ const AppRoutes = () => {
               }
             />
             <Route
+              path="/reservations/:fieldId"
+              element={
+                <PrivateRoute>
+                  <Reservations />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/fields/new"
               element={
                 <PrivateRoute>

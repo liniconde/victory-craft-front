@@ -5,6 +5,7 @@
   background: #f4f4f4;
   border-radius: 8px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  padding-bottom: 60px;
 }
 
 .reservations-title {
@@ -55,14 +56,16 @@
   display: block;
   margin: 20px auto;
   padding: 10px 20px;
-  background: #007bff;
+  background: #50bb73;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
+  position: relative;
+  z-index: 10;
 }
 
 .back-btn:hover {
-  background: #0056b3;
+  background: #50bb73;
 }

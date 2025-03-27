@@ -26,10 +26,10 @@ const Login: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Bloquea el scroll al montar el componente
+   
     document.body.style.overflow = "hidden";
 
-    // Lo vuelve a activar al desmontar el componente
+    
     return () => {
       document.body.style.overflow = "auto";
     };
