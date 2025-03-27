@@ -33,9 +33,6 @@ const BackgroundComponent: React.FC = () => {
           transition: "background-image 1s ease-in-out",
         }}
       />
-
-      {/* Capa semitransparente */}
-      <div className="absolute inset-0 bg-black/50 z-10" />
     </>
   );
 };
