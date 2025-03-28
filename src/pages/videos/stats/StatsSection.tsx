@@ -13,7 +13,7 @@ interface StatsSectionProps {
 }
 
 const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
-  const [stats, setStats] = useState< TeamStats[] | null>(null);
+  const [stats, setStats] = useState<TeamStats[] | null>(null);
   const [model, setModel] = useState("manual");
   const { showLoading, hideLoading, showError, isLoading } = useAppFeedback();
 
@@ -43,20 +43,20 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
       return teamsDefault.map((team) => ({
         teamName: team,
         stats: {
-          goles: Math.floor(Math.random() * 5),
-          pases: Math.floor(Math.random() * 150),
-          faltas: Math.floor(Math.random() * 10),
-          tiros: Math.floor(Math.random() * 20),
+          goles: Math.floor(Math.random() * 2),
+          pases: Math.floor(Math.random() * 50),
+          faltas: Math.floor(Math.random() * 2),
+          tiros: Math.floor(Math.random() * 5),
         },
       }));
     } else {
       return teamsDefault.map((team) => ({
         teamName: team,
         stats: {
-          puntos: Math.floor(Math.random() * 100),
-          saques: Math.floor(Math.random() * 50),
-          golpes: Math.floor(Math.random() * 200),
-          errores_no_forzados: Math.floor(Math.random() * 10),
+          puntos: Math.floor(Math.random() * 10),
+          saques: Math.floor(Math.random() * 2),
+          golpes: Math.floor(Math.random() * 50),
+          errores_no_forzados: Math.floor(Math.random() * 2),
         },
       }));
     }
