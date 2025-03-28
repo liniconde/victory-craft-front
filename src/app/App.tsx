@@ -39,9 +39,7 @@ const LoadingScreen = () => (
 const AppRoutes = () => {
   return (
     <>
-      {/* ✅ Solo muestra el NavigationBar si NO estamos en /login o /register */}
-      (
-      <NavigationBar />)
+      <NavigationBar />
       <div className="page-container">
         <Suspense fallback={<LoadingScreen />}>
           <Routes>

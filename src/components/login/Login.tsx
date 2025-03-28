@@ -5,6 +5,7 @@ import "./login.css"; // Asegúrate de que sea el archivo correcto
 import Fondo from "../../assets/pexels-todd-trapani-488382-2339377.jpg";
 import Fondo1 from "../../assets/pexels-pixabay-274506.jpg";
 import { loginUser } from "../../services/user/userService";
+import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -12,6 +13,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { hideLoading, showError, showLoading } = useAppFeedback();
 
   // Slideshow de imágenes
   const backgrounds = [Fondo, Fondo1];
@@ -26,10 +28,8 @@ const Login: React.FC = () => {
   }, []);
 
   useEffect(() => {
-   
     document.body.style.overflow = "hidden";
 
-    
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -38,16 +38,19 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      showLoading();
       const data = await loginUser(username, password);
+      hideLoading();
       if (data) {
         login(data.token);
         navigate("/");
       } else {
         setError("Login fallido. Por favor, intente de nuevo.");
+        showError("Login fallido. Por favor, intente de nuevo.");
       }
     } catch (error) {
       console.error("Login Error:", error);
-      setError("Error en el servidor. Por favor, intente más tarde.");
+      showError("Error en el servidor. Por favor, intente más tarde.");
     }
   };
 

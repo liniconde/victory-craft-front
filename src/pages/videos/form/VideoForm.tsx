@@ -10,6 +10,7 @@ import {
 } from "../../../services/video/videoService";
 import SlotSelector from "../../../components/slotSelector/slotSelector";
 import { Slot } from "../../../interfaces/SlotInterfaces";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 interface VideoUploadFormProps {
   mode: "create" | "edit";
@@ -33,7 +34,8 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   });
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+
+  const { hideLoading, showError, showLoading } = useAppFeedback();
 
   // 📌 Obtener datos del video si está en modo edición
   useEffect(() => {
@@ -63,16 +65,15 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     if (!videoFile) return null;
 
     try {
-      setIsUploading(true);
-
+      showLoading();
       const response = await uploadVideoS3(videoFile);
-
-      setIsUploading(false);
       return response;
     } catch (error) {
-      console.error("❌ Error uploading video:", error);
-      setIsUploading(false);
+      console.error("Error uploading video:", error);
+      showError("Error uploading video");
       return null;
+    } finally {
+      hideLoading();
     }
   };
 
@@ -153,8 +154,6 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
           >
             {mode === "create" ? "Subir Video" : "Update Video"}
           </button>
-
-          {isUploading && <p className="text-blue-500">Uploading video...</p>}
         </form>
       </div>
     </div>

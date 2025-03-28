@@ -105,7 +105,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
       alert(
         "Modo manual creado. Puedes editar las estadísticas desde otro formulario."
       );
-    } catch (err) {
+    } catch (err: any) {
       showError("No se pudo crear el modo manual");
     }
   };

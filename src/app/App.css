@@ -1,12 +1,14 @@
 html,
-body,
 #root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  padding-bottom: 5rem;
+}
+
+body {
+  @apply h-screen flex flex-col;
 }
 
 .logo:hover {
@@ -40,10 +42,7 @@ body,
 }
 
 .page-container {
-  height: calc(100vh - 10vh); /* Asumiendo que tu navbar ocupa 10vh */
-  width: 100vw; /* Ancho total de la ventana */
-  margin-top: 10vh; /* Empuja el contenido debajo del navbar */
-  overflow-x: hidden;
+  @apply h-[85%] overflow-y-auto w-full overflow-x-hidden;
 }
 
 .delete-button {

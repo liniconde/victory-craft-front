@@ -8,6 +8,7 @@ import {
   getFields,
   getFieldsbyUserId,
 } from "../../../../services/field/fieldService";
+import { useAppFeedback } from "../../../../hooks/useAppFeedback";
 
 const SlotList: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -18,18 +19,21 @@ const SlotList: React.FC = () => {
 
   const navigate = useNavigate();
   const { isAdmin, userId } = useAuth();
+  const { showLoading, hideLoading, showError } = useAppFeedback();
 
   const getFieldsSlots = async (fieldId: string) => {
-    console.log("heyy");
     const slots = await api.get(`/fields/${fieldId}/slots`);
+    console.log("dataa", slots.data);
     return slots.data || [];
   };
 
   const fetchFields = async () => {
     if (userId) {
+      showLoading();
       const fieldsData = isAdmin
         ? await getFieldsbyUserId(userId)
         : await getFields();
+      hideLoading();
       return fieldsData || [];
     }
   };
@@ -57,18 +61,33 @@ const SlotList: React.FC = () => {
   }, []);
 
   const handleDelete = (id: string) => {
+    showLoading();
     api
       .delete(`/slots/${id}`)
-      .then(() => setSlots(slots.filter((slot) => slot._id !== id)))
-      .catch((error) => console.error("Error deleting slot:", error));
+      .then(() => {
+        setSlots(slots.filter((slot) => slot._id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting slot:", error);
+        showError("Error deleting slot");
+      })
+      .finally(() => hideLoading());
   };
 
   const handleSelectField = (field: Field) => {
     setSelectedField(field);
+    showLoading();
     api
       .get(`/fields/${field._id}/slots`)
-      .then((response) => setSlots(response.data))
-      .catch((error) => console.error("Error fetching slots:", error));
+      .then((response) => {
+        setSlots(response.data);
+        console.log("response dataa", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching slots:", error);
+        showError("Error fetching slots");
+      })
+      .finally(() => hideLoading());
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

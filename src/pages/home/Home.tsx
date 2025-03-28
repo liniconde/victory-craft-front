@@ -80,7 +80,6 @@ const Home: React.FC = () => {
 
   return (
     <>
-      {/* 🌄 HERO SOLO CON FONDO EN ESTE DIV */}
       <div
         className="home-container"
         style={{
