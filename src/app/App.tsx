@@ -131,6 +131,14 @@ const AppRoutes = () => {
               }
             />
             <Route
+              path="/videos/:videoId/update"
+              element={
+                <PrivateRoute>
+                  <FieldVideosForm mode="edit" />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/fields/:fieldId/videos/:videoId/edit"
               element={
                 <PrivateRoute>

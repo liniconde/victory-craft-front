@@ -4,4 +4,5 @@ export interface Video {
   fieldId: string;
   s3Key: string;
   videoUrl?: string;
+  slotId: string;
 }
