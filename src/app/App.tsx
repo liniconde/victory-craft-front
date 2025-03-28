@@ -1,14 +1,8 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
-import { LoadingProvider } from "../hooks/useLoading";
 import { AuthProvider } from "../context/AuthContext";
 import NavigationBar from "../components/navigation/NavigationBar";
-import LoadingIndicator from "../components/loader/LoadingIndicator";
 import "./App.css";
 
 // 📌 Rutas con Lazy Loading
@@ -21,6 +15,7 @@ const ReservationForm = lazy(
   () => import("../pages/reservations/form/ReservationForm")
 );
 import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm";
+import { AppFeedbackProvider } from "../context/AppFeedbackProvider";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
@@ -42,7 +37,6 @@ const LoadingScreen = () => (
 
 // 📌 Componente para manejar las rutas
 const AppRoutes = () => {
-
   return (
     <>
       {/* ✅ Solo muestra el NavigationBar si NO estamos en /login o /register */}
@@ -197,12 +191,11 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <AuthProvider>
-      <LoadingProvider>
-        <LoadingIndicator />
+      <AppFeedbackProvider>
         <Router>
           <AppRoutes />
         </Router>
-      </LoadingProvider>
+      </AppFeedbackProvider>
     </AuthProvider>
   );
 };
