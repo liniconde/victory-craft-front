@@ -100,7 +100,7 @@ const Home: React.FC = () => {
       <div className="bg-white py-16 px-4">
         <Carousel items={cardItems} />
 
-        <p className="text-black text-center text-2xl font-medium mt-10">
+        <p className="text-center text-2xl font-medium mt-10">
           En Victory Craft te conectamos con las mejores campos de pádel, tenis
           y fútbol de la ciudad. <br />
           Elige, agenda y juega: sin complicaciones, sin llamadas, sin esperas.

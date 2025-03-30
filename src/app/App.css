@@ -1,11 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html,
-body,
+body {
+  font-family: "Cenios", sans-serif;
+}
 #root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-poppins;
+  }
+}
+
+@font-face {
+  font-family: "Cenios";
+  src: url("/fonts/CeniosDemo-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 .logo:hover {

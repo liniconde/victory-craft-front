@@ -132,7 +132,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
       <FieldSelector onFieldSelect={handleFieldSelect} />
 
       {fieldId && (
-        <div className="flex justify-between my-4 items-center">
+        <div className="flex justify-between my-4 items-center text-white">
           <Button
             variant="secondary"
             onClick={handlePreviousWeek}
@@ -140,14 +140,14 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
           >
             ← Semana Anterior
           </Button>
-          <h2 className="text-lg font-semibold my-4">
+          <h2 className="text-lg font-semibold my-4 text-white">
             Semana del {currentWeek.format("MMM D")} al{" "}
             {currentWeek.clone().add(6, "days").format("MMM D")}
           </h2>
           <Button
             variant="secondary"
             onClick={handleNextWeek}
-            className="text-sm px-3 py-2"
+            className="text-sm px-3 py-2 ml-2"
           >
             Semana Siguiente →
           </Button>
