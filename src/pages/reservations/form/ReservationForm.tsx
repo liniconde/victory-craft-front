@@ -10,6 +10,7 @@ import { getReservation } from "../../../services/reservation/reservationService
 import { Slot } from "../../../interfaces/SlotInterfaces";
 import { getFieldSlots } from "../../../services/field/fieldService";
 import BackgroundComponent from "../../../components/Background/Background";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 export enum ReservationFormEnum {
   CREATE = "create",
@@ -35,15 +36,20 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   }>();
   const navigate = useNavigate();
   const { userId, isAdmin } = useAuth();
+  const { showLoading, hideLoading, showError } = useAppFeedback();
 
   const fetchReservation = async (reservationId: string | undefined) => {
     if (mode === "edit" && reservationId) {
       try {
+        showLoading();
         const reservation = await getReservation(reservationId);
         setFieldId(reservation.field!._id);
         setSelectedSlot(reservation.slot);
       } catch (error) {
         console.error("Error fetching reservation:", error);
+        showError("Error fetching reservation");
+      } finally {
+        hideLoading();
       }
     }
   };
@@ -60,10 +66,14 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     setFieldId(fieldId);
     // Fetch slots for the selected field
     try {
+      showLoading();
       const slots = await getFieldSlots(fieldId);
       setSlots(slots);
     } catch (error) {
       console.error("Error fetching slots:", error);
+      showError("Error fetching slots");
+    } finally {
+      hideLoading();
     }
   };
 

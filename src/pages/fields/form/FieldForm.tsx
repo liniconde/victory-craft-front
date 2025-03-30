@@ -6,6 +6,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { getS3UploadImageUrl } from "../../../services/field/fieldService";
 import PersonalizedMapComponent from "../../../components/personalizedMap/PersonalizedMapComponent";
 import { FieldLocation } from "../../../interfaces/FieldInterfaces";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 // const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || `victory-craft`;
 
@@ -48,9 +49,10 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<FieldLocation>(defaultLocation);
+
+  const { hideLoading, showError, showLoading } = useAppFeedback();
 
   useEffect(() => {
     if (mode === "edit" && id) {
@@ -88,14 +90,15 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
   } | null> => {
     if (!imageFile) return null;
     try {
-      setIsUploading(true);
+      showLoading();
       const data = await getS3UploadImageUrl(imageFile, userId!);
-      setIsUploading(false);
       return { imageUrl: data.s3Url, imageS3Key: data.objectKey };
     } catch (error) {
-      console.error("❌ Error uploading image:", error);
-      setIsUploading(false);
+      console.error(" Error uploading image:", error);
+      showError(" Error uploading image");
       return null;
+    } finally {
+      hideLoading();
     }
   };
 
@@ -214,8 +217,6 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
           <button type="submit" className="field-form-button">
             {mode === "create" ? "Crear Campo" : "Actualizar Campo"}
           </button>
-
-          {isUploading && <p className="text-[#50BB73]">Cargando imagen...</p>}
         </form>
 
         {/* 🗺 Sección del mapa */}

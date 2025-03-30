@@ -83,7 +83,7 @@ export const uploadVideoS3 = async (
 };
 
 // 📌 Función para hacer login y almacenar el token
-export const createVideo = async (videoId: string): Promise<Video> => {
+export const updateVideo = async (videoId: string): Promise<Video> => {
   try {
     const response = await api.get<Video>(`videos/${videoId}`);
     return response.data;

@@ -4,12 +4,14 @@ import { Video } from "../../interfaces/VideoInterfaces";
 import { Field } from "../../interfaces/FieldInterfaces";
 import { getFields } from "../../services/field/fieldService";
 import { getFieldVideos } from "../../services/video/videoService";
+import StatsSection from "./stats/StatsSection";
 
 const FieldVideosPage: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<string>("");
   const [videos, setVideos] = useState<Video[]>([]);
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   const navigate = useNavigate();
 
@@ -26,6 +28,13 @@ const FieldVideosPage: React.FC = () => {
 
     fetchFields();
   }, []);
+
+  const getField = (fieldId: string) => {
+    if (fields) {
+      return fields.find((f) => f._id === fieldId);
+    }
+    return null;
+  };
 
   // Obtener los videos de la campo seleccionada
   useEffect(() => {
@@ -44,6 +53,7 @@ const FieldVideosPage: React.FC = () => {
 
   // Reproducir video
   const handlePlayVideo = (video: Video) => {
+    setSelectedVideo(video);
     setActiveVideoUrl(video.videoUrl!);
   };
 
@@ -155,6 +165,12 @@ const FieldVideosPage: React.FC = () => {
             Your browser does not support the video tag.
           </video>
         </div>
+      )}
+      {activeVideoUrl && selectedVideo && (
+        <StatsSection
+          videoId={selectedVideo._id}
+          sportType={getField(selectedFieldId)?.type || "football"}
+        />
       )}
     </div>
   );

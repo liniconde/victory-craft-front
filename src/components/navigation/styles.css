@@ -1,8 +1,8 @@
 /* 📌 Contenedor del Navbar */
 .navbar {
-  @apply w-full fixed top-0 left-0 bg-[#50BB73] text-white shadow-md z-50;
-  @apply w-full text-white shadow-md py-2 md:py-5 transition-all;
-  @apply flex justify-between items-center mx-auto;
+  @apply w-full h-[15%] bg-[#50BB73] text-white z-50;
+  @apply w-full text-white shadow-md py-1 md:py-5 transition-all;
+  @apply flex justify-between items-center;
 }
 
 .navbar .container {
@@ -11,7 +11,7 @@
 }
 
 .navbar-items {
-  @apply flex items-center gap-x-6 md:gap-x-10 mr-28 mt-6;
+  @apply flex items-center gap-x-6 md:gap-x-10 mr-28 mt-5;
 }
 
 /* 📌 Botón de Menú (Móvil) */
@@ -36,7 +36,7 @@
 
 /* 📌 Menú en Móvil */
 .navbar-menu {
-  @apply flex-col items-center text-center space-y-4 mt-4 w-full md:space-y-0 md:flex-row md:items-center md:justify-end md:w-auto md:mt-0 md:ml-auto;
+  @apply flex-col items-center text-center space-y-3 mt-4 w-full md:space-y-0 md:flex-row md:items-center md:justify-end md:w-auto md:mt-0 md:ml-auto;
 }
 
 /* 📌 Animación del menú en móviles */

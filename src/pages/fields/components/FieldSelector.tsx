@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getFields } from "../../../services/field/fieldService";
 import { Field } from "../../../interfaces/FieldInterfaces";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 interface FieldSelectorProps {
   onFieldSelect: (fieldId: string) => void;
@@ -11,13 +12,19 @@ const FieldSelector: React.FC<FieldSelectorProps> = ({ onFieldSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
 
+  const { showLoading, hideLoading, showError } = useAppFeedback();
+
   useEffect(() => {
     const fetchFields = async () => {
       try {
+        showLoading();
         const data = await getFields();
         setFields(data);
       } catch (error) {
         console.error("Error fetching fields:", error);
+        showError("Error fetching fields");
+      } finally {
+        hideLoading();
       }
     };
 

@@ -9,6 +9,7 @@ import {
   getFields,
   getFieldsbyUserId,
 } from "../../../services/field/fieldService";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 const FieldList: React.FC = () => {
   const [fields, setFields] = useState<Field[]>([]);
@@ -19,11 +20,13 @@ const FieldList: React.FC = () => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   const navigate = useNavigate();
+  const { hideLoading, showError, showLoading } = useAppFeedback();
   const { role, isAdmin, userId } = useAuth();
 
   useEffect(() => {
     const getFieldsAsync = async () => {
       try {
+        showLoading();
         const fields =
           isAdmin && userId
             ? await getFieldsbyUserId(userId!)
@@ -32,6 +35,9 @@ const FieldList: React.FC = () => {
         setFilteredFields(fields);
       } catch (error) {
         console.error("Error fetching fields:", error);
+        showError("Error fetching fields:")
+      } finally {
+        hideLoading();
       }
     };
     getFieldsAsync();
@@ -153,7 +159,7 @@ const FieldList: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      className="px-0 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      className="px-0 py-2 text bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/fields/edit/${field._id}`);

@@ -6,19 +6,25 @@ import {
   Reservation,
 } from "../../services/reservation/reservationService";
 import BackgroundComponent from "../../components/Background/Background";
+import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const ReservationList: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const navigate = useNavigate();
+  const { showLoading, hideLoading, showError } = useAppFeedback();
 
   useEffect(() => {
     const fetchReservations = async () => {
       try {
+        showLoading();
         const reservations = await getReservations();
         setReservations(reservations);
         console.log(reservations);
       } catch (error) {
         console.error("Error fetching reservations:", error);
+        showError("Error fetching reservations");
+      } finally {
+        hideLoading();
       }
     };
 

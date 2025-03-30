@@ -4,6 +4,7 @@ import { registerUser } from "../../services/user/userService";
 import "./register.css";
 import Fondo from "../../assets/pexels-todd-trapani-488382-2339377.jpg";
 import Fondo1 from "../../assets/pexels-pixabay-274506.jpg";
+import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const Register: React.FC = () => {
   const [firstName, setFirstName] = useState<string>("");
@@ -19,6 +20,7 @@ const Register: React.FC = () => {
   const backgrounds = [Fondo, Fondo1];
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentBackground = backgrounds[currentIndex];
+  const { hideLoading, showError, showLoading } = useAppFeedback();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,10 +34,12 @@ const Register: React.FC = () => {
 
     if (!firstName || !lastName || !email || !password) {
       setError("Todos los campos son obligatorios");
+      showError("Todos los campos son obligatorios");
       return;
     }
 
     try {
+      showLoading();
       const response = await registerUser({
         firstName,
         lastName,
@@ -44,6 +48,7 @@ const Register: React.FC = () => {
         role,
         username: email,
       });
+      hideLoading();
       console.log("Registro exitoso:", response);
       navigate("/login");
     } catch (error) {

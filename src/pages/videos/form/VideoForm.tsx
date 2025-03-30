@@ -8,6 +8,9 @@ import {
   S3UploadObject,
   uploadVideoS3,
 } from "../../../services/video/videoService";
+import SlotSelector from "../../../components/slotSelector/slotSelector";
+import { Slot } from "../../../interfaces/SlotInterfaces";
+import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 interface VideoUploadFormProps {
   mode: "create" | "edit";
@@ -18,17 +21,21 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   const { videoId, fieldId } = useParams<{
     videoId: string;
     fieldId: string;
+    slotId: string;
   }>();
 
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [videoData, setVideoData] = useState<Video>({
     _id: "",
     videoUrl: "",
     fieldId: "",
     s3Key: "",
+    slotId: "",
   });
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+
+  const { hideLoading, showError, showLoading } = useAppFeedback();
 
   // 📌 Obtener datos del video si está en modo edición
   useEffect(() => {
@@ -58,16 +65,15 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     if (!videoFile) return null;
 
     try {
-      setIsUploading(true);
-
+      showLoading();
       const response = await uploadVideoS3(videoFile);
-
-      setIsUploading(false);
       return response;
     } catch (error) {
-      console.error("❌ Error uploading video:", error);
-      setIsUploading(false);
+      console.error("Error uploading video:", error);
+      showError("Error uploading video");
       return null;
+    } finally {
+      hideLoading();
     }
   };
 
@@ -81,10 +87,11 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
 
     const videoObject = await uploadVideoToS3();
     console.log("image iobjectt", videoObject);
-    if (videoObject) {
+    if (videoObject && selectedSlot) {
       videoData.s3Key = videoObject.objectKey;
       videoData.videoUrl = videoObject.uploadUrl;
       videoData.fieldId = fieldId!;
+      videoData.slotId = selectedSlot._id;
     } else {
       alert("Error uploading File");
       return;
@@ -115,12 +122,20 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
         {mode === "create" ? "Upload a New Video" : "Update Video"}
       </h2>
 
+      {fieldId && (
+        <SlotSelector
+          fieldId={fieldId!}
+          selectedSlot={selectedSlot}
+          setSelectedSlot={setSelectedSlot}
+        />
+      )}
+
       <div className="video-form-container">
         <form onSubmit={handleSubmit} className="video-form">
           {/* Video File Upload */}
           <div>
             <label htmlFor="videoFile" className="video-form-label">
-              Upload Video
+              Subir Video
             </label>
             <input
               id="videoFile"
@@ -132,11 +147,13 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="video-form-button">
-            {mode === "create" ? "Upload Video" : "Update Video"}
+          <button
+            type="submit"
+            className="video-form-button"
+            disabled={!selectedSlot || !videoFile}
+          >
+            {mode === "create" ? "Subir Video" : "Update Video"}
           </button>
-
-          {isUploading && <p className="text-blue-500">Uploading video...</p>}
         </form>
       </div>
     </div>
