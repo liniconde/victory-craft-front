@@ -65,7 +65,7 @@ body {
 }
 
 .page-container {
-  @apply h-[85%] overflow-y-auto w-full overflow-x-hidden;
+  @apply h-[75%] overflow-y-auto w-full overflow-x-hidden;
 }
 
 .delete-button {

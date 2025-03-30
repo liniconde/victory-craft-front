@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
+import BottomCarousel from "../home/Carousel/BottonCarousel";
 import Imagen1 from "../../assets/03.V.jpg";
 import Imagen2 from "../../assets/00.jpg";
 import Carousel from "../../components/Carrousel&Card/Carousel";
@@ -104,6 +105,9 @@ const Home: React.FC = () => {
           y fútbol de la ciudad. <br />
           Elige, agenda y juega: sin complicaciones, sin llamadas, sin esperas.
         </p>
+      </div>
+      <div>
+        <BottomCarousel />
       </div>
     </>
   );

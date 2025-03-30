@@ -4,6 +4,7 @@ import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
 import { AuthProvider } from "../context/AuthContext";
 import NavigationBar from "../components/navigation/NavigationBar";
 import "./App.css";
+import Footer from "../components/footer/footer";
 
 // 📌 Rutas con Lazy Loading
 const Users = lazy(() => import("../pages/Users"));
@@ -181,6 +182,7 @@ const AppRoutes = () => {
           </Routes>
         </Suspense>
       </div>
+      <Footer />
     </>
   );
 };

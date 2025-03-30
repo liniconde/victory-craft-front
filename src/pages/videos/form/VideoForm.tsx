@@ -55,9 +55,25 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
 
   // 📌 Manejar la selección del archivo
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setVideoFile(event.target.files[0]);
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const isVideo = file.type.startsWith("video/");
+    const isSizeValid = file.size <= 50 * 1024 * 1024; // 50 MB en bytes
+
+    if (!isVideo) {
+      showError("Solo puedes subir archivos de video.");
+      return;
     }
+
+    if (!isSizeValid) {
+      showError("El archivo no puede superar los 50MB.");
+      return;
+    }
+
+    // ✅ Si pasa las validaciones
+    setVideoFile(file);
   };
 
   // 📤 Subir el video a S3 y obtener la URL firmada
