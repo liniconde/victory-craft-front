@@ -9,7 +9,6 @@ import { api } from "../../../utils/api";
 import { getReservation } from "../../../services/reservation/reservationService";
 import { Slot } from "../../../interfaces/SlotInterfaces";
 import { getFieldSlots } from "../../../services/field/fieldService";
-import BackgroundComponent from "../../../components/Background/Background";
 import { useAppFeedback } from "../../../hooks/useAppFeedback";
 
 export enum ReservationFormEnum {
@@ -134,7 +133,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   return (
     <div>
-      <BackgroundComponent />
       {isAdmin && (
         <h1>{mode === "create" ? "Nueva Reserva" : "Editar Reserva"}</h1>
       )}

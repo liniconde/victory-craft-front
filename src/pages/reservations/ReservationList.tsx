@@ -5,13 +5,11 @@ import {
   removeReservation,
   Reservation,
 } from "../../services/reservation/reservationService";
-import BackgroundComponent from "../../components/Background/Background";
-import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const ReservationList: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const navigate = useNavigate();
-  const { showLoading, hideLoading, showError } = useAppFeedback();
+  
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -45,7 +43,6 @@ const ReservationList: React.FC = () => {
 
   return (
     <>
-      <BackgroundComponent />
       <div className="reservations-container">
         <h1>Reservas</h1>
         <button

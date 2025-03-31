@@ -36,46 +36,18 @@ const Home: React.FC = () => {
     };
   }, []);
 
-  const cardItems = [
+  const groupedImages = [
     {
-      url: Fútbol1,
-      title: "Campo de fútbol",
+      title: "Fútbol",
+      images: [Fútbol1, fútbol2, fútbol3, fútbol4],
     },
     {
-      url: fútbol2,
-      title: "Nuestras campos",
+      title: "Tenis",
+      images: [tennis, tennis1],
     },
     {
-      url: fútbol3,
-      title: "Entrenamiento",
-    },
-    {
-      url: fútbol4,
-      title: "jugadas",
-    },
-    {
-      url: tennis,
-      title: "Tennis",
-    },
-    {
-      url: tennis1,
-      title: "Tennis",
-    },
-    {
-      url: padel,
-      title: "Padel",
-    },
-    {
-      url: padel1,
-      title: "Jugadores",
-    },
-    {
-      url: padel2,
-      title: "Padel",
-    },
-    {
-      url: padel3,
-      title: "Nuestras campos",
+      title: "Pádel",
+      images: [padel, padel1, padel2, padel3],
     },
   ];
 
@@ -98,7 +70,7 @@ const Home: React.FC = () => {
 
       {/* 🎯 CARRUSEL SEPARADO */}
       <div className="bg-white py-16 px-4">
-        <Carousel items={cardItems} />
+        <Carousel groupedItems={groupedImages} />
 
         <p className="text-center text-2xl font-medium mt-10">
           En Victory Craft te conectamos con las mejores campos de pádel, tenis
@@ -106,6 +78,55 @@ const Home: React.FC = () => {
           Elige, agenda y juega: sin complicaciones, sin llamadas, sin esperas.
         </p>
       </div>
+
+      <section className="bg-white py-12 px-4 text-center">
+        <h2 className="text-2xl font-bold text-[#50bb73] mb-8 font-poppins">
+          ¿Cómo funciona?
+        </h2>
+
+        <div className="flex flex-wrap justify-center gap-6 max-w-12xl mx-auto">
+          {/* Paso 1 */}
+          <div className="bg-gray-50 border border-gray-200 p-6 rounded-lg w-[350px] text-left shadow-sm hover:shadow-lg transition">
+            <span className="block text-3xl font-bold text-[#50bb73] mb-2">
+              1
+            </span>
+            <h3 className="text-base font-semibold mb-2 text-gray-900">
+              Crea tu cuenta
+            </h3>
+            <p className="text-sm text-gray-600">
+              Regístrate fácilmente en segundos para acceder a todos los
+              servicios.
+            </p>
+          </div>
+
+          {/* Paso 2 */}
+          <div className="bg-gray-50 border border-gray-200 p-6 rounded-lg w-[350px] text-left shadow-sm hover:shadow-lg transition">
+            <span className="block text-3xl font-bold text-[#50bb73] mb-2">
+              2
+            </span>
+            <h3 className="text-base font-semibold mb-2 text-gray-900">
+              Explora campos
+            </h3>
+            <p className="text-sm text-gray-600">
+              Busca campos de fútbol, pádel o tenis disponibles cerca de ti.
+            </p>
+          </div>
+
+          {/* Paso 3 */}
+          <div className="bg-gray-50 border border-gray-200 p-6 rounded-lg w-[350px] text-left shadow-sm hover:shadow-lg transition">
+            <span className="block text-3xl font-bold text-[#50bb73] mb-2">
+              3
+            </span>
+            <h3 className="text-base font-semibold mb-2 text-gray-900">
+              Reserva y juega
+            </h3>
+            <p className="text-sm text-gray-600">
+              Elige el horario que te convenga, reserva y ¡a jugar!
+            </p>
+          </div>
+        </div>
+      </section>
+
       <div>
         <BottomCarousel />
       </div>

@@ -78,8 +78,14 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
 
   // Manejar la selección del archivo
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setImageFile(event.target.files[0]);
+    const file = event.target.files?.[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        showError("Solo se permiten archivos .jpg o .jpeg");
+        return;
+      }
+      setImageFile(file);
     }
   };
 
@@ -207,7 +213,7 @@ const FieldForm: React.FC<FieldFormProps> = ({ mode }) => {
             <input
               id="imageFile"
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg"
               onChange={handleFileChange}
               className="field-form-input"
             />

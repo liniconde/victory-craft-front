@@ -1,57 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import CardItem from "./CardItem";
 
 interface CarouselProps {
-  items: { url: string; title?: string }[];
+  groupedItems: {
+    title: string;
+    images: string[];
+  }[];
 }
 
-const Carousel: React.FC<CarouselProps> = ({ items }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
-
-  const duplicatedItems = [...items, ...items]; // 🔁 duplicamos para loop visual
-  const cardWidth = 400;
-  const gap = 32;
-  const totalWidth = (cardWidth + gap) * duplicatedItems.length;
-
-  const [translateX, setTranslateX] = useState(0);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (isHovering) {
-      interval = setInterval(() => {
-        setTranslateX((prev) => (prev >= totalWidth / 2 ? 0 : prev + 1));
-      }, 16); // ➡ velocidad del scroll (ajustable)
-    }
-
-    return () => clearInterval(interval);
-  }, [isHovering]);
-
+const Carousel: React.FC<CarouselProps> = ({ groupedItems }) => {
   return (
-    <div className="w-full px-6 overflow-hidden">
+    <div className="w-full px-20 overflow-hidden">
       <h2 className="text-2xl text-black font-semibold mb-8 text-center">
         Explora nuestro mundo deportivo
       </h2>
 
-      <div
-        ref={containerRef}
-        className="relative w-full overflow-hidden"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        <div
-          className="flex"
-          style={{
-            width: `${totalWidth}px`,
-            transform: `translateX(-${translateX}px)`,
-            transition: "transform 0.05s linear",
-          }}
-        >
-          {duplicatedItems.map((item, index) => (
-            <CardItem key={index} imageUrl={item.url} title={item.title} />
-          ))}
-        </div>
+      <div className="flex justify-center gap-6">
+        {groupedItems.map((group, index) => (
+          <CardItem key={index} imageUrls={group.images} title={group.title} />
+        ))}
       </div>
     </div>
   );

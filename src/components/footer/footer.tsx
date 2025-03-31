@@ -9,7 +9,7 @@ import {
 
 const footer: React.FC = () => {
   return (
-    <footer className="bg-[#50BB73] text-white py-6 px-4 ">
+    <footer className="h-[10vh] bg-[#50BB73] text-white px-4 py-4">
       <div className="max-w-7xl mx-auto flex flex-col justify-between items-center gap-4">
         {/*Iconos*/}
         <div className="flex space-x-4 text-xl">

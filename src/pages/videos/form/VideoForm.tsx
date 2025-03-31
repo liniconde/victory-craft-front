@@ -86,7 +86,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
       return response;
     } catch (error) {
       console.error("Error uploading video:", error);
-      showError("Error uploading video");
+      showError("Error subiendo video");
       return null;
     } finally {
       hideLoading();
@@ -135,7 +135,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   return (
     <div className="max-w-screen-lg mx-auto px-8 py-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-        {mode === "create" ? "Upload a New Video" : "Update Video"}
+        {mode === "create" ? "Subir nuevo video" : "Actualizar Video"}
       </h2>
 
       {fieldId && (
@@ -168,7 +168,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
             className="video-form-button"
             disabled={!selectedSlot || !videoFile}
           >
-            {mode === "create" ? "Subir Video" : "Update Video"}
+            {mode === "create" ? "Subir Video" : "Actualizar Video"}
           </button>
         </form>
       </div>

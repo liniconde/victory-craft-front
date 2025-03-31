@@ -1,6 +1,6 @@
 /* 📌 Contenedor del Navbar */
 .navbar {
-  @apply w-full h-[15%] bg-[#50BB73] text-white z-50;
+  @apply w-full h-[10%] bg-[#50BB73] text-white z-50;
   @apply w-full text-white shadow-md py-1 md:py-5 transition-all;
   @apply flex justify-between items-center;
 }
