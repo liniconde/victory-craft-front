@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Table, Button } from "react-bootstrap";
 import moment, { Moment } from "moment";
 import FieldSelector from "../../fields/components/FieldSelector";
-import "./index.css";
+import "./ReservationForm.css";
 import { useAuth } from "../../../context/AuthContext";
 import { api } from "../../../utils/api";
 import { getReservation } from "../../../services/reservation/reservationService";
@@ -144,7 +144,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
           <Button
             variant="secondary"
             onClick={handlePreviousWeek}
-            className="text-sm px-3 py-2"
+            className="bg-[#50BB73] text-white hover:bg-green-800 text-sm px-3 py-2 rounded-md"
           >
             ← Semana Anterior
           </Button>
@@ -155,7 +155,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
           <Button
             variant="secondary"
             onClick={handleNextWeek}
-            className="text-sm px-3 py-2 ml-2"
+            className="bg-[#50BB73] text-white hover:bg-green-800 text-sm px-3 py-2 rounded-md"
           >
             Semana Siguiente →
           </Button>
@@ -163,7 +163,8 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
       )}
 
       {fieldId && (
-        <Table bordered hover>
+        <div className="overflow-x-auto">
+        <Table bordered hover className="min-w-full">
           <thead>
             <tr>
               {daysOfWeek.map((day) => (
@@ -200,6 +201,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
             </tr>
           </tbody>
         </Table>
+        </div>
       )}
 
       {showConfirmModal && (

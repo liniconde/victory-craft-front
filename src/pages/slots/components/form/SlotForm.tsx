@@ -64,7 +64,7 @@ const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
   return (
     <div className="slot-form-container animate-fade-in">
       <h1 className="text-center text-2xl font-bold text-gray-800">
-        {mode === "create" ? "Agregar Partido" : "Editar Partido"}
+        {mode === "create" ? "Crear Partido" : "Editar Partido"}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -142,7 +142,7 @@ const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
           </div>
         )}
         <button type="submit" className="submit-button">
-          {mode === "create" ? "Agregar nuevo partido" : "Actualizar Partido"}
+          {mode === "create" ? "Crear nuevo partido" : "Modificar Partido"}
         </button>
         <button
           className="cancel-button"

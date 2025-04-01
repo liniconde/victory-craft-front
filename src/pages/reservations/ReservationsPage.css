@@ -1,6 +1,7 @@
 /* ReservationsPage.css */
 .reservations-container {
-  padding: 20px;
+  padding: 1 rem;
+  margin: 0 auto;
 }
 
 .reservations-table {
@@ -15,17 +16,20 @@
 }
 
 .reservations-table th {
-  background-color: #f2f2f2;
+  background-color: #50bb73;
   text-align: left;
+  color: white;
 }
 
 .actions-button {
   margin: 5px;
   padding: 8px 16px;
   background-color: #4caf50;
-  color: #4caf50;
+  color: White;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  border-radius: 0.375rem;
 }
 
 .actions-button:hover {

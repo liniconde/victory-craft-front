@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
@@ -22,6 +22,7 @@ const FieldList: React.FC = () => {
   const navigate = useNavigate();
   const { hideLoading, showError, showLoading } = useAppFeedback();
   const { role, isAdmin, userId } = useAuth();
+  const mapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const getFieldsAsync = async () => {
@@ -117,7 +118,12 @@ const FieldList: React.FC = () => {
           <div
             key={field._id}
             className="bg-white rounded-lg shadow-lg h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-xl cursor-pointer"
-            onClick={() => setSelectedField(field)}
+            onClick={() => {
+              setSelectedField(field);
+              setTimeout(() => {
+                mapRef.current?.scrollIntoView({ behavior: "smooth" });
+              }, 100);
+            }}
           >
             <img
               src={field.imageUrl || "https://via.placeholder.com/300"}
@@ -185,7 +191,7 @@ const FieldList: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-12">
+      <div className="mt-12" ref={mapRef}>
         <MapComponent fields={filteredFields} selectedField={selectedField} />
       </div>
     </div>

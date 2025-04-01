@@ -17,6 +17,7 @@ const ReservationForm = lazy(
 );
 import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm";
 import { AppFeedbackProvider } from "../context/AppFeedbackProvider";
+import ReservationsPage from "../pages/reservations/ReservationsPage";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
@@ -71,7 +72,7 @@ const AppRoutes = () => {
               path="/reservations"
               element={
                 <PrivateRoute>
-                  <Reservations />
+                  <ReservationsPage />
                 </PrivateRoute>
               }
             />
