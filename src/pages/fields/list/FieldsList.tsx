@@ -35,7 +35,7 @@ const FieldList: React.FC = () => {
         setFilteredFields(fields);
       } catch (error) {
         console.error("Error fetching fields:", error);
-        showError("Error fetching fields:")
+        showError("Error fetching fields:");
       } finally {
         hideLoading();
       }
@@ -159,7 +159,7 @@ const FieldList: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      className="px-0 py-2 text bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
+                      className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/fields/edit/${field._id}`);
@@ -169,7 +169,7 @@ const FieldList: React.FC = () => {
                     </button>
 
                     <button
-                      className="px-0 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                      className="px-2 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(field._id);

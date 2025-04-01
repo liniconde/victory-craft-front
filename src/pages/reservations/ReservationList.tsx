@@ -5,11 +5,12 @@ import {
   removeReservation,
   Reservation,
 } from "../../services/reservation/reservationService";
+import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const ReservationList: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const navigate = useNavigate();
-  
+  const { showLoading, hideLoading, showError } = useAppFeedback();
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -26,7 +27,7 @@ const ReservationList: React.FC = () => {
       }
     };
 
-    fetchReservations(); // 🔹 Llamar a la función asíncrona
+    fetchReservations(); //Llama a la función asíncrona
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -49,7 +50,7 @@ const ReservationList: React.FC = () => {
           className="actions-button"
           onClick={() => navigate("/reservations/new")}
         >
-          Añadir nueva reserva
+          Añadir Nueva reserva
         </button>
         <table>
           <thead>
