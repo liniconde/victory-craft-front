@@ -1,8 +1,6 @@
 /* 📌 Contenedor del Navbar */
 .navbar {
-  @apply w-full h-[10%] bg-[#50BB73] text-white z-50;
-  @apply w-full text-white shadow-md py-1 md:py-5 transition-all;
-  @apply flex justify-between items-center;
+  @apply fixed top-0 left-0 right-0 z-50 bg-[#50BB73] text-white shadow-md py-3 px-4 flex justify-between items-center;
 }
 
 .navbar .container {
@@ -11,7 +9,7 @@
 }
 
 .navbar-items {
-  @apply flex items-center gap-x-6 md:gap-x-10 mr-28 mt-5;
+  @apply flex items-center gap-x-6 md:gap-x-10 mr-4 md:mr-10;
 }
 
 /* 📌 Botón de Menú (Móvil) */
@@ -21,7 +19,7 @@
 
 /* 📌 Enlaces del Navbar */
 .nav-link {
-  @apply text-white text-lg font-medium px-4 py-2 text-center hover:text-[#235A2C] transition duration-300 cursor-default;
+  @apply text-white text-lg font-medium px-4 py-2 text-center hover:text-[#235A2C] transition duration-300;
 }
 
 /* 📌 FORZAR EL COLOR BLANCO */
@@ -36,7 +34,7 @@
 
 /* 📌 Menú en Móvil */
 .navbar-menu {
-  @apply flex-col items-center text-center space-y-3 mt-4 w-full md:space-y-0 md:flex-row md:items-center md:justify-end md:w-auto md:mt-0 md:ml-auto;
+  @apply flex flex-col items-center md:flex-row space-y-4 md:space-y-0 md:space-x-6 bg-[#50BB73] md:bg-transparent absolute md:static top-full left-0 w-full md:w-auto p-6 md:p-0 z-40;
 }
 
 /* 📌 Animación del menú en móviles */
@@ -64,12 +62,12 @@
 }
 /* 📌 Contenedor del Logo */
 .logo-container {
-  @apply w-full md:w-auto flex justify-center md:justify-start ml-0;
+  @apply flex items-center cursor-pointer;
 }
 
 /* 📌 Ajuste del tamaño del Logo */
 .logo {
-  @apply w-[10vw] md:w-[13vw] h-auto; /* 🔹 Aumenta un 50% respecto a los valores actuales */
+  @apply w-[12vw] md:w-[16vw] h-auto; /* 🔹 Aumenta un 50% respecto a los valores actuales */
   max-width: 100%;
   display: block;
   margin-left: 5vw;

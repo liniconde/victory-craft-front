@@ -6,6 +6,7 @@ import {
   updateVideoStats,
 } from "../../../services/videoStats/videoStatsService";
 import { useAppFeedback } from "../../../hooks/useAppFeedback";
+import "./StatsSection.css";
 
 interface StatsSectionProps {
   videoId: string;
@@ -29,7 +30,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
           setStats(existingStats.teams);
         }
       } catch (err) {
-        console.warn("No se encontraron estadísticas previas" + err);
+        console.warn("No se encontraron estadísticas previas", err);
       } finally {
         hideLoading();
       }
@@ -111,12 +112,12 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
   };
 
   return (
-    <div className="mt-8 p-4 bg-gray-100 rounded shadow">
-      <h3 className="text-lg font-semibold mb-2">📊 Estadísticas del Video</h3>
+    <div className="stats-container">
+      <h3 className="stats-title">📊 Estadísticas del Video</h3>
 
-      <div className="flex gap-4 items-center mb-4">
+      <div className="stats-controls">
         <select
-          className="border rounded px-2 py-1"
+          className="stats-select"
           value={model}
           onChange={(e) => setModel(e.target.value)}
         >
@@ -129,44 +130,38 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
         <button
           onClick={handleGenerateStats}
           disabled={isLoading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="stats-button-primary"
         >
           {isLoading ? "Generando..." : "Calcular Estadísticas"}
         </button>
 
         <button
           onClick={handleManualStats}
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          className="stats-button-secondary"
         >
           Ingresar Manualmente
         </button>
       </div>
 
       {stats && (
-        <div className="mt-4">
-          <h4 className="font-semibold text-gray-800 mb-2">Resultados:</h4>
-          <div className="overflow-x-auto mb-36">
-            <table className="table-auto w-full text-sm bg-white shadow rounded">
+        <div className="stats-table-container">
+          <h4 className="stats-subtitle">Resultados:</h4>
+          <div className="overflow-x-auto">
+            <table className="stats-table">
               <thead>
-                <tr className="bg-gray-200">
-                  <th className="p-2 text-left">Equipo</th>
+                <tr>
+                  <th>Equipo</th>
                   {Object.keys(stats[0].stats).map((key) => (
-                    <th key={key} className="p-2 text-left">
-                      {key}
-                    </th>
+                    <th key={key}>{key}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {stats.map((team, idx: number) => (
-                  <tr key={idx} className="border-t">
-                    <td className="p-2 font-medium text-gray-700">
-                      {team.teamName}
-                    </td>
+                  <tr key={idx}>
+                    <td className="font-semibold">{team.teamName}</td>
                     {Object.values(team.stats).map((val, i) => (
-                      <td key={i} className="p-2">
-                        {val}
-                      </td>
+                      <td key={i}>{val}</td>
                     ))}
                   </tr>
                 ))}

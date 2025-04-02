@@ -38,22 +38,37 @@ const Register: React.FC = () => {
       return;
     }
 
+    const response = {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+      username: email,
+    };
+
     try {
       showLoading();
-      const response = await registerUser({
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-        username: email,
-      });
-      hideLoading();
-      console.log("Registro exitoso:", response);
+
+      console.log(
+        "Datos enviados al backend:",
+        JSON.stringify(response, null, 2)
+      );
+
+      const result = await registerUser(response); 
+
+      console.log("Registro exitoso:", result);
       navigate("/login");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al registrar:", error);
-      setError("Error en el registro. Intenta nuevamente.");
+
+      const message =
+        error?.response?.data?.message ||
+        "Error en el registro. Intenta nuevamente.";
+      setError(message);
+      showError(message);
+    } finally {
+      hideLoading();
     }
   };
 

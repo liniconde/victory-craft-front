@@ -1,0 +1,43 @@
+.stats-container {
+  @apply mt-8 p-4 bg-gray-100 rounded shadow-md;
+}
+
+.stats-title {
+  @apply text-lg font-semibold mb-4;
+}
+
+.stats-controls {
+  @apply flex flex-col sm:flex-row gap-4 items-center mb-6;
+}
+
+.stats-select {
+  @apply border rounded px-3 py-2 text-sm w-full sm:w-auto;
+}
+
+.stats-button-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition;
+}
+
+.stats-button-secondary {
+  @apply bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition;
+}
+
+.stats-table-container {
+  @apply mt-6;
+}
+
+.stats-subtitle {
+  @apply font-semibold text-gray-800 mb-2;
+}
+
+.stats-table {
+  @apply table-auto w-full text-sm bg-white shadow rounded;
+}
+
+.stats-table th {
+  @apply bg-gray-200 p-2 text-left;
+}
+
+.stats-table td {
+  @apply p-2 border-t;
+}

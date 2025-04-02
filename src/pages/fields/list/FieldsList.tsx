@@ -156,7 +156,7 @@ const FieldList: React.FC = () => {
                       className="px-2 py-2 text-sm bg-[#50BB73] text-white rounded-md hover:bg-green-800 transition"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/reservations/${field._id}`);
+                        navigate(`/reservations/new/${field._id}`);
                       }}
                     >
                       Reservar cancha

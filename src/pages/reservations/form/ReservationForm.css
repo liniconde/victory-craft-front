@@ -1,118 +1,102 @@
-/* Estilos para el Container principal */
-.container {
-  @apply max-w-[800px] mx-auto p-6 bg-white rounded-lg shadow-lg;
+/* 📌 Estilos para el contenedor principal del formulario */
+.reservation-container {
+  @apply pt-24 px-4 md:px-12 max-w-screen-xl mx-auto p-6 bg-white rounded-lg shadow-lg;
 }
 
-/* Título del formulario */
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #343a40;
+/* 📌 Título del formulario */
+.reservation-title {
+  @apply text-center mb-6 text-2xl font-bold text-gray-800;
 }
 
-/* Estilo para el campo de búsqueda */
+/* 📌 Campo de búsqueda */
 .form-control {
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
+  @apply px-4 py-2 border border-gray-300 rounded-md;
 }
 
-/* Estilo de la lista de campos */
+/* 📌 Estilos para ítems de listas */
 .list-group-item {
-  cursor: pointer;
+  @apply cursor-pointer;
+}
+
+.reservation-week-nav {
+  @apply flex flex-col md:flex-row md:justify-between md:items-center text-white my-8 gap-4;
+}
+
+.reservation-week-title {
+  @apply text-center md:text-lg font-semibold text-[#50BB73];
+}
+
+.week-nav-button {
+  @apply bg-[#50BB73] text-white hover:bg-green-800 text-sm px-4 py-2 rounded-md transition;
 }
 
 .list-group-item:hover {
-  background-color: #e9ecef;
+  @apply bg-gray-100;
 }
 
-/* Estilo de la tabla de slots */
-.table {
-  margin-top: 20px;
-  width: 100%;
-  border-collapse: collapse;
+/* 📌 Tabla de slots */
+.reservation-table {
+  @apply w-full border-collapse mt-6 max-w-none;
 }
 
-.table th,
-.table td {
-  text-align: center;
-  padding: 10px;
-  border: 1px solid #dee2e6;
+.reservation-table th,
+.reservation-table td {
+  @apply text-center p-2 border border-gray-300;
 }
 
-.table th {
-  background-color: #50bb73;
-  color: #fff;
+.reservation-table th {
+  @apply bg-[#50bb73] text-white;
 }
 
-.table td button {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.reservation-table td button {
+  @apply w-full p-2 text-sm rounded-md;
 }
 
-.table td button.success {
-  background-color: #28a745;
-  color: #fff;
+/* 📌 Botones en celdas */
+.btn-success {
+  @apply bg-green-600 text-white;
 }
 
-.table td button.secondary {
-  background-color: #218838;
-  color: #fff;
+.btn-success:hover {
+  @apply bg-green-700;
 }
 
-.table td button.success:hover {
-  background-color: #218838;
+.btn-secondary {
+  @apply bg-[#218838] text-white;
 }
 
-.table td button.secondary:hover {
-  background-color: #218838;
+.btn-secondary:hover {
+  @apply bg-green-800;
 }
 
-/* Estilos para el Modal */
+/* 📌 Modal */
 .modal-content {
   @apply p-4 rounded-lg;
 }
 
 .modal-title {
-  color: #343a40;
+  @apply text-xl font-bold text-gray-800;
+}
+
+.modal-body {
+  @apply text-base text-gray-800;
 }
 
 .modal-footer button {
-  @apply text-sm px-3 py-2;
+  @apply text-sm px-4 py-2 rounded-md transition;
 }
 
 .modal-footer .btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-  border: none;
+  @apply bg-gray-500 text-white hover:bg-gray-600;
 }
 
 .modal-footer .btn-primary {
-  background-color: #218838;
-  color: #fff;
-  border: none;
+  @apply bg-[#50BB73] text-white hover:bg-green-800;
 }
 
-.modal-footer .btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.modal-footer .btn-primary:hover {
-  background-color: #218838;
-}
-
-/* Estilo para el mensaje de confirmación */
-.modal-body {
-  font-size: 16px;
-  color: #343a40;
-}
-
+/* 📱 Responsive ajustes */
 @media (max-width: 768px) {
-  .container {
-    @apply p-4 rounded-none shadow-none max-w-full;
+  .reservation-container {
+    @apply px-4 py-4 max-w-full rounded-none shadow-none;
   }
 }

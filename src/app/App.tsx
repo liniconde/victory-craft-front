@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, useLocation, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
 import { AuthProvider } from "../context/AuthContext";
@@ -36,12 +36,15 @@ const LoadingScreen = () => (
     <div className="w-12 h-12 border-4 border-[#50BB73] border-t-transparent rounded-full animate-spin"></div>
   </div>
 );
+function AppRoutes() {
+  const location = useLocation();
+  const hideNavbarPaths = ["/login", "/register"];
+  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
-// 📌 Componente para manejar las rutas
-const AppRoutes = () => {
+  // 📌 Componente para manejar las rutas
   return (
     <>
-      <NavigationBar />
+      {!shouldHideNavbar && <NavigationBar />}
       <div className="page-container">
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
@@ -89,6 +92,14 @@ const AppRoutes = () => {
               element={
                 <PrivateRoute>
                   <FieldForm mode="create" />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/reservations/new/:fieldId"
+              element={
+                <PrivateRoute>
+                  <ReservationForm mode={ReservationFormEnum.CREATE} />
                 </PrivateRoute>
               }
             />
@@ -186,16 +197,16 @@ const AppRoutes = () => {
       <Footer />
     </>
   );
-};
+}
 
 // 📌 Componente Principal
 const App = () => {
   return (
     <AuthProvider>
       <AppFeedbackProvider>
-        <Router>
+        <BrowserRouter>
           <AppRoutes />
-        </Router>
+        </BrowserRouter>
       </AppFeedbackProvider>
     </AuthProvider>
   );

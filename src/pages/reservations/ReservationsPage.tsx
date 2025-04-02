@@ -7,7 +7,7 @@ const ReservationsPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative z-50 min-h-screen px-4 py-8 flex flex-col items-center text-center bg-white">
+    <div className="relative z-10 min-h-screen pt-[5rem] px-4 py-8 flex flex-col items-center text-center bg-white">
       <h1 className="text-3xl font-bold text-[#50BB73] mb-4">
         Reserva tu cancha
       </h1>
@@ -23,18 +23,6 @@ const ReservationsPage: React.FC = () => {
       >
         Seleccionar cancha
       </button>
-
-      {/* Opcional: Ilustración visual */}
-      {/* <img
-        src="/assets/illustration-reserve.png"
-        alt="Reserva ilustración"
-        className="w-64 mt-8 hidden md:block"
-      /> */}
-
-      {/* Componente lista de reservas */}
-      <div className="w-full max-w-7xl mt-12 px-4">
-        <ReservationList />
-      </div>
 
       {/* Guía de pasos */}
       <section className="bg-gray-100 w-full mt-12 py-8">
@@ -62,6 +50,11 @@ const ReservationsPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Componente lista de reservas */}
+      <div className="w-full max-w-7xl mt-12 px-4">
+        <ReservationList />
+      </div>
     </div>
   );
 };

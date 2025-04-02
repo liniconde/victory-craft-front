@@ -62,7 +62,7 @@ body {
 }
 
 .page-container {
-  @apply h-[80%] min-h-[80vh] flex-grow overflow-y-auto w-full overflow-x-hidden;
+  @apply h-[100%] min-h-[100vh] flex-grow overflow-y-auto w-full overflow-x-hidden pt-[4.5rem];
 }
 
 .delete-button {

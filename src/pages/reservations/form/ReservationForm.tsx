@@ -27,7 +27,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [currentWeek, setCurrentWeek] = useState<Moment>(
     moment().startOf("week")
-  ); // ✅ Estado para la semana actual
+  );
 
   const { id, fieldId: fieldIdParam } = useParams<{
     id: string;
@@ -63,7 +63,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
 
   const handleFieldSelect = async (fieldId: string) => {
     setFieldId(fieldId);
-    // Fetch slots for the selected field
     try {
       showLoading();
       const slots = await getFieldSlots(fieldId);
@@ -118,7 +117,6 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
     }
   };
 
-  // ✅ Funciones para cambiar de semana
   const handlePreviousWeek = () => {
     setCurrentWeek((prevWeek) => prevWeek.clone().subtract(1, "week"));
   };
@@ -132,30 +130,32 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
   );
 
   return (
-    <div>
+    <div className="reservation-container">
       {isAdmin && (
-        <h1>{mode === "create" ? "Nueva Reserva" : "Editar Reserva"}</h1>
+        <h1 className="reservation-title">
+          {mode === "create" ? "Nueva Reserva" : "Editar Reserva"}
+        </h1>
       )}
 
-      <FieldSelector onFieldSelect={handleFieldSelect} />
+      {!fieldIdParam && <FieldSelector onFieldSelect={handleFieldSelect} />}
 
       {fieldId && (
-        <div className="flex justify-between my-4 items-center text-white">
+        <div className="reservation-week-nav">
           <Button
             variant="secondary"
             onClick={handlePreviousWeek}
-            className="bg-[#50BB73] text-white hover:bg-green-800 text-sm px-3 py-2 rounded-md"
+            className="reservation-button"
           >
             ← Semana Anterior
           </Button>
-          <h2 className="text-lg font-semibold my-4 text-white">
+          <h2 className="reservation-week-title">
             Semana del {currentWeek.format("MMM D")} al{" "}
             {currentWeek.clone().add(6, "days").format("MMM D")}
           </h2>
           <Button
             variant="secondary"
             onClick={handleNextWeek}
-            className="bg-[#50BB73] text-white hover:bg-green-800 text-sm px-3 py-2 rounded-md"
+            className="reservation-button"
           >
             Semana Siguiente →
           </Button>
@@ -163,76 +163,73 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ mode }) => {
       )}
 
       {fieldId && (
-        <div className="overflow-x-auto">
-        <Table bordered hover className="min-w-full">
-          <thead>
-            <tr>
-              {daysOfWeek.map((day) => (
-                <th key={day.format("YYYY-MM-DD")}>
-                  {day.format("dddd, MMM D")}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {daysOfWeek.map((day) => (
-                <td key={day.format("YYYY-MM-DD")}>
-                  {slots
-                    .filter((slot) => moment(slot.startTime).isSame(day, "day"))
-                    .map((slot) => (
-                      <Button
-                        key={slot._id}
-                        className={`w-full mb-2 py-2 text-sm font-medium rounded-lg transition 
-                        ${
-                          slot.isAvailable
-                            ? "bg-[#50BB73] hover:bg-green-800 text-white"
-                            : "bg-red-500 text-white cursor-not-allowed opacity-70"
-                        }`}
-                        disabled={!slot.isAvailable}
-                        onClick={() => handleSlotSelect(slot)}
-                      >
-                        {moment(slot.startTime).format("HH:mm")} -{" "}
-                        {moment(slot.endTime).format("HH:mm")}
-                      </Button>
-                    ))}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </Table>
+        <div className="overflow-x-auto px-2">
+          <Table bordered hover className="reservation-table">
+            <thead>
+              <tr>
+                {daysOfWeek.map((day) => (
+                  <th key={day.format("YYYY-MM-DD")}>
+                    {day.format("dddd, MMM D")}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {daysOfWeek.map((day) => (
+                  <td key={day.format("YYYY-MM-DD")}>
+                    {slots
+                      .filter((slot) =>
+                        moment(slot.startTime).isSame(day, "day")
+                      )
+                      .map((slot) => (
+                        <Button
+                          key={slot._id}
+                          className={`reservation-slot-button ${
+                            slot.isAvailable ? "available" : "unavailable"
+                          }`}
+                          disabled={!slot.isAvailable}
+                          onClick={() => handleSlotSelect(slot)}
+                        >
+                          {moment(slot.startTime).format("HH:mm")} -{" "}
+                          {moment(slot.endTime).format("HH:mm")}
+                        </Button>
+                      ))}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </Table>
         </div>
       )}
 
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md animate-fade-in-up">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">
-                Confirmar Reservación
-              </h2>
+        <div className="reservation-modal-overlay">
+          <div className="reservation-modal">
+            <div className="reservation-modal-header">
+              <h2 className="reservation-modal-title">Confirmar Reservación</h2>
               <button
-                className="text-gray-500 hover:text-gray-700"
+                className="reservation-modal-close"
                 onClick={() => setShowConfirmModal(false)}
               >
                 ✕
               </button>
             </div>
 
-            <p className="text-gray-700 mb-6">
+            <p className="reservation-modal-message">
               ¿Estás segura/o que deseas reservar este campo?
             </p>
 
-            <div className="flex justify-end gap-4">
+            <div className="reservation-modal-actions">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-600 transition"
+                className="reservation-modal-cancel"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmReservation}
-                className="px-4 py-2 bg-[#50BB73] text-white rounded-lg hover:bg-green-800 transition"
+                className="reservation-modal-confirm"
               >
                 Confirmar
               </button>

@@ -28,14 +28,6 @@ const Home: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    // ✅ Aplica fondo negro al body solo cuando se monta el Home
-    document.body.style.backgroundColor = "#000";
-    return () => {
-      document.body.style.backgroundColor = "";
-    };
-  }, []);
-
   const groupedImages = [
     {
       title: "Fútbol",
@@ -124,6 +116,31 @@ const Home: React.FC = () => {
               Elige el horario que te convenga, reserva y ¡a jugar!
             </p>
           </div>
+
+          <section className="bg-white py-12">
+            <div className="max-w-7xl mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              {/* Texto izquierdo */}
+              <div className="text-left">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#50BB73] mb-4">
+                  ¿Tienes un campo?
+                </h2>
+                <p className="text-gray-700 text-base md:text-lg mb-6">
+                  Si eres dueño de un campo deportivo y quieres sacarle el
+                  máximo provecho, regístrate como administrador y empieza a
+                  recibir reservas en segundos.
+                </p>
+              </div>
+
+              {/* Imagen derecha */}
+              <div className="flex justify-center md:justify-end">
+                <img
+                  src={fútbol2} // Reemplaza por una imagen real
+                  alt="Ejemplo de campo"
+                  className="w-full max-w-md rounded-lg shadow-lg object-cover"
+                />
+              </div>
+            </div>
+          </section>
         </div>
       </section>
 
