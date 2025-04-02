@@ -69,7 +69,8 @@ const ReservationList: React.FC = () => {
           </div>
         )}
 
-        <table className="reservations-table w-full border-collapse">
+        {/* Tabla solo visible en pantallas medianas y grandes */}
+        <table className="reservations-table w-full border-collapse hidden md:table">
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="p-2">Imagen</th>
@@ -102,7 +103,7 @@ const ReservationList: React.FC = () => {
                     {start} - {end}
                   </td>
                   <td className="p-2">
-                    <div className="flex justify-center items-center gap-[25px]">
+                    <div className="flex justify-center items-center gap-4">
                       <button
                         className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                         onClick={() =>
@@ -112,7 +113,7 @@ const ReservationList: React.FC = () => {
                         Editar
                       </button>
                       <button
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                         onClick={() => handleDelete(reservation._id)}
                       >
                         Borrar
@@ -124,6 +125,54 @@ const ReservationList: React.FC = () => {
             })}
           </tbody>
         </table>
+
+        {/* Vista en tarjetas para móvil */}
+        <div className="grid gap-4 md:hidden">
+          {reservations.map((reservation) => {
+            const field = reservation.slot?.field;
+            const start = new Date(
+              reservation.slot?.startTime
+            ).toLocaleString();
+            const end = new Date(reservation.slot?.endTime).toLocaleString();
+
+            return (
+              <div
+                key={reservation._id}
+                className="bg-white p-4 rounded shadow border"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-lg font-semibold">
+                    {field?.name || "N/A"}
+                  </h2>
+                  <img
+                    src={field?.imageUrl}
+                    alt="Imagen de cancha"
+                    className="w-20 h-14 object-cover rounded"
+                  />
+                </div>
+                <p className="text-sm text-gray-600 mb-2">
+                  {start} - {end}
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                    onClick={() =>
+                      navigate(`/reservations/edit/${reservation._id}`)
+                    }
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+                    onClick={() => handleDelete(reservation._id)}
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );
