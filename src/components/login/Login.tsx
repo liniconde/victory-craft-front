@@ -40,7 +40,6 @@ const Login: React.FC = () => {
     try {
       showLoading();
       const data = await loginUser(username, password);
-      hideLoading();
       if (data) {
         login(data.token);
         navigate("/");
@@ -50,7 +49,9 @@ const Login: React.FC = () => {
       }
     } catch (error) {
       console.error("Login Error:", error);
-      showError("Error en el servidor. Por favor, intente más tarde.");
+      showError("Error al hacer login. Usuario o contraseña incorrecto.");
+    } finally {
+      hideLoading();
     }
   };
 
