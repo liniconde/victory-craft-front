@@ -25,8 +25,6 @@ const PersonalizedMapComponent: React.FC<Props> = ({
   const [center] = useState(INITIAL_CENTER);
   const [zoom] = useState(INITIAL_ZOOM);
 
-  console.log("MapToken ->", mapboxgl.accessToken, mapboxToken);
-
   // Inicializar el mapa solo una vez
   useEffect(() => {
     if (!mapboxToken) {
