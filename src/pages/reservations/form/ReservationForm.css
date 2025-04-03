@@ -41,11 +41,11 @@
 
 .reservation-table th,
 .reservation-table td {
-  @apply text-center p-2 border border-gray-300;
+  @apply text-center p-3 border border-gray-300 h-28 align-top;
 }
 
 .reservation-table th {
-  @apply bg-[#50bb73] text-white;
+  @apply bg-[#50bb73] text-white h-16;
 }
 
 .reservation-table td button {
@@ -97,6 +97,6 @@
 /* 📱 Responsive ajustes */
 @media (max-width: 768px) {
   .reservation-container {
-    @apply px-4 py-4 max-w-full rounded-none shadow-none;
+    @apply px-4 py-4 max-w-full rounded-none shadow-none mt-4;
   }
 }
