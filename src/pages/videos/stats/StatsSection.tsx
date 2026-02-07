@@ -4,6 +4,7 @@ import {
   getVideoStatsByVideoId,
   TeamStats,
   updateVideoStats,
+  analyzeVideoWithGemini,
 } from "../../../services/videoStats/videoStatsService";
 import { useAppFeedback } from "../../../hooks/useAppFeedback";
 import "./StatsSection.css";
@@ -15,6 +16,7 @@ interface StatsSectionProps {
 
 const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
   const [stats, setStats] = useState<TeamStats[] | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
   const [model, setModel] = useState("manual");
   const { showLoading, hideLoading, showError, isLoading } = useAppFeedback();
 
@@ -27,7 +29,10 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
       try {
         const existingStats = await getVideoStatsByVideoId(videoId);
         if (existingStats) {
-          setStats(existingStats.teams);
+          const teamsFromResponse =
+            existingStats.statistics?.teams ?? existingStats.teams ?? null;
+          if (teamsFromResponse) setStats(teamsFromResponse);
+          if (existingStats.summary) setSummary(existingStats.summary);
         }
       } catch (err) {
         console.warn("No se encontraron estadísticas previas", err);
@@ -67,22 +72,38 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
     showLoading();
     setTimeout(async () => {
       try {
-        const generated = generateRandomStats();
-        if (!stats) {
-          await createVideoStats({
-            videoId,
-            sportType,
-            teams: generated,
-            generatedByModel: model,
-          });
+        // Si el modelo seleccionado es Gemini, usar el endpoint de análisis externo
+        if (model.toLowerCase().includes("gemini")) {
+          const analysis = await analyzeVideoWithGemini(videoId);
+          const teamsFromAnalysis =
+            analysis.statistics?.teams ?? analysis.teams ?? null;
+          if (teamsFromAnalysis) {
+            setStats(teamsFromAnalysis);
+          } else {
+            showError("No se recibieron estadísticas del análisis");
+          }
+          if (analysis.summary) {
+            setSummary(analysis.summary);
+          }
         } else {
-          await updateVideoStats(videoId, {
-            sportType,
-            teams: generated,
-            generatedByModel: model,
-          });
+          const generated = generateRandomStats();
+          if (!stats) {
+            await createVideoStats({
+              videoId,
+              sportType,
+              teams: generated,
+              generatedByModel: model,
+            });
+          } else {
+            await updateVideoStats(videoId, {
+              sportType,
+              teams: generated,
+              generatedByModel: model,
+            });
+          }
+          setStats(generated);
+          setSummary(null);
         }
-        setStats(generated);
       } catch (err: any) {
         showError("Error al generar estadísticas");
       } finally {
@@ -103,8 +124,9 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
         teams: emptyStats,
         generatedByModel: "manual",
       });
+      setStats(emptyStats);
       alert(
-        "Modo manual creado. Puedes editar las estadísticas desde otro formulario."
+        "Modo manual creado. Puedes editar las estadísticas desde otro formulario.",
       );
     } catch (err: any) {
       showError("No se pudo crear el modo manual");
@@ -125,6 +147,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
           <option value="OpenPose">OpenPose</option>
           <option value="YOLOv8">YOLOv8</option>
           <option value="DeepSportAnalyzer">DeepSportAnalyzer</option>
+          <option value="Gemini-2.0-Flash">Gemini-2.0-Flash</option>
         </select>
 
         <button
@@ -135,13 +158,17 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
           {isLoading ? "Generando..." : "Calcular Estadísticas"}
         </button>
 
-        <button
-          onClick={handleManualStats}
-          className="stats-button-secondary"
-        >
+        <button onClick={handleManualStats} className="stats-button-secondary">
           Ingresar Manualmente
         </button>
       </div>
+
+      {summary && (
+        <div className="stats-summary-container">
+          <h4 className="stats-summary-title">📝 Resumen del Análisis</h4>
+          <p className="stats-summary-text">{summary}</p>
+        </div>
+      )}
 
       {stats && (
         <div className="stats-table-container">

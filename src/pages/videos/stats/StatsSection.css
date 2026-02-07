@@ -22,6 +22,18 @@
   @apply bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition;
 }
 
+.stats-summary-container {
+  @apply mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg mb-6;
+}
+
+.stats-summary-title {
+  @apply font-semibold text-blue-800 mb-2;
+}
+
+.stats-summary-text {
+  @apply text-gray-700 leading-relaxed text-sm;
+}
+
 .stats-table-container {
   @apply mt-6;
 }
