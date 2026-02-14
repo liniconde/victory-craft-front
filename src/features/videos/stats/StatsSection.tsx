@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  createVideoStats,
-  getVideoStatsByVideoId,
-  TeamStats,
-  updateVideoStats,
-  analyzeVideoWithGemini,
-} from "../../../services/videoStats/videoStatsService";
+import { TeamStats } from "../contracts/types";
 import { useVideosModule } from "../VideosModuleContext";
 import "./StatsSection.css";
 
@@ -19,6 +13,12 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
   const [summary, setSummary] = useState<string | null>(null);
   const [model, setModel] = useState("manual");
   const {
+    api: {
+      analyzeVideoWithGemini,
+      createVideoStats,
+      getVideoStatsByVideoId,
+      updateVideoStats,
+    },
     feedback: { showLoading, hideLoading, showError, isLoading },
   } = useVideosModule();
 

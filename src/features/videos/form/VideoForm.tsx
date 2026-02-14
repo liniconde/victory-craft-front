@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./VideoForm.css";
-import { Video } from "../../../interfaces/VideoInterfaces";
-import {
-  createVideo,
-  getVideo,
-  S3UploadObject,
-  updateVideoById,
-  uploadVideoS3,
-} from "../../../services/video/videoService";
+import { S3UploadObject, Video } from "../contracts/types";
 import SlotSelector from "../../../components/slotSelector/slotSelector";
 import { Slot } from "../../../interfaces/SlotInterfaces";
 import { useVideosModule } from "../VideosModuleContext";
@@ -39,6 +32,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const {
+    api: { createVideo, getVideo, updateVideoById, uploadVideoS3 },
     feedback: { hideLoading, showError, showLoading },
   } = useVideosModule();
 

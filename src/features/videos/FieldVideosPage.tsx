@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Video } from "../../interfaces/VideoInterfaces";
-import { Field } from "../../interfaces/FieldInterfaces";
-import { getFields } from "../../services/field/fieldService";
-import { getFieldVideos } from "../../services/video/videoService";
+import { Field, Video } from "./contracts/types";
 import StatsSection from "./stats/StatsSection";
 import { useVideosModule } from "./VideosModuleContext";
 import "./FieldVideosPage.css";
@@ -17,6 +14,7 @@ const FieldVideosPage: React.FC = () => {
 
   const navigate = useNavigate();
   const {
+    api: { getFields, getFieldVideos },
     feedback: { showError },
   } = useVideosModule();
 

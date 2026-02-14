@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
+import { VideosApi } from "./contracts/videosApi";
+import { defaultVideosApi } from "./infrastructure/defaultVideosApi";
 
 export interface VideosModuleFeedback {
   showLoading: (message?: string) => void;
@@ -9,11 +11,13 @@ export interface VideosModuleFeedback {
 
 interface VideosModuleContextValue {
   feedback: VideosModuleFeedback;
+  api: VideosApi;
 }
 
 interface VideosModuleProviderProps {
   children: React.ReactNode;
   feedback?: Partial<VideosModuleFeedback>;
+  api?: Partial<VideosApi>;
 }
 
 const defaultFeedback: VideosModuleFeedback = {
@@ -27,11 +31,13 @@ const defaultFeedback: VideosModuleFeedback = {
 
 const VideosModuleContext = createContext<VideosModuleContextValue>({
   feedback: defaultFeedback,
+  api: defaultVideosApi,
 });
 
 export const VideosModuleProvider: React.FC<VideosModuleProviderProps> = ({
   children,
   feedback,
+  api,
 }) => {
   const value = useMemo<VideosModuleContextValue>(
     () => ({
@@ -39,8 +45,12 @@ export const VideosModuleProvider: React.FC<VideosModuleProviderProps> = ({
         ...defaultFeedback,
         ...feedback,
       },
+      api: {
+        ...defaultVideosApi,
+        ...api,
+      },
     }),
-    [feedback],
+    [feedback, api],
   );
 
   return (
