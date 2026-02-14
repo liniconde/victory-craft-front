@@ -1,5 +1,5 @@
 // 📦 useAppFeedback.tsx (versión con hook personalizado)
-import React, { createContext, useState } from "react";
+import React, { createContext, useCallback, useMemo, useState } from "react";
 import LoadingSpinner from "../components/loading/LoadingSpinner";
 import ErrorModal from "../components/error/ErrorModal";
 
@@ -21,19 +21,24 @@ export const AppFeedbackProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loadingMessage, setLoadingMessage] = useState("Cargando...");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const showLoading = (message = "Cargando...") => {
+  const showLoading = useCallback((message = "Cargando...") => {
     setLoadingMessage(message);
     setLoading(true);
-  };
+  }, []);
 
-  const hideLoading = () => setLoading(false);
+  const hideLoading = useCallback(() => setLoading(false), []);
 
-  const showError = (message: string) => setErrorMessage(message);
-  const hideError = () => setErrorMessage(null);
+  const showError = useCallback((message: string) => setErrorMessage(message), []);
+  const hideError = useCallback(() => setErrorMessage(null), []);
+
+  const contextValue = useMemo(
+    () => ({ showLoading, hideLoading, showError, isLoading: loading }),
+    [showLoading, hideLoading, showError, loading],
+  );
 
   return (
     <AppFeedbackContext.Provider
-      value={{ showLoading, hideLoading, showError, isLoading: loading }}
+      value={contextValue}
     >
       {children}
       {loading && <LoadingSpinner message={loadingMessage} />}

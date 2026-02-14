@@ -40,3 +40,11 @@ export interface S3UploadObject {
   objectKey: string;
   uploadUrl: string;
 }
+
+export interface Slot {
+  _id: string;
+  startTime: string;
+  endTime: string;
+  value: number;
+  isAvailable: boolean;
+}

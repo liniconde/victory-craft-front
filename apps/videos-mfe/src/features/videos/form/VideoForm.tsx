@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./VideoForm.css";
-import { S3UploadObject, Video } from "../contracts/types";
-import SlotSelector from "../../../components/slotSelector/slotSelector";
-import { Slot } from "../../../interfaces/SlotInterfaces";
-import { useVideosModule } from "../VideosModuleContext";
+import { S3UploadObject, Slot, Video } from "../types";
+import SlotSelector from "../components/SlotSelector";
+import { useVideosModule } from "../../../hooks/useVideosModule";
 
 interface VideoUploadFormProps {
   mode: "create" | "edit";

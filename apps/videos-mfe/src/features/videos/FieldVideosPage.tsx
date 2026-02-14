@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Field, Video } from "./contracts/types";
+import { Field, Video } from "./types";
 import StatsSection from "./stats/StatsSection";
-import { useVideosModule } from "./VideosModuleContext";
+import { useVideosModule } from "../../hooks/useVideosModule";
 import "./FieldVideosPage.css";
 
 const FieldVideosPage: React.FC = () => {
@@ -11,6 +11,7 @@ const FieldVideosPage: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const navigate = useNavigate();
   const {
@@ -46,7 +47,7 @@ const FieldVideosPage: React.FC = () => {
           const allFields = await getFields();
           setFields(allFields);
           const allVideosPromises = allFields.map((field) =>
-            getFieldVideos(field._id)
+            getFieldVideos(field._id),
           );
           const videosGrouped = await Promise.all(allVideosPromises);
           videosList = videosGrouped.flat();
@@ -62,12 +63,19 @@ const FieldVideosPage: React.FC = () => {
     fetchVideos();
   }, [selectedFieldId]);
 
-  const handlePlayVideo = (video: Video) => {
+  const handlePlayVideo = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLVideoElement>,
+    video: Video,
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Selected video 22:", video);
     setSelectedVideo(video);
     setActiveVideoUrl(video.videoUrl!);
   };
 
-  const handleUploadNewVideo = () => {
+  const handleUploadNewVideo = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (selectedFieldId) {
       navigate(`/fields/${selectedFieldId}/videos/create`);
     }
@@ -75,7 +83,7 @@ const FieldVideosPage: React.FC = () => {
 
   return (
     <div className="field-videos-container">
-      <h2 className="field-videos-title">🎥 Ver partidos</h2>
+      <h2 className="field-videos-title">🎥 Ver partidos 11</h2>
 
       {/* Selector */}
       <div className="field-videos-select-container">
@@ -103,6 +111,7 @@ const FieldVideosPage: React.FC = () => {
       {selectedFieldId && (
         <div className="flex justify-end mb-6">
           <button
+            type="button"
             onClick={handleUploadNewVideo}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
@@ -123,8 +132,14 @@ const FieldVideosPage: React.FC = () => {
               {/* 🎥 Mostrar vista previa del video siempre */}
               <video
                 key={video.videoUrl}
+                ref={(el) => (videoRefs.current[video._id] = el)}
                 className="video-preview cursor-pointer"
-                onClick={() => handlePlayVideo(video)}
+                onClick={(e) =>
+                  handlePlayVideo(
+                    e as unknown as React.MouseEvent<HTMLVideoElement>,
+                    video,
+                  )
+                }
                 controls={activeVideoUrl === video.videoUrl}
                 muted
               >
@@ -147,10 +162,11 @@ const FieldVideosPage: React.FC = () => {
               {/* ▶ Botón para reproducir si no está activo */}
               {activeVideoUrl !== video.videoUrl && (
                 <button
-                  onClick={() => handlePlayVideo(video)}
+                  type="button"
+                  onClick={(e) => handlePlayVideo(e, video)}
                   className="play-button mt-2"
                 >
-                  ▶ Ver video
+                  ▶ Ver video 22
                 </button>
               )}
 

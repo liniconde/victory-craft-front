@@ -17,9 +17,8 @@ const ReservationForm = lazy(
 );
 import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm";
 import { AppFeedbackProvider } from "../context/AppFeedbackProvider";
-import { useAppFeedback } from "../hooks/useAppFeedback";
 import ReservationsPage from "../pages/reservations/ReservationsPage";
-import { VideosModuleProvider } from "../features/videos/VideosModuleContext";
+import { RemoteVideosModule } from "../microfrontends/videos/RemoteVideosModule";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
@@ -27,10 +26,6 @@ const Home = lazy(() => import("../pages/home/Home"));
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
-const FieldVideosPageList = lazy(
-  () => import("../features/videos/FieldVideosPage")
-);
-const FieldVideosForm = lazy(() => import("../features/videos/form/VideoForm"));
 
 // 📌 Componente para mostrar la pantalla de carga mientras se cargan los componentes
 const LoadingScreen = () => (
@@ -40,7 +35,6 @@ const LoadingScreen = () => (
 );
 function AppRoutes() {
   const location = useLocation();
-  const appFeedback = useAppFeedback();
   const hideNavbarPaths = ["/login", "/register"];
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -126,9 +120,7 @@ function AppRoutes() {
               path="/fields/videos/"
               element={
                 <PrivateRoute>
-                  <VideosModuleProvider feedback={appFeedback}>
-                    <FieldVideosPageList />
-                  </VideosModuleProvider>
+                  <RemoteVideosModule mode="list" />
                 </PrivateRoute>
               }
             />
@@ -136,9 +128,7 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/create"
               element={
                 <PrivateRoute>
-                  <VideosModuleProvider feedback={appFeedback}>
-                    <FieldVideosForm mode="create" />
-                  </VideosModuleProvider>
+                  <RemoteVideosModule mode="create" />
                 </PrivateRoute>
               }
             />
@@ -146,9 +136,7 @@ function AppRoutes() {
               path="/videos/:videoId/update"
               element={
                 <PrivateRoute>
-                  <VideosModuleProvider feedback={appFeedback}>
-                    <FieldVideosForm mode="edit" />
-                  </VideosModuleProvider>
+                  <RemoteVideosModule mode="edit" />
                 </PrivateRoute>
               }
             />
@@ -156,9 +144,7 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/:videoId/edit"
               element={
                 <PrivateRoute>
-                  <VideosModuleProvider feedback={appFeedback}>
-                    <FieldVideosForm mode="create" />
-                  </VideosModuleProvider>
+                  <RemoteVideosModule mode="create" />
                 </PrivateRoute>
               }
             />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { TeamStats } from "../contracts/types";
-import { useVideosModule } from "../VideosModuleContext";
+import { TeamStats } from "../types";
+import { useVideosModule } from "../../../hooks/useVideosModule";
 import "./StatsSection.css";
 
 interface StatsSectionProps {
@@ -44,7 +44,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
     };
 
     fetchStats();
-  }, [videoId]);
+  }, [getVideoStatsByVideoId, hideLoading, showLoading, videoId]);
 
   const generateRandomStats = () => {
     if (sportType === "football") {

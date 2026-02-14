@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:mfe-videos": "vite build --config apps/videos-mfe/vite.config.ts",
+    "dev:mfe-videos": "vite --config apps/videos-mfe/vite.config.ts",
+    "preview:mfe-videos": "vite preview --config apps/videos-mfe/vite.config.ts --port 4173",
     "lint": "eslint .",
     "preview": "vite preview"
   },

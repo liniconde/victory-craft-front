@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useMemo } from "react";
-import { VideosApi } from "./contracts/videosApi";
-import { defaultVideosApi } from "./infrastructure/defaultVideosApi";
+import React, { createContext, useMemo } from "react";
+import { VideosApi } from "./videosApi";
+import { defaultVideosApi } from "./api";
 
 export interface VideosModuleFeedback {
   showLoading: (message?: string) => void;
@@ -29,7 +29,7 @@ const defaultFeedback: VideosModuleFeedback = {
   isLoading: false,
 };
 
-const VideosModuleContext = createContext<VideosModuleContextValue>({
+export const VideosModuleContext = createContext<VideosModuleContextValue>({
   feedback: defaultFeedback,
   api: defaultVideosApi,
 });
@@ -59,5 +59,3 @@ export const VideosModuleProvider: React.FC<VideosModuleProviderProps> = ({
     </VideosModuleContext.Provider>
   );
 };
-
-export const useVideosModule = () => useContext(VideosModuleContext);

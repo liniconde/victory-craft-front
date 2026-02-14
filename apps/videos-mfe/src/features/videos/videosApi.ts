@@ -1,7 +1,8 @@
-import { Field, S3UploadObject, Video, VideoStats } from "./types";
+import { Field, S3UploadObject, Slot, Video, VideoStats } from "./types";
 
 export interface VideosApi {
   getFields: () => Promise<Field[]>;
+  getFieldSlots: (fieldId: string) => Promise<Slot[]>;
   getFieldVideos: (fieldId: string) => Promise<Video[]>;
   getVideo: (videoId: string) => Promise<Video>;
   uploadVideoS3: (videoFile: File) => Promise<S3UploadObject>;
