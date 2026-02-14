@@ -81,7 +81,6 @@ body {
   @apply slot-form-button hover:scale-105 transition-transform duration-300 mx-auto block mt-4;
 }
 
-/* Botón para seleccionar campo */
 button {
   display: block;
   padding: 10px;
