@@ -26,9 +26,9 @@ const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
 const FieldVideosPageList = lazy(
-  () => import("../pages/videos/FieldVideosPage")
+  () => import("../features/videos/FieldVideosPage")
 );
-const FieldVideosForm = lazy(() => import("../pages/videos/form/VideoForm"));
+const FieldVideosForm = lazy(() => import("../features/videos/form/VideoForm"));
 
 // 📌 Componente para mostrar la pantalla de carga mientras se cargan los componentes
 const LoadingScreen = () => (
