@@ -32,6 +32,16 @@ export const getVideo = async (videoId: string): Promise<Video> => {
   }
 };
 
+export const createVideo = async (videoData: Video): Promise<Video> => {
+  try {
+    const response = await api.post<Video>(API_VIDEOS_URL, videoData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating video:", error);
+    throw error;
+  }
+};
+
 export const getS3UploadVideoUrl = async (
   videoFile: File,
   fieldId: string
@@ -89,6 +99,19 @@ export const updateVideo = async (videoId: string): Promise<Video> => {
     return response.data;
   } catch (error) {
     console.error("Error getting Field videos:", error);
+    throw error;
+  }
+};
+
+export const updateVideoById = async (
+  videoId: string,
+  videoData: Video
+): Promise<Video> => {
+  try {
+    const response = await api.put<Video>(`${API_VIDEOS_URL}/${videoId}`, videoData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating video:", error);
     throw error;
   }
 };

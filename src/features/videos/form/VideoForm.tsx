@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { api } from "../../../utils/api";
 import "./VideoForm.css";
 import { Video } from "../../../interfaces/VideoInterfaces";
 import {
+  createVideo,
   getVideo,
   S3UploadObject,
+  updateVideoById,
   uploadVideoS3,
 } from "../../../services/video/videoService";
 import SlotSelector from "../../../components/slotSelector/slotSelector";
 import { Slot } from "../../../interfaces/SlotInterfaces";
-import { useAppFeedback } from "../../../hooks/useAppFeedback";
+import { useVideosModule } from "../VideosModuleContext";
 
 interface VideoUploadFormProps {
   mode: "create" | "edit";
 }
+
+const VIDEO_SIZE_LIMIT_MB = 80; // Límite de tamaño en MB
 
 const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
   const navigate = useNavigate();
@@ -35,7 +38,9 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
-  const { hideLoading, showError, showLoading } = useAppFeedback();
+  const {
+    feedback: { hideLoading, showError, showLoading },
+  } = useVideosModule();
 
   // 📌 Obtener datos del video si está en modo edición
   useEffect(() => {
@@ -60,7 +65,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     if (!file) return;
 
     const isVideo = file.type.startsWith("video/");
-    const isSizeValid = file.size <= 50 * 1024 * 1024; // 50 MB en bytes
+    const isSizeValid = file.size <= VIDEO_SIZE_LIMIT_MB * 1024 * 1024; // 50 MB en bytes
 
     if (!isVideo) {
       showError("Solo puedes subir archivos de video.");
@@ -68,7 +73,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     }
 
     if (!isSizeValid) {
-      showError("El archivo no puede superar los 50MB.");
+      showError(`El archivo no puede superar los ${VIDEO_SIZE_LIMIT_MB} MB.`);
       return;
     }
 
@@ -114,16 +119,14 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ mode }) => {
     }
 
     if (mode === "create") {
-      api
-        .post("/videos", videoData)
+      createVideo(videoData)
         .then(() => {
           navigate(`/fields/videos/`);
           alert("Video uploaded Succesfully");
         })
         .catch((error) => console.error("Error creating video:", error));
     } else if (videoId) {
-      api
-        .put(`/videos/${videoId}`, videoData)
+      updateVideoById(videoId, videoData)
         .then(() => {
           navigate(`/fields/videos/`);
           alert("Video updated Succesfully");

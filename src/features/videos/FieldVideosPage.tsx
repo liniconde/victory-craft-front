@@ -5,6 +5,7 @@ import { Field } from "../../interfaces/FieldInterfaces";
 import { getFields } from "../../services/field/fieldService";
 import { getFieldVideos } from "../../services/video/videoService";
 import StatsSection from "./stats/StatsSection";
+import { useVideosModule } from "./VideosModuleContext";
 import "./FieldVideosPage.css";
 
 const FieldVideosPage: React.FC = () => {
@@ -15,6 +16,9 @@ const FieldVideosPage: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   const navigate = useNavigate();
+  const {
+    feedback: { showError },
+  } = useVideosModule();
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -23,6 +27,7 @@ const FieldVideosPage: React.FC = () => {
         setFields(fields);
       } catch (error) {
         console.error("Error fetching fields:", error);
+        showError("No se pudieron cargar los campos.");
       }
     };
     fetchFields();
@@ -52,6 +57,7 @@ const FieldVideosPage: React.FC = () => {
         setVideos(videosList);
       } catch (error) {
         console.error("Error fetching videos:", error);
+        showError("No se pudieron cargar los videos.");
       }
     };
 

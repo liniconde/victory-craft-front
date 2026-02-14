@@ -17,7 +17,9 @@ const ReservationForm = lazy(
 );
 import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm";
 import { AppFeedbackProvider } from "../context/AppFeedbackProvider";
+import { useAppFeedback } from "../hooks/useAppFeedback";
 import ReservationsPage from "../pages/reservations/ReservationsPage";
+import { VideosModuleProvider } from "../features/videos/VideosModuleContext";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
@@ -38,6 +40,7 @@ const LoadingScreen = () => (
 );
 function AppRoutes() {
   const location = useLocation();
+  const appFeedback = useAppFeedback();
   const hideNavbarPaths = ["/login", "/register"];
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -123,7 +126,9 @@ function AppRoutes() {
               path="/fields/videos/"
               element={
                 <PrivateRoute>
-                  <FieldVideosPageList />
+                  <VideosModuleProvider feedback={appFeedback}>
+                    <FieldVideosPageList />
+                  </VideosModuleProvider>
                 </PrivateRoute>
               }
             />
@@ -131,7 +136,9 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/create"
               element={
                 <PrivateRoute>
-                  <FieldVideosForm mode="create" />
+                  <VideosModuleProvider feedback={appFeedback}>
+                    <FieldVideosForm mode="create" />
+                  </VideosModuleProvider>
                 </PrivateRoute>
               }
             />
@@ -139,7 +146,9 @@ function AppRoutes() {
               path="/videos/:videoId/update"
               element={
                 <PrivateRoute>
-                  <FieldVideosForm mode="edit" />
+                  <VideosModuleProvider feedback={appFeedback}>
+                    <FieldVideosForm mode="edit" />
+                  </VideosModuleProvider>
                 </PrivateRoute>
               }
             />
@@ -147,7 +156,9 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/:videoId/edit"
               element={
                 <PrivateRoute>
-                  <FieldVideosForm mode="create" />
+                  <VideosModuleProvider feedback={appFeedback}>
+                    <FieldVideosForm mode="create" />
+                  </VideosModuleProvider>
                 </PrivateRoute>
               }
             />

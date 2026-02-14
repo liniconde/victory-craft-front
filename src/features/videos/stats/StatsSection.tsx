@@ -6,7 +6,7 @@ import {
   updateVideoStats,
   analyzeVideoWithGemini,
 } from "../../../services/videoStats/videoStatsService";
-import { useAppFeedback } from "../../../hooks/useAppFeedback";
+import { useVideosModule } from "../VideosModuleContext";
 import "./StatsSection.css";
 
 interface StatsSectionProps {
@@ -18,7 +18,9 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
   const [stats, setStats] = useState<TeamStats[] | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
   const [model, setModel] = useState("manual");
-  const { showLoading, hideLoading, showError, isLoading } = useAppFeedback();
+  const {
+    feedback: { showLoading, hideLoading, showError, isLoading },
+  } = useVideosModule();
 
   const teamsDefault =
     sportType === "football" ? ["Rojo", "Azul"] : ["Jugador 1", "Jugador 2"];
