@@ -22,6 +22,7 @@ import { RemoteVideosModule } from "../microfrontends/videos/RemoteVideosModule"
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
+const OAuthCallback = lazy(() => import("../components/auth/OAuthCallback"));
 const Home = lazy(() => import("../pages/home/Home"));
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
@@ -35,7 +36,7 @@ const LoadingScreen = () => (
 );
 function AppRoutes() {
   const location = useLocation();
-  const hideNavbarPaths = ["/login", "/register"];
+  const hideNavbarPaths = ["/login", "/register", "/auth/callback"];
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
   // 📌 Componente para manejar las rutas
@@ -48,6 +49,7 @@ function AppRoutes() {
             {/* ✅ Rutas Públicas */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
             <Route path="/" element={<Home />} />
             <Route path="/fields" element={<FieldsList />} />
 

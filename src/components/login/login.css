@@ -47,6 +47,10 @@
   @apply w-full bg-[#235A2C] hover:bg-[#235A2C] text-white font-bold py-2 px-4 rounded-lg transition duration-300;
 }
 
+.oauth-button {
+  @apply w-full bg-white text-gray-900 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300;
+}
+
 /* Mensaje de error */
 .error-message {
   @apply text-white mt-2;

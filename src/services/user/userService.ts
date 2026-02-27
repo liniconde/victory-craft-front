@@ -61,3 +61,18 @@ export const registerUser = async (
     throw error;
   }
 };
+
+export const getGoogleOAuthLoginUrl = (returnTo: string = "/"): string => {
+  const configuredUrl = (import.meta.env.VITE_OAUTH2_GOOGLE_URL as string | undefined)?.trim();
+  const apiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "");
+  const callbackPath = (import.meta.env.VITE_OAUTH2_CALLBACK_PATH as string | undefined) || "/auth/callback";
+  const redirectUri = `${window.location.origin}${callbackPath}`;
+
+  const baseUrl = configuredUrl || (apiBaseUrl ? `${apiBaseUrl}/users/oauth2/google` : "/users/oauth2/google");
+  const url = new URL(baseUrl, window.location.origin);
+
+  url.searchParams.set("redirect_uri", redirectUri);
+  url.searchParams.set("return_to", returnTo);
+
+  return url.toString();
+};

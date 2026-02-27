@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./login.css"; // Asegúrate de que sea el archivo correcto
 import Fondo from "../../assets/pexels-todd-trapani-488382-2339377.jpg";
 import Fondo1 from "../../assets/pexels-pixabay-274506.jpg";
-import { loginUser } from "../../services/user/userService";
+import { getGoogleOAuthLoginUrl, loginUser } from "../../services/user/userService";
 import { useAppFeedback } from "../../hooks/useAppFeedback";
 
 const Login: React.FC = () => {
@@ -53,6 +53,11 @@ const Login: React.FC = () => {
     } finally {
       hideLoading();
     }
+  };
+
+  const handleGoogleLogin = () => {
+    const oauthUrl = getGoogleOAuthLoginUrl("/");
+    window.location.assign(oauthUrl);
   };
 
   return (
@@ -104,6 +109,13 @@ const Login: React.FC = () => {
             </div>
             <button type="submit" className="login-button">
               Iniciar Sesión
+            </button>
+            <button
+              type="button"
+              className="oauth-button"
+              onClick={handleGoogleLogin}
+            >
+              Continuar con Google
             </button>
             {error && <p className="error-message">{error}</p>}
           </form>
