@@ -39,6 +39,49 @@ declare global {
 const remoteScriptPromises = new Map<string, Promise<void>>();
 const remoteStylePromises = new Map<string, Promise<void>>();
 
+type RemoteLoadErrorMeta = {
+  kind: "script" | "style";
+  resourceUrl: string;
+  eventType: string;
+  fetchStatus?: number;
+  fetchOk?: boolean;
+  fetchContentType?: string | null;
+  fetchError?: string;
+  currentUrl: string;
+};
+
+const buildRemoteLoadError = async (
+  kind: "script" | "style",
+  resourceUrl: string,
+  event: Event | string,
+) => {
+  const meta: RemoteLoadErrorMeta = {
+    kind,
+    resourceUrl,
+    eventType: typeof event === "string" ? event : event.type,
+    currentUrl: window.location.href,
+  };
+
+  try {
+    const response = await fetch(resourceUrl, {
+      method: "GET",
+      cache: "no-store",
+    });
+    meta.fetchStatus = response.status;
+    meta.fetchOk = response.ok;
+    meta.fetchContentType = response.headers.get("content-type");
+  } catch (fetchErr) {
+    meta.fetchError =
+      fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+  }
+
+  const error = new Error(
+    `Remote ${kind} load error (${resourceUrl}). Check console for diagnostics.`,
+  ) as Error & { meta?: RemoteLoadErrorMeta };
+  error.meta = meta;
+  return error;
+};
+
 const loadRemoteScript = (scriptUrl: string) => {
   if (remoteScriptPromises.has(scriptUrl)) {
     return remoteScriptPromises.get(scriptUrl)!;
@@ -57,7 +100,7 @@ const loadRemoteScript = (scriptUrl: string) => {
       existing.addEventListener("load", () => resolve(), { once: true });
       existing.addEventListener(
         "error",
-        () => reject(new Error("Script load error")),
+        async (event) => reject(await buildRemoteLoadError("script", scriptUrl, event)),
         { once: true },
       );
       return;
@@ -68,7 +111,8 @@ const loadRemoteScript = (scriptUrl: string) => {
     script.async = true;
     script.dataset.videosMfe = scriptUrl;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Script load error"));
+    script.onerror = async (event) =>
+      reject(await buildRemoteLoadError("script", scriptUrl, event));
     document.head.appendChild(script);
   });
 
@@ -97,7 +141,8 @@ const loadRemoteStyle = (scriptUrl: string) => {
     link.href = styleUrl;
     link.dataset.videosMfeStyle = styleUrl;
     link.onload = () => resolve();
-    link.onerror = () => reject(new Error("Style load error"));
+    link.onerror = async (event) =>
+      reject(await buildRemoteLoadError("style", styleUrl, event));
     document.head.appendChild(link);
   });
 
@@ -199,6 +244,11 @@ export const RemoteVideosModule: React.FC<RemoteVideosModuleProps> = ({
       })
       .catch((error) => {
         console.error("Failed to load videos remote:", error);
+        const loadErrorMeta = (error as Error & { meta?: RemoteLoadErrorMeta })
+          .meta;
+        if (loadErrorMeta) {
+          console.error("RemoteVideosModule diagnostics:", loadErrorMeta);
+        }
         setLoadError("No se pudo cargar el microfrontend de videos.");
       });
 

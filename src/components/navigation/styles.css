@@ -1,6 +1,7 @@
 /* 📌 Contenedor del Navbar */
 .navbar {
   @apply fixed top-0 left-0 right-0 z-50 bg-[#50BB73] text-white shadow-md py-3 px-4 flex justify-between items-center;
+  min-height: var(--app-navbar-height, 80px);
 }
 
 .navbar .container {
@@ -67,8 +68,9 @@
 
 /* 📌 Ajuste del tamaño del Logo */
 .logo {
-  @apply w-[12vw] md:w-[16vw] h-auto; /* 🔹 Aumenta un 50% respecto a los valores actuales */
-  max-width: 100%;
+  width: auto;
+  height: clamp(34px, 4.2vw, 56px);
   display: block;
-  margin-left: 5vw;
+  margin-left: clamp(8px, 2vw, 24px);
+  object-fit: contain;
 }

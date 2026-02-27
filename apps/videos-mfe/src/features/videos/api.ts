@@ -1,5 +1,14 @@
 import axios from "axios";
-import { Slot, Video, VideoStats, S3UploadObject, Field } from "./types";
+import {
+  Slot,
+  Video,
+  VideoStats,
+  S3UploadObject,
+  Field,
+  VideoLibraryCreateRequest,
+  VideoLibraryPaginatedResponse,
+  VideoLibraryItem,
+} from "./types";
 import { VideosApi } from "./videosApi";
 
 const api = axios.create({
@@ -24,6 +33,43 @@ export const configureVideosApi = (config: {
 const API_VIDEO_STATS_URL = "/video-stats";
 const API_VIDEOS_URL = "/videos";
 const API_FIELDS_URL = "/fields";
+const API_VIDEOS_LIBRARY_URL = "/videos/library";
+
+const normalizeLibraryResponse = (
+  data: unknown,
+  page: number,
+  limit: number
+): VideoLibraryPaginatedResponse => {
+  const raw = (data ?? {}) as Record<string, unknown>;
+
+  const rawItems = Array.isArray(raw.items)
+    ? raw.items
+    : Array.isArray(raw.data)
+      ? raw.data
+      : [];
+
+  const items: VideoLibraryItem[] = rawItems as VideoLibraryItem[];
+
+  const total =
+    typeof raw.total === "number"
+      ? raw.total
+      : typeof raw.count === "number"
+        ? raw.count
+        : items.length;
+
+  const totalPages =
+    typeof raw.totalPages === "number"
+      ? raw.totalPages
+      : Math.max(1, Math.ceil(total / Math.max(1, limit)));
+
+  return {
+    items,
+    page: typeof raw.page === "number" ? raw.page : page,
+    limit: typeof raw.limit === "number" ? raw.limit : limit,
+    total,
+    totalPages,
+  };
+};
 
 export const defaultVideosApi: VideosApi = {
   getFields: async (): Promise<Field[]> => {
@@ -84,6 +130,21 @@ export const defaultVideosApi: VideosApi = {
   },
   analyzeVideoWithGemini: async (videoId: string): Promise<VideoStats> => {
     const response = await api.post<VideoStats>(`/videos/${videoId}/analyze`, {});
+    return response.data;
+  },
+  getVideoLibrary: async (
+    page = 1,
+    limit = 20
+  ): Promise<VideoLibraryPaginatedResponse> => {
+    const response = await api.get(API_VIDEOS_LIBRARY_URL, {
+      params: { page, limit },
+    });
+    return normalizeLibraryResponse(response.data, page, limit);
+  },
+  createLibraryVideo: async (
+    payload: VideoLibraryCreateRequest
+  ): Promise<Video> => {
+    const response = await api.post<Video>(API_VIDEOS_LIBRARY_URL, payload);
     return response.data;
   },
 };

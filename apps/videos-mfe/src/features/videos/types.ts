@@ -48,3 +48,26 @@ export interface Slot {
   value: number;
   isAvailable: boolean;
 }
+
+export interface VideoLibraryItem {
+  _id: string;
+  s3Key: string;
+  videoUrl?: string;
+  playbackUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface VideoLibraryCreateRequest {
+  s3Key?: string;
+  objectKey?: string;
+  videoUrl?: string;
+}
+
+export interface VideoLibraryPaginatedResponse {
+  items: VideoLibraryItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}

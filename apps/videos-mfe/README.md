@@ -41,6 +41,29 @@ npm run build
 npm run preview
 ```
 
+## Sandbox local (sin app padre)
+
+Puedes probar el microfrontend directamente en local sin montarlo en el shell:
+
+```bash
+npm run dev
+```
+
+Abre estas rutas:
+
+- `http://localhost:4173/subpages/videos` (subpagina videos)
+- `http://localhost:4173/subpages/new-page` (subpagina nueva)
+- `http://localhost:4173/fields/1/videos/create` (create)
+- `http://localhost:4173/videos/1/update` (edit)
+
+Notas:
+
+- El sandbox usa `VITE_API_URL` como `apiBaseUrl`.
+- Si necesitas token, pásalo una vez por query:
+  - `http://localhost:4173/fields/videos/?token=TU_TOKEN`
+  - Queda guardado en `localStorage` bajo `videos_mfe_dev_token`.
+
+
 ## Tailwind en el MFE
 
 Este microfrontend ya incluye configuración local de Tailwind (`tailwind.config.js`, `postcss.config.js`, `src/index.css`), por lo que puedes usar clases utilitarias en JSX y `@apply` en CSS.

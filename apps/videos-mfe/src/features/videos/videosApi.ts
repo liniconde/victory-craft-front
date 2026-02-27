@@ -1,4 +1,12 @@
-import { Field, S3UploadObject, Slot, Video, VideoStats } from "./types";
+import {
+  Field,
+  S3UploadObject,
+  Slot,
+  Video,
+  VideoLibraryCreateRequest,
+  VideoLibraryPaginatedResponse,
+  VideoStats,
+} from "./types";
 
 export interface VideosApi {
   getFields: () => Promise<Field[]>;
@@ -15,4 +23,11 @@ export interface VideosApi {
     updateData: Partial<VideoStats>
   ) => Promise<VideoStats>;
   analyzeVideoWithGemini: (videoId: string) => Promise<VideoStats>;
+  getVideoLibrary: (
+    page?: number,
+    limit?: number
+  ) => Promise<VideoLibraryPaginatedResponse>;
+  createLibraryVideo: (
+    payload: VideoLibraryCreateRequest
+  ) => Promise<Video>;
 }
