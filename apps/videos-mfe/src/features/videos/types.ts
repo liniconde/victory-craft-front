@@ -18,11 +18,47 @@ export interface TeamStats {
   _id?: string;
 }
 
+export type SportType =
+  | "football"
+  | "padel"
+  | "tennis"
+  | "basketball"
+  | "other";
+
+export type ManualEventType = "pass" | "shot" | "goal" | "foul" | "other";
+export type ManualEventTeam = "A" | "B";
+
+export interface ManualEvent {
+  id: string;
+  time: number;
+  type: ManualEventType;
+  team: ManualEventTeam;
+  note?: string;
+}
+
+export interface MatchStatMetric {
+  total: number;
+  teamA: number;
+  teamB: number;
+}
+
+export interface MatchStats {
+  passes: MatchStatMetric;
+  shots: MatchStatMetric;
+  goals: MatchStatMetric;
+  fouls: MatchStatMetric;
+  others: MatchStatMetric;
+}
+
 export interface VideoStats {
   summary?: string;
   _id?: string;
   videoId: string;
-  sportType: string;
+  sportType: SportType;
+  teamAName?: string;
+  teamBName?: string;
+  events?: ManualEvent[];
+  matchStats?: MatchStats;
   teams: TeamStats[];
   generatedByModel: string;
   createdAt?: string;
@@ -30,7 +66,11 @@ export interface VideoStats {
   __v?: number;
   statistics?: {
     summary?: string;
-    sportType?: string;
+    sportType?: SportType;
+    teamAName?: string;
+    teamBName?: string;
+    events?: ManualEvent[];
+    matchStats?: MatchStats;
     teams: TeamStats[];
   };
 }

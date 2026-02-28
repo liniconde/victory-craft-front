@@ -22,6 +22,7 @@ export interface VideosApi {
     videoId: string,
     updateData: Partial<VideoStats>
   ) => Promise<VideoStats>;
+  deleteVideoStats: (videoId: string) => Promise<void>;
   analyzeVideoWithGemini: (videoId: string) => Promise<VideoStats>;
   getVideoLibrary: (
     page?: number,

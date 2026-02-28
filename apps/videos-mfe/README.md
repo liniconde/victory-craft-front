@@ -67,6 +67,7 @@ Notas:
 
 Este microfrontend ya incluye configuración local de Tailwind (`tailwind.config.js`, `postcss.config.js`, `src/index.css`), por lo que puedes usar clases utilitarias en JSX y `@apply` en CSS.
 
+
 ## Deploy en Vercel
 
 1. Crea un proyecto Vercel apuntando a `apps/videos-mfe`.

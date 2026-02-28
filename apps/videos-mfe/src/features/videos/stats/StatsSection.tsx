@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { TeamStats } from "../types";
+import React, { useEffect, useMemo, useState } from "react";
+import { MatchStats, SportType, TeamStats, VideoStats } from "../types";
 import { useVideosModule } from "../../../hooks/useVideosModule";
 import "./StatsSection.css";
 
@@ -8,8 +8,19 @@ interface StatsSectionProps {
   sportType: string;
 }
 
+const emptyMatchStats: MatchStats = {
+  passes: { total: 0, teamA: 0, teamB: 0 },
+  shots: { total: 0, teamA: 0, teamB: 0 },
+  goals: { total: 0, teamA: 0, teamB: 0 },
+  fouls: { total: 0, teamA: 0, teamB: 0 },
+  others: { total: 0, teamA: 0, teamB: 0 },
+};
+
+const toMetricLabel = (metric: string): string =>
+  metric.charAt(0).toUpperCase() + metric.slice(1);
+
 const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
-  const [stats, setStats] = useState<TeamStats[] | null>(null);
+  const [videoStats, setVideoStats] = useState<VideoStats | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
   const [model, setModel] = useState("manual");
   const {
@@ -22,22 +33,18 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
     feedback: { showLoading, hideLoading, showError, isLoading },
   } = useVideosModule();
 
-  const teamsDefault =
-    sportType === "football" ? ["Rojo", "Azul"] : ["Jugador 1", "Jugador 2"];
-
   useEffect(() => {
     const fetchStats = async () => {
       showLoading();
       try {
         const existingStats = await getVideoStatsByVideoId(videoId);
-        if (existingStats) {
-          const teamsFromResponse =
-            existingStats.statistics?.teams ?? existingStats.teams ?? null;
-          if (teamsFromResponse) setStats(teamsFromResponse);
-          if (existingStats.summary) setSummary(existingStats.summary);
+        setVideoStats(existingStats);
+        if (existingStats.summary) setSummary(existingStats.summary);
+      } catch (error) {
+        const maybeError = error as { response?: { status?: number } };
+        if (maybeError.response?.status !== 404) {
+          console.warn("No se encontraron estadísticas previas", error);
         }
-      } catch (err) {
-        console.warn("No se encontraron estadísticas previas", err);
       } finally {
         hideLoading();
       }
@@ -46,94 +53,94 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
     fetchStats();
   }, [getVideoStatsByVideoId, hideLoading, showLoading, videoId]);
 
-  const generateRandomStats = () => {
-    if (sportType === "football") {
-      return teamsDefault.map((team) => ({
-        teamName: team,
-        stats: {
-          goles: Math.floor(Math.random() * 2),
-          pases: Math.floor(Math.random() * 50),
-          faltas: Math.floor(Math.random() * 2),
-          tiros: Math.floor(Math.random() * 5),
-        },
-      }));
-    } else {
-      return teamsDefault.map((team) => ({
-        teamName: team,
-        stats: {
-          puntos: Math.floor(Math.random() * 10),
-          saques: Math.floor(Math.random() * 2),
-          golpes: Math.floor(Math.random() * 50),
-          errores_no_forzados: Math.floor(Math.random() * 2),
-        },
-      }));
-    }
-  };
-
   const handleGenerateStats = () => {
     showLoading();
     setTimeout(async () => {
       try {
-        // Si el modelo seleccionado es Gemini, usar el endpoint de análisis externo
         if (model.toLowerCase().includes("gemini")) {
           const analysis = await analyzeVideoWithGemini(videoId);
-          const teamsFromAnalysis =
-            analysis.statistics?.teams ?? analysis.teams ?? null;
-          if (teamsFromAnalysis) {
-            setStats(teamsFromAnalysis);
-          } else {
-            showError("No se recibieron estadísticas del análisis");
-          }
+          setVideoStats(analysis);
           if (analysis.summary) {
             setSummary(analysis.summary);
           }
-        } else {
-          const generated = generateRandomStats();
-          if (!stats) {
-            await createVideoStats({
-              videoId,
-              sportType,
-              teams: generated,
-              generatedByModel: model,
-            });
-          } else {
-            await updateVideoStats(videoId, {
-              sportType,
-              teams: generated,
-              generatedByModel: model,
-            });
-          }
-          setStats(generated);
-          setSummary(null);
+          return;
         }
-      } catch (err: any) {
+
+        const payload: VideoStats = {
+          videoId,
+          sportType: sportType as SportType,
+          teamAName: videoStats?.teamAName ?? "Team A",
+          teamBName: videoStats?.teamBName ?? "Team B",
+          events: videoStats?.events ?? [],
+          teams: videoStats?.teams ?? [
+            { teamName: "Team A", stats: {} },
+            { teamName: "Team B", stats: {} },
+          ],
+          matchStats: videoStats?.matchStats ?? emptyMatchStats,
+          generatedByModel: model,
+          statistics: {
+            sportType: sportType as SportType,
+            teamAName: videoStats?.teamAName ?? "Team A",
+            teamBName: videoStats?.teamBName ?? "Team B",
+            events: videoStats?.events ?? [],
+            teams: videoStats?.teams ?? [
+              { teamName: "Team A", stats: {} },
+              { teamName: "Team B", stats: {} },
+            ],
+            matchStats: videoStats?.matchStats ?? emptyMatchStats,
+          },
+        };
+
+        const persisted = videoStats
+          ? await updateVideoStats(videoId, payload)
+          : await createVideoStats(payload);
+        setVideoStats(persisted);
+      } catch (error) {
         showError("Error al generar estadísticas");
       } finally {
         hideLoading();
       }
-    }, 5000);
+    }, 500);
   };
 
   const handleManualStats = async () => {
-    const emptyStats = teamsDefault.map((team) => ({
-      teamName: team,
-      stats: {},
-    }));
     try {
-      await createVideoStats({
+      const created = await createVideoStats({
         videoId,
-        sportType,
-        teams: emptyStats,
+        sportType: sportType as SportType,
+        teamAName: "Team A",
+        teamBName: "Team B",
+        events: [],
+        teams: [
+          { teamName: "Team A", stats: {} },
+          { teamName: "Team B", stats: {} },
+        ],
+        matchStats: emptyMatchStats,
         generatedByModel: "manual",
+        statistics: {
+          sportType: sportType as SportType,
+          teamAName: "Team A",
+          teamBName: "Team B",
+          events: [],
+          teams: [
+            { teamName: "Team A", stats: {} },
+            { teamName: "Team B", stats: {} },
+          ],
+          matchStats: emptyMatchStats,
+        },
       });
-      setStats(emptyStats);
-      alert(
-        "Modo manual creado. Puedes editar las estadísticas desde otro formulario.",
-      );
-    } catch (err: any) {
+      setVideoStats(created);
+      setSummary(created.summary ?? null);
+      window.alert("Modo manual creado en /video-stats.");
+    } catch (error) {
       showError("No se pudo crear el modo manual");
     }
   };
+
+  const teams = useMemo<TeamStats[]>(() => videoStats?.teams ?? [], [videoStats]);
+  const matchStats = videoStats?.matchStats ?? emptyMatchStats;
+  const teamAName = videoStats?.teamAName ?? teams[0]?.teamName ?? "Team A";
+  const teamBName = videoStats?.teamBName ?? teams[1]?.teamName ?? "Team B";
 
   return (
     <div className="stats-container">
@@ -143,7 +150,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
         <select
           className="stats-select"
           value={model}
-          onChange={(e) => setModel(e.target.value)}
+          onChange={(event) => setModel(event.target.value)}
         >
           <option value="manual">Manual</option>
           <option value="OpenPose">OpenPose</option>
@@ -165,40 +172,68 @@ const StatsSection: React.FC<StatsSectionProps> = ({ videoId, sportType }) => {
         </button>
       </div>
 
-      {summary && (
+      {summary ? (
         <div className="stats-summary-container">
           <h4 className="stats-summary-title">📝 Resumen del Análisis</h4>
           <p className="stats-summary-text">{summary}</p>
         </div>
-      )}
+      ) : null}
 
-      {stats && (
+      {videoStats ? (
         <div className="stats-table-container">
-          <h4 className="stats-subtitle">Resultados:</h4>
+          <h4 className="stats-subtitle">Estadísticas globales (partido)</h4>
           <div className="overflow-x-auto">
             <table className="stats-table">
               <thead>
                 <tr>
-                  <th>Equipo</th>
-                  {Object.keys(stats[0].stats).map((key) => (
-                    <th key={key}>{key}</th>
-                  ))}
+                  <th>Métrica</th>
+                  <th>Total</th>
+                  <th>{teamAName}</th>
+                  <th>{teamBName}</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.map((team, idx: number) => (
-                  <tr key={idx}>
-                    <td className="font-semibold">{team.teamName}</td>
-                    {Object.values(team.stats).map((val, i) => (
-                      <td key={i}>{val}</td>
-                    ))}
+                {Object.entries(matchStats).map(([metric, values]) => (
+                  <tr key={metric}>
+                    <td>{toMetricLabel(metric)}</td>
+                    <td>{values.total}</td>
+                    <td>{values.teamA}</td>
+                    <td>{values.teamB}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {teams.length > 0 ? (
+            <>
+              <h4 className="stats-subtitle">Estadísticas individuales por equipo</h4>
+              <div className="overflow-x-auto">
+                <table className="stats-table">
+                  <thead>
+                    <tr>
+                      <th>Equipo</th>
+                      {Object.keys(teams[0].stats).map((key) => (
+                        <th key={key}>{toMetricLabel(key)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teams.map((team, idx: number) => (
+                      <tr key={team._id ?? idx}>
+                        <td className="font-semibold">{team.teamName}</td>
+                        {Object.values(team.stats).map((val, i) => (
+                          <td key={`${team.teamName}-${i}`}>{val}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : null}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
