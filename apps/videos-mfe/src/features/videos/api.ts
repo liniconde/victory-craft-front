@@ -1,13 +1,29 @@
 import axios from "axios";
 import {
+  AnalysisJob,
+  AnalysisResultsResponse,
+  AnalyzeVideoJobRequest,
+  CloseStreamResponse,
+  CreateMatchSessionRequest,
+  CreateVideoSegmentRequest,
+  CreateVideoSegmentResponse,
+  CreateAnalyzeJobResponse,
   Slot,
   Video,
   VideoStats,
   S3UploadObject,
   Field,
+  MatchSession,
+  RoomParticipant,
+  RoomSegmentsResponse,
+  StreamRoom,
+  StreamRoomDetails,
   VideoLibraryCreateRequest,
   VideoLibraryPaginatedResponse,
   VideoLibraryItem,
+  VideoSegment,
+  MessageResponse,
+  NotificationItem,
 } from "./types";
 import { VideosApi } from "./videosApi";
 
@@ -30,10 +46,36 @@ export const configureVideosApi = (config: {
   }
 };
 
+export const getVideosApiRuntimeConfig = () => {
+  const rawCommonHeaders =
+    (api.defaults.headers as { common?: Record<string, unknown> }).common ?? {};
+  const authHeader = rawCommonHeaders.Authorization;
+  const token =
+    typeof authHeader === "string" && authHeader.startsWith("Bearer ")
+      ? authHeader.slice("Bearer ".length)
+      : null;
+
+  return {
+    baseURL: api.defaults.baseURL ?? "",
+    token,
+  };
+};
+
 const API_VIDEO_STATS_URL = "/video-stats";
 const API_VIDEOS_URL = "/videos";
 const API_FIELDS_URL = "/fields";
 const API_VIDEOS_LIBRARY_URL = "/videos/library";
+const API_NOTIFICATIONS_URL = "/notifications";
+const API_MATCH_SESSIONS_URL = "/match-sessions";
+const API_ROOMS_URL = "/rooms";
+
+const JOB_STATUS_VALUES = new Set([
+  "queued",
+  "started",
+  "in_progress",
+  "completed",
+  "failed",
+]);
 
 const EVENT_TYPES = new Set(["pass", "shot", "goal", "foul", "other"]);
 const TEAM_SIDES = new Set(["A", "B"]);
@@ -289,6 +331,208 @@ const normalizeLibraryResponse = (
   };
 };
 
+const normalizeNotificationsResponse = (data: unknown): NotificationItem[] => {
+  if (!Array.isArray(data)) return [];
+  return data
+    .filter((item): item is Record<string, unknown> => Boolean(item))
+    .map((item, index) => ({
+      _id: typeof item._id === "string" ? item._id : `notification-${index}`,
+      type:
+        item.type === "analysis_queued" ||
+        item.type === "analysis_completed" ||
+        item.type === "analysis_failed" ||
+        item.type === "info"
+          ? item.type
+          : "info",
+      message: typeof item.message === "string" ? item.message : "",
+      videoId: typeof item.videoId === "string" ? item.videoId : undefined,
+      analysisJobId:
+        typeof item.analysisJobId === "string" ? item.analysisJobId : undefined,
+      metadata:
+        typeof item.metadata === "object" && item.metadata !== null
+          ? (item.metadata as Record<string, unknown>)
+          : undefined,
+      createdAt: typeof item.createdAt === "string" ? item.createdAt : undefined,
+      updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : undefined,
+    }));
+};
+
+const normalizeAnalysisJob = (data: unknown): AnalysisJob => {
+  const raw = toRecord(data);
+  const statusRaw = String(raw.status ?? "");
+  return {
+    _id: typeof raw._id === "string" ? raw._id : undefined,
+    videoId: typeof raw.videoId === "string" ? raw.videoId : undefined,
+    analysisType:
+      raw.analysisType === "agent_prompt" || raw.analysisType === "custom"
+        ? raw.analysisType
+        : undefined,
+    status: JOB_STATUS_VALUES.has(statusRaw)
+      ? (statusRaw as AnalysisJob["status"])
+      : undefined,
+    input: toRecord(raw.input),
+    output: toRecord(raw.output),
+    errorMessage:
+      typeof raw.errorMessage === "string" ? raw.errorMessage : undefined,
+    sqsMessageId:
+      typeof raw.sqsMessageId === "string" ? raw.sqsMessageId : undefined,
+    startedAt: typeof raw.startedAt === "string" ? raw.startedAt : undefined,
+    completedAt:
+      typeof raw.completedAt === "string" ? raw.completedAt : undefined,
+    createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizeCreateAnalyzeJobResponse = (
+  data: unknown
+): CreateAnalyzeJobResponse => {
+  const raw = toRecord(data);
+  return {
+    message: typeof raw.message === "string" ? raw.message : undefined,
+    job: normalizeAnalysisJob(raw.job),
+  };
+};
+
+const normalizeAnalysisResultsResponse = (
+  data: unknown,
+  page: number,
+  limit: number
+): AnalysisResultsResponse => {
+  const raw = toRecord(data);
+  const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
+  const items = itemsRaw
+    .filter((item): item is Record<string, unknown> => Boolean(item))
+    .map((item, index) => {
+      const input = toRecord(item.input);
+      return {
+        _id: typeof item._id === "string" ? item._id : `analysis-result-${index}`,
+        analysisJobId:
+          typeof item.analysisJobId === "string" ? item.analysisJobId : undefined,
+        analysisType:
+          item.analysisType === "agent_prompt" || item.analysisType === "custom"
+            ? item.analysisType
+            : undefined,
+        createdAt:
+          typeof item.createdAt === "string" ? item.createdAt : undefined,
+        updatedAt:
+          typeof item.updatedAt === "string" ? item.updatedAt : undefined,
+        videoId: typeof item.videoId === "string" ? item.videoId : undefined,
+        input: {
+          prompt: typeof input.prompt === "string" ? input.prompt : undefined,
+          ...input,
+        },
+        output: toRecord(item.output),
+        params: toRecord(item.params),
+      };
+    });
+
+  const paginationRaw = toRecord(raw.pagination);
+  return {
+    items,
+    pagination: {
+      page:
+        typeof paginationRaw.page === "number" ? paginationRaw.page : page,
+      limit:
+        typeof paginationRaw.limit === "number" ? paginationRaw.limit : limit,
+      total:
+        typeof paginationRaw.total === "number"
+          ? paginationRaw.total
+          : items.length,
+      totalPages:
+        typeof paginationRaw.totalPages === "number"
+          ? paginationRaw.totalPages
+          : Math.max(1, Math.ceil(items.length / Math.max(limit, 1))),
+      hasNextPage:
+        typeof paginationRaw.hasNextPage === "boolean"
+          ? paginationRaw.hasNextPage
+          : undefined,
+      hasPrevPage:
+        typeof paginationRaw.hasPrevPage === "boolean"
+          ? paginationRaw.hasPrevPage
+          : undefined,
+    },
+  };
+};
+
+const normalizeVideoSegment = (data: unknown): VideoSegment => {
+  const raw = toRecord(data);
+  return {
+    _id: typeof raw._id === "string" ? raw._id : "",
+    matchSessionId:
+      typeof raw.matchSessionId === "string" ? raw.matchSessionId : "",
+    roomId: typeof raw.roomId === "string" ? raw.roomId : "",
+    libraryVideoId:
+      typeof raw.libraryVideoId === "string" ? raw.libraryVideoId : undefined,
+    sequence: numberOrZero(raw.sequence),
+    durationSec: numberOrZero(raw.durationSec),
+    startOffsetSec: numberOrZero(raw.startOffsetSec),
+    endOffsetSec: numberOrZero(raw.endOffsetSec),
+    s3Key: typeof raw.s3Key === "string" ? raw.s3Key : "",
+    videoUrl: typeof raw.videoUrl === "string" ? raw.videoUrl : "",
+    signedDownloadUrl:
+      typeof raw.signedDownloadUrl === "string"
+        ? raw.signedDownloadUrl
+        : undefined,
+    uploadedAt: typeof raw.uploadedAt === "string" ? raw.uploadedAt : undefined,
+    createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizeCloseStreamResponse = (data: unknown): CloseStreamResponse => {
+  const raw = toRecord(data);
+  return {
+    roomId: typeof raw.roomId === "string" ? raw.roomId : "",
+    matchSessionId:
+      typeof raw.matchSessionId === "string" ? raw.matchSessionId : "",
+    endedAt: typeof raw.endedAt === "string" ? raw.endedAt : undefined,
+    totalDurationSec: numberOrZero(raw.totalDurationSec),
+    lastSequence: numberOrZero(raw.lastSequence),
+    status:
+      raw.status === "active" || raw.status === "closed"
+        ? raw.status
+        : undefined,
+  };
+};
+
+const toApiError = (error: unknown, fallbackMessage: string): Error => {
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    const data = toRecord(error.response?.data);
+    const detail =
+      typeof data.message === "string"
+        ? data.message
+        : typeof data.error === "string"
+          ? data.error
+          : "";
+
+    if (status === 401) {
+      return new Error("No autorizado (401). Inicia sesion de nuevo.");
+    }
+    if (status === 403) {
+      return new Error("No tienes permisos para esta sala (403).");
+    }
+    if (status === 404) {
+      return new Error("Recurso no encontrado (404).");
+    }
+    if (status === 400) {
+      return new Error(detail ? `Solicitud invalida (400): ${detail}` : "Solicitud invalida (400).");
+    }
+    if (status === 409) {
+      return new Error(
+        detail ? `Conflicto de estado (409): ${detail}` : "Conflicto de estado (409)."
+      );
+    }
+
+    if (detail) {
+      return new Error(detail);
+    }
+  }
+
+  return new Error(fallbackMessage);
+};
+
 export const defaultVideosApi: VideosApi = {
   getFields: async (): Promise<Field[]> => {
     const response = await api.get<Field[]>(API_FIELDS_URL);
@@ -367,5 +611,201 @@ export const defaultVideosApi: VideosApi = {
   ): Promise<Video> => {
     const response = await api.post<Video>(API_VIDEOS_LIBRARY_URL, payload);
     return response.data;
+  },
+  createMatchSession: async (
+    payload: CreateMatchSessionRequest
+  ): Promise<MatchSession> => {
+    try {
+      const response = await api.post<MatchSession>(API_MATCH_SESSIONS_URL, payload);
+      return response.data;
+    } catch (error) {
+      throw toApiError(error, "No se pudo crear la sesion.");
+    }
+  },
+  createStreamRoom: async (matchSessionId: string): Promise<StreamRoom> => {
+    try {
+      const response = await api.post<StreamRoom>(
+        `${API_MATCH_SESSIONS_URL}/${matchSessionId}/rooms`,
+        {}
+      );
+      return response.data;
+    } catch (error) {
+      throw toApiError(error, "No se pudo crear la sala.");
+    }
+  },
+  publishMatchSegment: async (
+    matchSessionId: string,
+    payload: CreateVideoSegmentRequest
+  ): Promise<CreateVideoSegmentResponse> => {
+    try {
+      const response = await api.post<CreateVideoSegmentResponse>(
+        `${API_MATCH_SESSIONS_URL}/${matchSessionId}/segments`,
+        payload
+      );
+      return {
+        created: Boolean(response.data.created),
+        totalDurationSec: numberOrZero(response.data.totalDurationSec),
+        lastSequence: numberOrZero(response.data.lastSequence),
+        sequenceInfo:
+          typeof response.data.sequenceInfo === "object" &&
+          response.data.sequenceInfo !== null
+            ? {
+                expectedNextSequence: numberOrZero(
+                  (response.data.sequenceInfo as { expectedNextSequence?: unknown })
+                    .expectedNextSequence
+                ),
+                hasGap: Boolean(
+                  (response.data.sequenceInfo as { hasGap?: unknown }).hasGap
+                ),
+              }
+            : undefined,
+        segment: normalizeVideoSegment(response.data.segment),
+      };
+    } catch (error) {
+      throw toApiError(error, "No se pudo publicar el segmento.");
+    }
+  },
+  getStreamRoomDetails: async (roomId: string): Promise<StreamRoomDetails> => {
+    try {
+      const response = await api.get<StreamRoomDetails>(`${API_ROOMS_URL}/${roomId}`);
+      return {
+        ...response.data,
+        participants: Array.isArray(response.data.participants)
+          ? response.data.participants
+          : [],
+        matchSession:
+          typeof response.data.matchSession === "object" &&
+          response.data.matchSession !== null
+            ? {
+                _id:
+                  typeof response.data.matchSession._id === "string"
+                    ? response.data.matchSession._id
+                    : "",
+                title:
+                  typeof response.data.matchSession.title === "string"
+                    ? response.data.matchSession.title
+                    : "",
+                status:
+                  response.data.matchSession.status === "active" ||
+                  response.data.matchSession.status === "ended"
+                    ? response.data.matchSession.status
+                    : undefined,
+                totalDurationSec: numberOrZero(
+                  response.data.matchSession.totalDurationSec
+                ),
+                endedAt:
+                  typeof response.data.matchSession.endedAt === "string"
+                    ? response.data.matchSession.endedAt
+                    : undefined,
+              }
+            : undefined,
+      };
+    } catch (error) {
+      throw toApiError(error, "No se pudo obtener la sala.");
+    }
+  },
+  getRoomSegments: async (
+    roomId: string,
+    afterSequence?: number
+  ): Promise<RoomSegmentsResponse> => {
+    try {
+      const response = await api.get<{ items?: unknown[] }>(
+        `${API_ROOMS_URL}/${roomId}/segments`,
+        {
+          params:
+            typeof afterSequence === "number" && Number.isFinite(afterSequence)
+              ? { afterSequence }
+              : undefined,
+        }
+      );
+
+      return {
+        items: Array.isArray(response.data.items)
+          ? response.data.items.map((item) => normalizeVideoSegment(item))
+          : [],
+      };
+    } catch (error) {
+      throw toApiError(error, "No se pudieron cargar los segmentos.");
+    }
+  },
+  joinStreamRoom: async (roomId: string): Promise<RoomParticipant> => {
+    try {
+      const response = await api.post<RoomParticipant>(`${API_ROOMS_URL}/${roomId}/join`, {});
+      return response.data;
+    } catch (error) {
+      throw toApiError(error, "No se pudo unir a la sala.");
+    }
+  },
+  leaveStreamRoom: async (roomId: string): Promise<RoomParticipant> => {
+    try {
+      const response = await api.post<RoomParticipant>(
+        `${API_ROOMS_URL}/${roomId}/leave`,
+        {}
+      );
+      return response.data;
+    } catch (error) {
+      throw toApiError(error, "No se pudo salir de la sala.");
+    }
+  },
+  closeStreamRoom: async (roomId: string): Promise<CloseStreamResponse> => {
+    try {
+      const response = await api.post<CloseStreamResponse>(
+        `${API_ROOMS_URL}/${roomId}/close`,
+        {}
+      );
+      return normalizeCloseStreamResponse(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        throw new Error("Solo el owner puede cerrar la transmision (403).");
+      }
+      throw toApiError(error, "No se pudo cerrar la sala.");
+    }
+  },
+  createAnalyzeJob: async (
+    videoId: string,
+    payload: AnalyzeVideoJobRequest
+  ): Promise<CreateAnalyzeJobResponse> => {
+    const response = await api.post(
+      `${API_VIDEOS_URL}/${videoId}/analyzeVideo`,
+      payload
+    );
+    return normalizeCreateAnalyzeJobResponse(response.data);
+  },
+  getAnalyzeJobStatus: async (
+    videoId: string,
+    jobId: string
+  ): Promise<AnalysisJob> => {
+    const response = await api.get(
+      `${API_VIDEOS_URL}/${videoId}/analyzeVideo/${jobId}/status`
+    );
+    return normalizeAnalysisJob(response.data);
+  },
+  getAnalysisResults: async (
+    videoId: string,
+    page = 1,
+    limit = 20
+  ): Promise<AnalysisResultsResponse> => {
+    const response = await api.get(
+      `${API_VIDEOS_URL}/${videoId}/analysis-results`,
+      {
+        params: { page, limit },
+      }
+    );
+    return normalizeAnalysisResultsResponse(response.data, page, limit);
+  },
+  listNotifications: async (limit = 50): Promise<NotificationItem[]> => {
+    const response = await api.get<NotificationItem[]>(API_NOTIFICATIONS_URL, {
+      params: { limit },
+    });
+    return normalizeNotificationsResponse(response.data);
+  },
+  getNotifications: async (limit = 50): Promise<NotificationItem[]> => {
+    const response = await api.get<NotificationItem[]>(API_NOTIFICATIONS_URL, {
+      params: { limit },
+    });
+    return normalizeNotificationsResponse(response.data);
+  },
+  deleteNotification: async (id: string): Promise<void> => {
+    await api.delete<MessageResponse>(`${API_NOTIFICATIONS_URL}/${id}`);
   },
 };

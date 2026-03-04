@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import "./index.css";
 import SubpagesLayout from "./subpages/layout/SubpagesLayout";
 import VideosListPage from "./subpages/videos/pages/VideosListPage";
 import NewSubpage from "./subpages/new-page/NewSubpage";
+import RecordingSubpage from "./subpages/new-page/RecordingSubpage";
+import LiveRoomSubpage from "./subpages/new-page/LiveRoomSubpage";
 import VideosLibraryPage from "./subpages/videos-library/pages/VideosLibraryPage";
 import VideoAnalyzerPage from "./subpages/video-analyzer/pages/VideoAnalyzerPage";
 import VideoForm from "./features/videos/form/VideoForm";
@@ -47,17 +56,87 @@ const FallbackRouteByMode: React.FC<{ mode: RemoteMode }> = ({ mode }) => {
   return <Navigate to="/subpages/videos" replace />;
 };
 
-const RemoteVideosApp: React.FC<{ mode: RemoteMode; feedback: VideosModuleFeedback }> = ({
-  mode,
-  feedback,
-}) => {
+const MFE_ROUTE_MARKERS = ["/subpages/", "/fields/", "/videos/"];
+
+const normalizePath = (pathname: string, search?: string): string => {
+  const safePath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return `${safePath}${search ?? ""}`;
+};
+
+const extractMfePath = (pathname: string, search = ""): string | null => {
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  const matchIndex = MFE_ROUTE_MARKERS.reduce<number>((index, marker) => {
+    const markerIndex = normalizedPath.indexOf(marker);
+    if (markerIndex < 0) return index;
+    if (index === -1) return markerIndex;
+    return Math.min(index, markerIndex);
+  }, -1);
+
+  if (matchIndex < 0) return null;
+  return normalizePath(normalizedPath.slice(matchIndex), search);
+};
+
+const RouteSyncInterceptor: React.FC<{
+  initialPath: string;
+  initialSearch: string;
+}> = ({ initialPath, initialSearch }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const didInitRef = useRef(false);
+  const currentRoute = useMemo(
+    () => normalizePath(location.pathname, location.search),
+    [location.pathname, location.search]
+  );
+
+  useEffect(() => {
+    if (didInitRef.current) return;
+    didInitRef.current = true;
+
+    const fromBrowser = extractMfePath(window.location.pathname, window.location.search);
+    const fromMountProps = extractMfePath(initialPath, initialSearch);
+    const targetRoute = fromBrowser || fromMountProps;
+
+    if (targetRoute && targetRoute !== currentRoute) {
+      navigate(targetRoute, { replace: true });
+    }
+  }, [currentRoute, initialPath, initialSearch, navigate]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const targetRoute = extractMfePath(window.location.pathname, window.location.search);
+      if (targetRoute && targetRoute !== currentRoute) {
+        navigate(targetRoute, { replace: true });
+      }
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, [currentRoute, navigate]);
+
+  return null;
+};
+
+const RemoteVideosApp: React.FC<{
+  mode: RemoteMode;
+  feedback: VideosModuleFeedback;
+  initialPath: string;
+  initialSearch: string;
+}> = ({ mode, feedback, initialPath, initialSearch }) => {
   return (
     <VideosModuleProvider feedback={feedback}>
       <BrowserRouter>
+        <RouteSyncInterceptor initialPath={initialPath} initialSearch={initialSearch} />
         <Routes>
           <Route path="/" element={<SubpagesLayout />}>
             <Route path="subpages/videos" element={<VideosListPage />} />
             <Route path="subpages/new-page" element={<NewSubpage />} />
+            <Route path="subpages/new-page/recording" element={<RecordingSubpage />} />
+            <Route
+              path="subpages/new-page/live-room-client"
+              element={<LiveRoomSubpage />}
+            />
             <Route path="subpages/videos-library" element={<VideosLibraryPage />} />
             <Route path="subpages/video-analyzer" element={<VideoAnalyzerPage />} />
             <Route
@@ -80,7 +159,7 @@ const RemoteVideosApp: React.FC<{ mode: RemoteMode; feedback: VideosModuleFeedba
 };
 
 const mount: RemoteVideosGlobal["mount"] = (container, props) => {
-  const { apiBaseUrl, token, feedback, mode } = props;
+  const { apiBaseUrl, token, feedback, mode, path, search } = props;
   configureVideosApi({ baseURL: apiBaseUrl, token });
   container.classList.add("videos-mfe-scope");
 
@@ -90,7 +169,14 @@ const mount: RemoteVideosGlobal["mount"] = (container, props) => {
     roots.set(container, root);
   }
 
-  root.render(<RemoteVideosApp mode={mode} feedback={feedback} />);
+  root.render(
+    <RemoteVideosApp
+      mode={mode}
+      feedback={feedback}
+      initialPath={path}
+      initialSearch={search}
+    />
+  );
 
   return () => {
     const mountedRoot = roots.get(container);

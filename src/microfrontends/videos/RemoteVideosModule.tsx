@@ -175,28 +175,35 @@ export const RemoteVideosModule: React.FC<RemoteVideosModuleProps> = ({
     [feedback.showLoading, feedback.hideLoading, feedback.showError],
   );
 
-  // Capture initial location once to avoid re-mount when MFE changes internal state
-  const initialLocationRef = useRef({
-    pathname: location.pathname,
-    search: location.search,
-    params: params,
-  });
+  const stableParams = useMemo(
+    () =>
+      Object.keys(params).reduce<Record<string, string | undefined>>(
+        (acc, key) => {
+          acc[key] = params[key];
+          return acc;
+        },
+        {},
+      ),
+    [params],
+  );
 
   const mountProps = useMemo<RemoteVideosMountProps>(
     () => ({
       mode,
-      path: initialLocationRef.current.pathname,
-      search: initialLocationRef.current.search,
-      params: initialLocationRef.current.params,
+      path: location.pathname,
+      search: location.search,
+      params: stableParams,
       token: localStorage.getItem("token"),
       apiBaseUrl: import.meta.env.VITE_API_URL || "",
       feedback: feedbackBridge,
     }),
-    [mode, feedbackBridge],
+    [mode, location.pathname, location.search, stableParams, feedbackBridge],
   );
 
   useEffect(() => {
     console.debug("RemoteVideosModule: effect start", { remoteScriptUrl });
+    setLoadError(null);
+    setRemoteReady(false);
 
     if (!remoteScriptUrl) {
       setLoadError("No se configuró VITE_VIDEOS_MFE_SCRIPT_URL.");

@@ -1,10 +1,24 @@
 import {
+  AnalysisJob,
+  AnalysisResultsResponse,
+  AnalyzeVideoJobRequest,
+  CloseStreamResponse,
+  CreateMatchSessionRequest,
+  CreateVideoSegmentRequest,
+  CreateVideoSegmentResponse,
+  CreateAnalyzeJobResponse,
   Field,
+  NotificationItem,
+  RoomParticipant,
+  RoomSegmentsResponse,
   S3UploadObject,
   Slot,
+  StreamRoom,
+  StreamRoomDetails,
   Video,
   VideoLibraryCreateRequest,
   VideoLibraryPaginatedResponse,
+  MatchSession,
   VideoStats,
 } from "./types";
 
@@ -31,4 +45,31 @@ export interface VideosApi {
   createLibraryVideo: (
     payload: VideoLibraryCreateRequest
   ) => Promise<Video>;
+  createMatchSession: (payload: CreateMatchSessionRequest) => Promise<MatchSession>;
+  createStreamRoom: (matchSessionId: string) => Promise<StreamRoom>;
+  publishMatchSegment: (
+    matchSessionId: string,
+    payload: CreateVideoSegmentRequest
+  ) => Promise<CreateVideoSegmentResponse>;
+  getStreamRoomDetails: (roomId: string) => Promise<StreamRoomDetails>;
+  getRoomSegments: (
+    roomId: string,
+    afterSequence?: number
+  ) => Promise<RoomSegmentsResponse>;
+  joinStreamRoom: (roomId: string) => Promise<RoomParticipant>;
+  leaveStreamRoom: (roomId: string) => Promise<RoomParticipant>;
+  closeStreamRoom: (roomId: string) => Promise<CloseStreamResponse>;
+  createAnalyzeJob: (
+    videoId: string,
+    payload: AnalyzeVideoJobRequest
+  ) => Promise<CreateAnalyzeJobResponse>;
+  getAnalyzeJobStatus: (videoId: string, jobId: string) => Promise<AnalysisJob>;
+  getAnalysisResults: (
+    videoId: string,
+    page?: number,
+    limit?: number
+  ) => Promise<AnalysisResultsResponse>;
+  listNotifications: (limit?: number) => Promise<NotificationItem[]>;
+  getNotifications: (limit?: number) => Promise<NotificationItem[]>;
+  deleteNotification: (id: string) => Promise<void>;
 }

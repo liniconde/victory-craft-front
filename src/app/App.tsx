@@ -1,4 +1,10 @@
-import { BrowserRouter, useLocation, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  useLocation,
+  Routes,
+  Route,
+} from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
 import { AuthProvider } from "../context/AuthContext";
@@ -27,6 +33,34 @@ const Home = lazy(() => import("../pages/home/Home"));
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
+
+type VideosMode = "list" | "create" | "edit";
+const VIDEO_MFE_PREFIXES = ["/subpages", "/fields", "/videos"];
+
+const isVideosMfePath = (pathname: string) =>
+  VIDEO_MFE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+
+const inferVideosModeFromPath = (pathname: string): VideosMode => {
+  if (/^\/videos\/[^/]+\/update\/?$/.test(pathname)) return "edit";
+  if (/^\/fields\/[^/]+\/videos\/create\/?$/.test(pathname)) return "create";
+  if (/^\/fields\/[^/]+\/videos\/[^/]+\/edit\/?$/.test(pathname)) return "create";
+  return "list";
+};
+
+const VideosRouteHandler = () => {
+  const location = useLocation();
+  return <RemoteVideosModule mode={inferVideosModeFromPath(location.pathname)} />;
+};
+
+const UnknownPrivateRoute = () => {
+  const location = useLocation();
+  if (isVideosMfePath(location.pathname)) {
+    return <VideosRouteHandler />;
+  }
+  return <Navigate to="/" replace />;
+};
 
 // 📌 Componente para mostrar la pantalla de carga mientras se cargan los componentes
 const LoadingScreen = () => (
@@ -122,7 +156,15 @@ function AppRoutes() {
               path="/fields/videos/"
               element={
                 <PrivateRoute>
-                  <RemoteVideosModule mode="list" />
+                  <VideosRouteHandler />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/videos/*"
+              element={
+                <PrivateRoute>
+                  <VideosRouteHandler />
                 </PrivateRoute>
               }
             />
@@ -130,7 +172,15 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/create"
               element={
                 <PrivateRoute>
-                  <RemoteVideosModule mode="create" />
+                  <VideosRouteHandler />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/:fieldId/videos/*"
+              element={
+                <PrivateRoute>
+                  <VideosRouteHandler />
                 </PrivateRoute>
               }
             />
@@ -138,7 +188,15 @@ function AppRoutes() {
               path="/videos/:videoId/update"
               element={
                 <PrivateRoute>
-                  <RemoteVideosModule mode="edit" />
+                  <VideosRouteHandler />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/videos/*"
+              element={
+                <PrivateRoute>
+                  <VideosRouteHandler />
                 </PrivateRoute>
               }
             />
@@ -146,7 +204,15 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/:videoId/edit"
               element={
                 <PrivateRoute>
-                  <RemoteVideosModule mode="create" />
+                  <VideosRouteHandler />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/subpages/*"
+              element={
+                <PrivateRoute>
+                  <VideosRouteHandler />
                 </PrivateRoute>
               }
             />
@@ -187,6 +253,14 @@ function AppRoutes() {
               element={
                 <PrivateRoute>
                   <SlotForm mode="edit" />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <PrivateRoute>
+                  <UnknownPrivateRoute />
                 </PrivateRoute>
               }
             />
