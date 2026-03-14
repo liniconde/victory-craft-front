@@ -13,6 +13,12 @@
   @apply flex items-center gap-x-6 md:gap-x-10 mr-4 md:mr-10;
 }
 
+.navbar-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 /* 📌 Botón de Menú (Móvil) */
 .navbar-toggler {
   @apply bg-transparent text-white text-3xl md:hidden focus:outline-none transition-transform transform;
@@ -36,6 +42,47 @@
 .nav-link-active {
   @apply bg-[#235A2C] text-white shadow-md;
 }
+
+.view-mode-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.view-mode-switcher__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.view-mode-switcher__controls {
+  display: inline-flex;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(35, 90, 44, 0.22);
+}
+
+.view-mode-switcher__button {
+  min-height: 2.2rem;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.view-mode-switcher__button--active {
+  background: #235a2c;
+}
+
+.view-mode-switcher--mobile {
+  display: none;
+}
+
 .navbar-brand,
 .nav-dropdown-item {
   color: white;
@@ -143,6 +190,34 @@
     font-size: 1rem;
   }
 
+  .view-mode-switcher {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .view-mode-switcher--desktop {
+    display: none;
+  }
+
+  .view-mode-switcher--mobile {
+    display: flex;
+  }
+
+  .view-mode-switcher__label {
+    padding-left: 0.25rem;
+    text-align: left;
+  }
+
+  .view-mode-switcher__controls {
+    width: 100%;
+  }
+
+  .view-mode-switcher__button {
+    flex: 1;
+  }
+
   .logo {
     height: 34px;
     margin-left: 0;
@@ -150,6 +225,14 @@
 }
 
 @media (min-width: 768px) {
+  .view-mode-switcher--mobile {
+    display: none;
+  }
+
+  .view-mode-switcher--desktop {
+    display: inline-flex;
+  }
+
   .navbar-menu--open,
   .navbar-menu--closed {
     opacity: 1;

@@ -4,8 +4,40 @@ import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
 import "./styles.css";
 
+const ViewModeSwitcher: React.FC<{
+  viewRole: string | null;
+  setViewRole: (role: "user" | "admin" | null) => void;
+  className?: string;
+}> = ({ viewRole, setViewRole, className = "" }) => (
+  <div className={`view-mode-switcher ${className}`.trim()}>
+    <span className="view-mode-switcher__label">Vista</span>
+    <div className="view-mode-switcher__controls">
+      <button
+        type="button"
+        className={`view-mode-switcher__button ${
+          (viewRole ?? "user") === "user"
+            ? "view-mode-switcher__button--active"
+            : ""
+        }`}
+        onClick={() => setViewRole("user")}
+      >
+        Usuario
+      </button>
+      <button
+        type="button"
+        className={`view-mode-switcher__button ${
+          viewRole === "admin" ? "view-mode-switcher__button--active" : ""
+        }`}
+        onClick={() => setViewRole("admin")}
+      >
+        Admin
+      </button>
+    </div>
+  </div>
+);
+
 const NavigationBar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, setViewRole, viewRole } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,12 +62,21 @@ const NavigationBar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <img
-        src={Logo}
-        alt="Victory Craft Logo"
-        className="logo cursor-pointer"
-        onClick={() => navigate("/")}
-      />
+      <div className="navbar-brand-group">
+        <img
+          src={Logo}
+          alt="Victory Craft Logo"
+          className="logo cursor-pointer"
+          onClick={() => navigate("/")}
+        />
+        {isAuthenticated && (
+          <ViewModeSwitcher
+            viewRole={viewRole}
+            setViewRole={setViewRole}
+            className="view-mode-switcher--desktop"
+          />
+        )}
+      </div>
       <div className="navbar-items">
         {/* ✅ LOGO CON PUNTERO */}
 
@@ -100,6 +141,12 @@ const NavigationBar: React.FC = () => {
               >
                 Logout
               </button>
+
+              <ViewModeSwitcher
+                viewRole={viewRole}
+                setViewRole={setViewRole}
+                className="view-mode-switcher--mobile"
+              />
             </>
           )}
           {!isAuthenticated && (

@@ -19,6 +19,9 @@ interface AuthContextType {
   exp: number;
   role: string | null;
   isAdmin: boolean;
+  actualRole: string | null;
+  viewRole: string | null;
+  setViewRole: (role: "user" | "admin" | null) => void;
 }
 
 // 📌 Crear contexto con valores iniciales
@@ -46,13 +49,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [exp, setExp] = useState<number>(0);
   const [token, setToken] = useState<string>("");
-  const [role, setRole] = useState<string | null>(null);
+  const [actualRole, setActualRole] = useState<string | null>(null);
+  const [viewRole, setViewRoleState] = useState<"user" | "admin" | null>(null);
 
   useEffect(() => {
     const storageToken = localStorage.getItem("token");
     console.log("Token from storage:", storageToken);
     if (storageToken) {
       authenticateFromStorage(storageToken);
+    }
+    const storedViewRole = localStorage.getItem("viewRole");
+    if (storedViewRole === "admin" || storedViewRole === "user") {
+      setViewRoleState(storedViewRole);
     }
     setAuthReady(true);
   }, []);
@@ -66,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       setUserId(localStorage.getItem("userId"));
       setEmail(localStorage.getItem("email"));
-      setRole(localStorage.getItem("role"));
+      setActualRole(localStorage.getItem("role"));
       setExp(
         localStorage.getItem("exp")
           ? parseInt(localStorage.getItem("exp") || "0")
@@ -88,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserId(decoded?.id || "");
       setEmail(decoded?.id || "");
       setExp(decoded?.exp || 0);
-      setRole(decoded?.role || "");
+      setActualRole(decoded?.role || "");
     }
     setToken(newToken);
     setIsAuthenticated(true);
@@ -100,12 +108,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("userId");
     localStorage.removeItem("email");
     localStorage.removeItem("exp");
+    localStorage.removeItem("viewRole");
     setIsAuthenticated(false);
     setToken("");
     setUserId(null);
+    setActualRole(null);
+    setViewRoleState(null);
     setAuthReady(true);
   };
 
+  const setViewRole = (nextRole: "user" | "admin" | null): void => {
+    if (nextRole) {
+      localStorage.setItem("viewRole", nextRole);
+    } else {
+      localStorage.removeItem("viewRole");
+    }
+    setViewRoleState(nextRole);
+  };
+
+  const role = viewRole || actualRole || "user";
   const isAdmin = role === "admin";
 
   const value: AuthContextType = {
@@ -119,6 +140,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     exp,
     role,
     isAdmin,
+    actualRole,
+    viewRole,
+    setViewRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
