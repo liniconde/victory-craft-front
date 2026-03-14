@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
 import MapComponent from "../map/MapComponent";
@@ -16,7 +16,8 @@ const FieldList: React.FC = () => {
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [filterType, setFilterType] = useState<string>("all");
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const navigate = useNavigate();
   const { hideLoading, showError, showLoading } = useAppFeedback();
@@ -52,12 +53,6 @@ const FieldList: React.FC = () => {
     }
   }, [filterType, fields]);
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const handleDelete = (id: string) => {
     api
       .delete(`/fields/${id}`)
@@ -65,38 +60,40 @@ const FieldList: React.FC = () => {
       .catch((error) => console.error("Error deleting field:", error));
   };
 
-  const getGridColumns = () => {
-    if (windowWidth < 640) return "grid-cols-1";
-    if (windowWidth < 1024) return "grid-cols-2";
-    if (windowWidth < 1440) return "grid-cols-3";
-    return "grid-cols-4";
-  };
-
-  const visibleRowsClass = useMemo(() => {
-    if (windowWidth < 640) return "fields-carousel--mobile";
-    if (windowWidth < 1024) return "fields-carousel--tablet";
-    return "fields-carousel--desktop";
-  }, [windowWidth]);
-
   const updateScrollState = () => {
     const container = carouselRef.current;
     if (!container) return;
+
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+    setCanScrollLeft(container.scrollLeft > 8);
+    setCanScrollRight(container.scrollLeft < maxScrollLeft - 8);
   };
 
   useEffect(() => {
     updateScrollState();
-  }, [filteredFields, windowWidth]);
+  }, [filteredFields]);
 
   useEffect(() => {
     const container = carouselRef.current;
     if (!container) return;
 
-    container.scrollTop = 0;
+    container.scrollLeft = 0;
     updateScrollState();
   }, [filterType]);
 
+  const scrollCarousel = (direction: "left" | "right") => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const distance = Math.max(container.clientWidth * 0.75, 280);
+    container.scrollBy({
+      left: direction === "right" ? distance : -distance,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div className="max-w-screen-2xl mx-auto px-8 py-8">
+    <div className="fields-page-shell mx-auto px-4 md:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
         Campos Disponibles
       </h1>
@@ -124,12 +121,22 @@ const FieldList: React.FC = () => {
       </div>
 
       <div className="fields-carousel-shell">
+        <button
+          type="button"
+          className="fields-carousel-arrow fields-carousel-arrow--left"
+          onClick={() => scrollCarousel("left")}
+          disabled={!canScrollLeft}
+          aria-label="Ver campos anteriores"
+        >
+          ←
+        </button>
+
         <div
           ref={carouselRef}
-          className={`fields-carousel ${visibleRowsClass}`}
+          className="fields-carousel"
           onScroll={updateScrollState}
         >
-          <div className={`grid gap-6 ${getGridColumns()}`}>
+          <div className="fields-carousel-track">
             {filteredFields.map((field) => (
               <div
                 key={field._id}
@@ -207,9 +214,19 @@ const FieldList: React.FC = () => {
             ))}
           </div>
         </div>
+
+        <button
+          type="button"
+          className="fields-carousel-arrow fields-carousel-arrow--right"
+          onClick={() => scrollCarousel("right")}
+          disabled={!canScrollRight}
+          aria-label="Ver más campos"
+        >
+          →
+        </button>
       </div>
 
-      <div className="mt-12" ref={mapRef}>
+      <div className="fields-map-shell mt-12" ref={mapRef}>
         <MapComponent fields={filteredFields} selectedField={selectedField} />
       </div>
     </div>

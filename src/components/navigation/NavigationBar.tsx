@@ -6,7 +6,7 @@ import "./styles.css";
 
 const NavigationBar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,6 +23,11 @@ const NavigationBar: React.FC = () => {
   const getNavLinkClassName = (path: string) =>
     `nav-link block md:inline-flex ${isActiveRoute(path) ? "nav-link-active" : ""}`;
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <img
@@ -38,21 +43,23 @@ const NavigationBar: React.FC = () => {
         <button
           className="navbar-toggler md:hidden"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Cerrar menu" : "Abrir menu"}
+          aria-expanded={isOpen}
         >
-          ☰
+          {isOpen ? "×" : "☰"}
         </button>
 
         {/* 🔹 Menú de navegación */}
         <div
           className={`navbar-menu ${
-            isOpen ? "block" : "hidden"
+            isOpen ? "navbar-menu--open" : "navbar-menu--closed"
           } md:flex md:space-x-6 w-full md:w-auto md:items-center text-center md:text-left`}
         >
           {/* 🔹 Pestañas accesibles para todos */}
           <button
             type="button"
             className={getNavLinkClassName("/fields")}
-            onClick={() => navigate("/fields")}
+            onClick={() => handleNavigate("/fields")}
           >
             Campos
           </button>
@@ -63,14 +70,14 @@ const NavigationBar: React.FC = () => {
               <button
                 type="button"
                 className={getNavLinkClassName("/reservations")}
-                onClick={() => navigate("/reservations")}
+                onClick={() => handleNavigate("/reservations")}
               >
                 Reservas
               </button>
               <button
                 type="button"
                 className={getNavLinkClassName("/slots")}
-                onClick={() => navigate("/slots")}
+                onClick={() => handleNavigate("/slots")}
               >
                 Partidos
               </button>
@@ -78,7 +85,7 @@ const NavigationBar: React.FC = () => {
               <button
                 type="button"
                 className={getNavLinkClassName("/fields/videos")}
-                onClick={() => navigate("/fields/videos")}
+                onClick={() => handleNavigate("/fields/videos")}
               >
                 Vídeos
               </button>
@@ -88,7 +95,7 @@ const NavigationBar: React.FC = () => {
                 className="px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900 transition md:pr-4"
                 onClick={() => {
                   logout();
-                  navigate("/");
+                  handleNavigate("/");
                 }}
               >
                 Logout
@@ -99,7 +106,7 @@ const NavigationBar: React.FC = () => {
             <button
               type="button"
               className={getNavLinkClassName("/users")}
-              onClick={() => navigate("/users")}
+              onClick={() => handleNavigate("/users")}
             >
               Usuarios
             </button>

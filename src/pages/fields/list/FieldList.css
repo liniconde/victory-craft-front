@@ -19,24 +19,71 @@
   @apply text-center p-4;
 }
 
+.fields-page-shell {
+  width: min(96vw, 1500px);
+}
+
 .fields-carousel-shell {
+  position: relative;
   background: linear-gradient(180deg, #f7fbf8 0%, #eef7f0 100%);
   border: 1px solid rgba(80, 187, 115, 0.18);
   border-radius: 24px;
-  padding: 1.25rem;
+  padding: 1.25rem 4.6rem;
   box-shadow: 0 16px 40px rgba(35, 90, 44, 0.08);
 }
 
+.fields-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  width: 2.9rem;
+  height: 2.9rem;
+  border: none;
+  border-radius: 999px;
+  background: #235a2c;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(35, 90, 44, 0.18);
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease;
+  z-index: 2;
+}
+
+.fields-carousel-arrow:hover:not(:disabled) {
+  transform: translateY(calc(-50% - 1px));
+  box-shadow: 0 14px 28px rgba(35, 90, 44, 0.24);
+}
+
+.fields-carousel-arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  box-shadow: none;
+}
+
+.fields-carousel-arrow--left {
+  left: 1.1rem;
+  transform: translateY(-50%);
+}
+
+.fields-carousel-arrow--right {
+  right: 1.1rem;
+  transform: translateY(-50%);
+}
+
 .fields-carousel {
-  overflow-y: auto;
-  padding-right: 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.35rem;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #50bb73 rgba(80, 187, 115, 0.12);
 }
 
 .fields-carousel::-webkit-scrollbar {
-  width: 10px;
+  height: 10px;
 }
 
 .fields-carousel::-webkit-scrollbar-track {
@@ -49,20 +96,21 @@
   border-radius: 9999px;
 }
 
-.fields-carousel--desktop {
-  max-height: 60rem;
-}
-
-.fields-carousel--tablet {
-  max-height: 57rem;
-}
-
-.fields-carousel--mobile {
-  max-height: 62rem;
+.fields-carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;
+  width: max-content;
 }
 
 .field-card-item {
+  width: min(22rem, calc(100vw - 5rem));
   min-height: 27rem;
+  flex: 0 0 auto;
+}
+
+.fields-map-shell {
+  width: 100%;
 }
 
 .field-card-title {
@@ -76,4 +124,32 @@
   color: #16a34a; /* Tailwind text-green-600 */
   font-weight: bold; /* Tailwind font-bold */
   margin-top: 0.5rem; /* Tailwind mt-2 */
+}
+
+@media (max-width: 640px) {
+  .fields-page-shell {
+    width: min(100vw, 100%);
+  }
+
+  .fields-carousel-shell {
+    padding: 1rem;
+  }
+
+  .fields-carousel-arrow {
+    top: auto;
+    bottom: 0.85rem;
+    transform: none;
+  }
+
+  .fields-carousel-arrow:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .fields-carousel-arrow--left {
+    left: 1rem;
+  }
+
+  .fields-carousel-arrow--right {
+    right: 1rem;
+  }
 }
