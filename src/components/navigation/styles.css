@@ -20,12 +20,21 @@
 
 /* 📌 Enlaces del Navbar */
 .nav-link {
-  @apply text-white text-lg font-medium px-4 py-2 text-center hover:text-[#235A2C] transition duration-300;
+  @apply inline-flex items-center justify-center rounded-full border border-transparent bg-transparent px-4 py-2 text-center text-lg font-medium text-white transition duration-200 ease-out;
+  cursor: pointer;
 }
 
-/* 📌 FORZAR EL COLOR BLANCO */
-.nav-link {
-  @apply text-white text-lg font-medium px-4 py-2 hover:text-[#235A2C] transition duration-300;
+.nav-link:hover {
+  @apply bg-[#235A2C] text-white shadow-md;
+  transform: translateY(-1px);
+}
+
+.nav-link:focus-visible {
+  @apply bg-[#235A2C] text-white outline-none ring-2 ring-white ring-offset-2 ring-offset-[#50BB73];
+}
+
+.nav-link-active {
+  @apply bg-[#235A2C] text-white shadow-md;
 }
 .navbar-brand,
 .nav-dropdown-item {

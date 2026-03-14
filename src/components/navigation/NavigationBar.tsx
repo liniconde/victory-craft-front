@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
 import "./styles.css";
@@ -8,6 +8,20 @@ const NavigationBar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActiveRoute = (path: string) => {
+    if (path === "/fields") {
+      return location.pathname === "/fields";
+    }
+
+    return (
+      location.pathname === path || location.pathname.startsWith(`${path}/`)
+    );
+  };
+
+  const getNavLinkClassName = (path: string) =>
+    `nav-link block md:inline-flex ${isActiveRoute(path) ? "nav-link-active" : ""}`;
 
   return (
     <nav className="navbar">
@@ -35,35 +49,39 @@ const NavigationBar: React.FC = () => {
           } md:flex md:space-x-6 w-full md:w-auto md:items-center text-center md:text-left`}
         >
           {/* 🔹 Pestañas accesibles para todos */}
-          <span
-            className="nav-link block md:inline-block"
+          <button
+            type="button"
+            className={getNavLinkClassName("/fields")}
             onClick={() => navigate("/fields")}
           >
             Campos
-          </span>
+          </button>
 
           {/* 🔹 Pestañas solo para usuarios autenticados */}
           {isAuthenticated && (
             <>
-              <span
-                className="nav-link block md:inline-block"
+              <button
+                type="button"
+                className={getNavLinkClassName("/reservations")}
                 onClick={() => navigate("/reservations")}
               >
                 Reservas
-              </span>
-              <span
-                className="nav-link block md:inline-block"
+              </button>
+              <button
+                type="button"
+                className={getNavLinkClassName("/slots")}
                 onClick={() => navigate("/slots")}
               >
                 Partidos
-              </span>
+              </button>
 
-              <span
-                className="nav-link block md:inline-block"
+              <button
+                type="button"
+                className={getNavLinkClassName("/fields/videos")}
                 onClick={() => navigate("/fields/videos")}
               >
                 Vídeos
-              </span>
+              </button>
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
               <button
@@ -78,12 +96,13 @@ const NavigationBar: React.FC = () => {
             </>
           )}
           {!isAuthenticated && (
-            <span
-              className="nav-link block md:inline-block"
+            <button
+              type="button"
+              className={getNavLinkClassName("/users")}
               onClick={() => navigate("/users")}
             >
               Usuarios
-            </span>
+            </button>
           )}
         </div>
       </div>

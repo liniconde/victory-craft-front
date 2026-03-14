@@ -19,6 +19,52 @@
   @apply text-center p-4;
 }
 
+.fields-carousel-shell {
+  background: linear-gradient(180deg, #f7fbf8 0%, #eef7f0 100%);
+  border: 1px solid rgba(80, 187, 115, 0.18);
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 16px 40px rgba(35, 90, 44, 0.08);
+}
+
+.fields-carousel {
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #50bb73 rgba(80, 187, 115, 0.12);
+}
+
+.fields-carousel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.fields-carousel::-webkit-scrollbar-track {
+  background: rgba(80, 187, 115, 0.12);
+  border-radius: 9999px;
+}
+
+.fields-carousel::-webkit-scrollbar-thumb {
+  background: #50bb73;
+  border-radius: 9999px;
+}
+
+.fields-carousel--desktop {
+  max-height: 60rem;
+}
+
+.fields-carousel--tablet {
+  max-height: 57rem;
+}
+
+.fields-carousel--mobile {
+  max-height: 62rem;
+}
+
+.field-card-item {
+  min-height: 27rem;
+}
+
 .field-card-title {
   font-size: 1.25rem;
   font-weight: 600;

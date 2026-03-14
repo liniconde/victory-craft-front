@@ -3,19 +3,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../../../utils/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "./styles.css"; // 📌 Importamos el archivo CSS con Tailwind
+import "./styles.css";
 
 interface SlotFormProps {
   mode: "create" | "edit";
 }
 
 const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
+  const initialStartDate = new Date();
+  const initialEndDate = new Date(initialStartDate.getTime() + 60 * 60 * 1000);
   const [value, setValue] = useState<number>(0);
   const [isAvailable, setIsAvailable] = useState(true);
   const { id, fieldId } = useParams<{ id: string; fieldId: string }>();
   const navigate = useNavigate();
-  const [startTime, setStartTime] = useState<Date | null>(new Date());
-  const [endTime, setEndTime] = useState<Date | null>(new Date());
+  const [startTime, setStartTime] = useState<Date | null>(initialStartDate);
+  const [endTime, setEndTime] = useState<Date | null>(initialEndDate);
   const [useCustomValue, setUseCustomValue] = useState(false);
   const [fieldDefaultValue, setFieldDefaultValue] = useState<number>(0);
 
@@ -61,99 +63,123 @@ const SlotForm: React.FC<SlotFormProps> = ({ mode }) => {
     }
   };
 
+  const handleStartTimeChange = (date: Date | null) => {
+    setStartTime(date);
+
+    if (!date) return;
+
+    setEndTime(new Date(date.getTime() + 60 * 60 * 1000));
+  };
+
   return (
-    <div className="slot-form-container animate-fade-in">
-      <h1 className="text-center text-2xl font-bold text-gray-800">
-        {mode === "create" ? "Crear Partido" : "Editar Partido"}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="slot-form-label">Fecha de inicio</label>
-          <DatePicker
-            selected={startTime}
-            onChange={(date: Date | null) => setStartTime(date)}
-            showTimeSelect
-            timeIntervals={30}
-            dateFormat="Pp"
-            className="slot-form-input"
-          />
-        </div>
-        <div>
-          <label className="slot-form-label">Fecha de Fin</label>
-          <DatePicker
-            selected={endTime}
-            onChange={(date: Date | null) => setEndTime(date)}
-            showTimeSelect
-            timeIntervals={30}
-            dateFormat="Pp"
-            className="slot-form-input"
-          />
-        </div>
-        <div>
-          <label className="slot-form-label">
-            ¿Quieres personalizar el precio de este horario?
-          </label>
-          <div className="flex items-center gap-4 mt-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="valueOption"
-                value="default"
-                checked={!useCustomValue}
-                onChange={() => {
-                  setUseCustomValue(false);
-                  setValue(fieldDefaultValue);
-                }}
-              />
-              Usar valor del campo (€{fieldDefaultValue || ""})
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="valueOption"
-                value="custom"
-                checked={useCustomValue}
-                onChange={() => {
-                  setUseCustomValue(true);
-                  setValue(0); // o mantener valor actual
-                }}
-              />
-              Personalizar
-            </label>
-          </div>
+    <div className="slot-form-shell animate-fade-in">
+      <div className="slot-form-container">
+        <div className="slot-form-header">
+          <h1 className="slot-form-title">
+            {mode === "create" ? "Crear Partido" : "Editar Partido"}
+          </h1>
+          <p className="slot-form-subtitle">
+            Define el horario del partido y personaliza el precio si quieres un
+            valor distinto al de la cancha.
+          </p>
         </div>
 
-        {useCustomValue && (
-          <div>
-            <label className="slot-form-label">Valor personalizado (€)</label>
-            <input
-              type="number"
-              min={1}
-              value={value}
-              onChange={(e) => setValue(parseFloat(e.target.value))}
-              className="slot-form-input"
-              required
-            />
-            {value <= 0 && (
-              <p className="text-red-600 text-sm mt-1">
-                El valor debe ser mayor a 0.
-              </p>
-            )}
+        <form onSubmit={handleSubmit} className="slot-form">
+          <div className="slot-form-grid">
+            <div className="slot-form-field">
+              <label className="slot-form-label">Fecha de inicio</label>
+              <DatePicker
+                selected={startTime}
+                onChange={handleStartTimeChange}
+                showTimeSelect
+                timeIntervals={30}
+                dateFormat="Pp"
+                className="slot-form-input"
+              />
+            </div>
+            <div className="slot-form-field">
+              <label className="slot-form-label">Fecha de fin</label>
+              <DatePicker
+                selected={endTime}
+                onChange={(date: Date | null) => setEndTime(date)}
+                showTimeSelect
+                timeIntervals={30}
+                dateFormat="Pp"
+                className="slot-form-input"
+              />
+            </div>
           </div>
-        )}
-        <button type="submit" className="submit-button">
-          {mode === "create" ? "Crear nuevo partido" : "Modificar Partido"}
-        </button>
-        <button
-          className="cancel-button"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/slots");
-          }}
-        >
-          Cancelar
-        </button>
-      </form>
+
+          <div className="slot-form-pricing">
+            <label className="slot-form-label">
+              ¿Quieres personalizar el precio de este horario?
+            </label>
+            <div className="slot-form-options">
+              <label className="slot-form-option">
+                <input
+                  type="radio"
+                  name="valueOption"
+                  value="default"
+                  checked={!useCustomValue}
+                  onChange={() => {
+                    setUseCustomValue(false);
+                    setValue(fieldDefaultValue);
+                  }}
+                />
+                <span>Usar valor del campo (€{fieldDefaultValue || ""})</span>
+              </label>
+              <label className="slot-form-option">
+                <input
+                  type="radio"
+                  name="valueOption"
+                  value="custom"
+                  checked={useCustomValue}
+                  onChange={() => {
+                    setUseCustomValue(true);
+                    setValue(0);
+                  }}
+                />
+                <span>Personalizar precio</span>
+              </label>
+            </div>
+          </div>
+
+          {useCustomValue && (
+            <div className="slot-form-field">
+              <label className="slot-form-label">Valor personalizado (€)</label>
+              <input
+                type="number"
+                min={1}
+                value={value}
+                onChange={(e) => setValue(parseFloat(e.target.value))}
+                className="slot-form-input"
+                required
+              />
+              {value <= 0 && (
+                <p className="slot-form-error">El valor debe ser mayor a 0.</p>
+              )}
+            </div>
+          )}
+
+          <div className="slot-form-actions">
+            <button
+              className="slot-form-button slot-form-button--secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/slots");
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="slot-form-button slot-form-button--primary"
+            >
+              {mode === "create" ? "Crear nuevo partido" : "Guardar cambios"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

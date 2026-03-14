@@ -10,11 +10,16 @@ import "./ReservationsPage.css";
 import { useAuth } from "../../context/AuthContext";
 import "./ReservationList.css";
 
-const ReservationList: React.FC = () => {
+interface ReservationListProps {
+  refreshKey?: number;
+}
+
+const ReservationList: React.FC<ReservationListProps> = ({ refreshKey = 0 }) => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const navigate = useNavigate();
   const { showLoading, hideLoading, showError } = useAppFeedback();
   const { isAdmin } = useAuth();
+  const emptyActionLabel = isAdmin ? "Crear Nuevo Partido" : "Seleccionar cancha";
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -32,7 +37,7 @@ const ReservationList: React.FC = () => {
     };
 
     fetchReservations(); //Llama a la función asíncrona
-  }, []);
+  }, [refreshKey]);
 
   const handleDelete = async (id: string) => {
     // Delete the reservation by ID
@@ -47,87 +52,120 @@ const ReservationList: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="reservations-container mx-auto max-w-7xl px-4">
-        <h1 className="text-2xl font-semibold mb-4">Reservas</h1>
+    <section className="reservations-module">
+      <div className="reservations-container">
+        <div className="reservations-header">
+          <div>
+            <h1 className="reservations-title">Reservas</h1>
+            <p className="reservations-subtitle">
+              Consulta tus horarios reservados y gestiona cada partido desde un
+              solo lugar.
+            </p>
+          </div>
 
-        {isAdmin && (
-          <button
-            className="actions-button mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            onClick={() => navigate("/reservations/new")}
-          >
-            Crear Nuevo Partido
-          </button>
-        )}
+          {isAdmin && (
+            <button
+              className="actions-button"
+              onClick={() => navigate("/reservations/new")}
+            >
+              Crear Nuevo Partido
+            </button>
+          )}
+        </div>
 
         {reservations.length === 0 && (
-          <div className="text-gray-600 text-center mt-6">
-            <p>No tienes reservas aún.</p>
+          <div className="reservations-empty">
+            <h2>No tienes reservas aún.</h2>
             <p>
-              Haz clic en <strong>"Crear Nuevo Partido"</strong> para comenzar.
+              {isAdmin
+                ? 'Haz clic en "Crear Nuevo Partido" para comenzar.'
+                : 'Cuando reserves una cancha, la verás listada aquí.'}
             </p>
+            {!isAdmin && (
+              <button
+                className="actions-button"
+                onClick={() => navigate("/reservations")}
+              >
+                {emptyActionLabel}
+              </button>
+            )}
           </div>
         )}
 
-        {/* Tabla solo visible en pantallas medianas y grandes */}
-        <table className="reservations-table w-full border-collapse hidden md:table">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2">Imagen</th>
-              <th className="p-2">Nombre de la Cancha</th>
-              <th className="p-2">Horario</th>
-              <th className="p-2">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reservations.map((reservation) => {
-              const field = reservation.slot?.field;
-              const start = new Date(
-                reservation.slot?.startTime
-              ).toLocaleString();
-              const end = new Date(reservation.slot?.endTime).toLocaleString();
-
-              return (
-                <tr key={reservation._id} className="border-b">
-                  <td className="p-2">
-                    <div className="flex justify-center items-center">
-                      <img
-                        src={field?.imageUrl}
-                        alt="Imagen de cancha"
-                        className="w-24 h-16 object-cover rounded shadow"
-                      />
-                    </div>
-                  </td>
-                  <td className="p-2 font-medium">{field?.name || "N/A"}</td>
-                  <td className="p-2 text-sm text-gray-600">
-                    {start} - {end}
-                  </td>
-                  <td className="p-2">
-                    <div className="flex justify-center items-center gap-4">
-                      <button
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                        onClick={() =>
-                          navigate(`/reservations/edit/${reservation._id}`)
-                        }
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                        onClick={() => handleDelete(reservation._id)}
-                      >
-                        Borrar
-                      </button>
-                    </div>
-                  </td>
+        {reservations.length > 0 && (
+          <div className="reservations-table-shell hidden md:block">
+            <table className="reservations-table">
+              <thead>
+                <tr>
+                  <th>Cancha</th>
+                  <th>Nombre</th>
+                  <th>Horario</th>
+                  <th>Acciones</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {reservations.map((reservation) => {
+                  const field = reservation.slot?.field;
+                  const start = new Date(
+                    reservation.slot?.startTime
+                  ).toLocaleString();
+                  const end = new Date(
+                    reservation.slot?.endTime
+                  ).toLocaleString();
 
-        {/* Vista en tarjetas para móvil */}
-        <div className="grid gap-4 md:hidden">
+                  return (
+                    <tr key={reservation._id}>
+                      <td>
+                        <div className="reservations-image-wrap">
+                          <img
+                            src={
+                              field?.imageUrl ||
+                              "https://via.placeholder.com/240x160?text=Cancha"
+                            }
+                            alt="Imagen de cancha"
+                            className="reservations-image"
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="reservations-field-meta">
+                          <strong>{field?.name || "N/A"}</strong>
+                          <span>{field?.location?.name || "Ubicacion no disponible"}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="reservations-schedule">
+                          <strong>{start}</strong>
+                          <span>{end}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="reservations-actions">
+                          <button
+                            className="reservations-action reservations-action--edit"
+                            onClick={() =>
+                              navigate(`/reservations/edit/${reservation._id}`)
+                            }
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="reservations-action reservations-action--delete"
+                            onClick={() => handleDelete(reservation._id)}
+                          >
+                            Borrar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="reservations-mobile-grid md:hidden">
           {reservations.map((reservation) => {
             const field = reservation.slot?.field;
             const start = new Date(
@@ -136,26 +174,30 @@ const ReservationList: React.FC = () => {
             const end = new Date(reservation.slot?.endTime).toLocaleString();
 
             return (
-              <div
-                key={reservation._id}
-                className="bg-white p-4 rounded shadow border"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-lg font-semibold">
-                    {field?.name || "N/A"}
-                  </h2>
+              <article key={reservation._id} className="reservations-mobile-card">
+                <div className="reservations-mobile-card__top">
                   <img
-                    src={field?.imageUrl}
+                    src={
+                      field?.imageUrl ||
+                      "https://via.placeholder.com/240x160?text=Cancha"
+                    }
                     alt="Imagen de cancha"
-                    className="w-20 h-14 object-cover rounded"
+                    className="reservations-mobile-card__image"
                   />
+                  <div className="reservations-mobile-card__info">
+                    <h2>{field?.name || "N/A"}</h2>
+                    <p>{field?.location?.name || "Ubicacion no disponible"}</p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  {start} - {end}
-                </p>
-                <div className="flex justify-end gap-2">
+
+                <div className="reservations-mobile-card__schedule">
+                  <strong>{start}</strong>
+                  <span>{end}</span>
+                </div>
+
+                <div className="reservations-mobile-card__actions">
                   <button
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                    className="reservations-action reservations-action--edit"
                     onClick={() =>
                       navigate(`/reservations/edit/${reservation._id}`)
                     }
@@ -163,18 +205,18 @@ const ReservationList: React.FC = () => {
                     Editar
                   </button>
                   <button
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+                    className="reservations-action reservations-action--delete"
                     onClick={() => handleDelete(reservation._id)}
                   >
                     Borrar
                   </button>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
       </div>
-    </>
+    </section>
   );
 };
 

@@ -9,11 +9,13 @@ import {
   getFieldsbyUserId,
 } from "../../../../services/field/fieldService";
 import { useAppFeedback } from "../../../../hooks/useAppFeedback";
+import "./slotList.css";
 
 const SlotList: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
+  const [showFieldPicker, setShowFieldPicker] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredFields, setFilteredFields] = useState<Field[]>([]);
 
@@ -76,6 +78,7 @@ const SlotList: React.FC = () => {
 
   const handleSelectField = (field: Field) => {
     setSelectedField(field);
+    setShowFieldPicker(false);
     showLoading();
     api
       .get(`/fields/${field._id}/slots`)
@@ -90,6 +93,21 @@ const SlotList: React.FC = () => {
       .finally(() => hideLoading());
   };
 
+  const handleShowAllFields = async () => {
+    setSelectedField(null);
+    setShowFieldPicker(true);
+    try {
+      showLoading();
+      const allSlots = await Promise.all(fields.map((field) => getFieldsSlots(field._id)));
+      setSlots(allSlots.flat());
+    } catch (error) {
+      console.error("Error fetching all slots:", error);
+      showError("Error fetching slots");
+    } finally {
+      hideLoading();
+    }
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
@@ -99,58 +117,110 @@ const SlotList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <div className="slots-page max-w-screen-xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-gray-800 mb-3 text-center">
         Disponibilidad por Campo
       </h1>
+      <p className="slots-page__subtitle">
+        Filtra por nombre y selecciona una cancha para ver y gestionar sus
+        partidos disponibles.
+      </p>
 
-      {/* 🔍 Buscar y seleccionar campo */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-        <input
-          type="text"
-          placeholder="Buscar campo..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="w-full sm:w-1/2 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#50BB73]"
-        />
-        <div className="flex gap-2">
-          {filteredFields.map((field) => (
-            <button
-              key={field._id}
-              onClick={() => handleSelectField(field)}
-              className="bg-[#50BB73] text-white px-4 py-2 rounded-md hover:bg-green-800 transition text-sm"
-            >
-              {field.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ✅ Botón para crear nuevo slot */}
-      {selectedField && (
-        <div className="text-right mb-6">
+      {!showFieldPicker && (
+        <div className="slot-topbar">
           <button
-            onClick={() => navigate(`/slots/new/${selectedField._id}`)}
-            className="bg-[#50BB73] text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-800 transition"
+            type="button"
+            className="slot-field-reset slot-field-reset--active"
+            onClick={handleShowAllFields}
           >
-            Crear nuevo partido
+            Ver todas las canchas
           </button>
+
+          {selectedField && (
+            <button
+              onClick={() => navigate(`/slots/new/${selectedField._id}`)}
+              className="slot-actions__button"
+            >
+              Crear nuevo partido
+            </button>
+          )}
         </div>
       )}
 
+      {/* 🔍 Buscar y seleccionar campo */}
+      {showFieldPicker && (
+        <section className="slot-field-picker">
+          <div className="slot-field-picker__header">
+            <h2 className="slot-field-picker__title">Elige una cancha</h2>
+
+            <div className="slot-field-picker__controls">
+              <label className="slot-field-picker__search">
+                <span>Buscar por nombre</span>
+                <input
+                  type="text"
+                  placeholder="Buscar campo..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+              </label>
+
+              <div className="slot-field-picker__toolbar">
+                <button
+                  type="button"
+                  className={`slot-field-reset ${selectedField ? "" : "slot-field-reset--active"}`}
+                  onClick={handleShowAllFields}
+                >
+                  Ver todas las canchas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="slot-field-picker__grid">
+            {filteredFields.map((field) => {
+              const isActive = selectedField?._id === field._id;
+
+              return (
+                <button
+                  key={field._id}
+                  type="button"
+                  onClick={() => handleSelectField(field)}
+                  className={`slot-field-row ${isActive ? "slot-field-row--active" : ""}`}
+                >
+                  <div className="slot-field-row__main">
+                    <h3>{field.name}</h3>
+                    <p>{field.location?.name || "Ubicacion no disponible"}</p>
+                  </div>
+                  <div className="slot-field-row__meta">
+                    <span>{field.type}</span>
+                    <strong>${field.pricePerHour} / hora</strong>
+                  </div>
+                </button>
+              );
+            })}
+
+            {filteredFields.length === 0 && (
+              <div className="slot-field-picker__empty">
+                No hay canchas que coincidan con ese nombre.
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* 🎯 Mostrar slots como tarjetas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="slots-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {slots.map((slot) => (
           <div
             key={slot._id}
-            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-transform hover:scale-105"
+            className="slot-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-transform hover:scale-105"
           >
             <img
-              src={slot.field?.imageUrl || "https://via.placeholder.com/300"}
+              src={slot.field?.imageUrl || "https://via.placeholder.com/640x360?text=Cancha"}
               alt={slot.field?.name}
-              className="w-full h-48 object-cover"
+              className="slot-card__image w-full h-48 object-cover"
             />
-            <div className="p-4">
+            <div className="slot-card__body p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {slot.field?.name || "Campo"}
               </h3>
@@ -173,15 +243,15 @@ const SlotList: React.FC = () => {
                 {slot.isAvailable ? "Disponible" : "No disponible"}
               </p>
 
-              <div className="flex justify-between mt-4">
+              <div className="slot-card__actions flex justify-between mt-4">
                 <button
-                  className="px-3 py-1 text-sm bg-[#50BB73] text-white rounded-md hover:bg-[#235A2C] transition"
+                  className="slot-card__button slot-card__button--edit"
                   onClick={() => navigate(`/slots/edit/${slot._id}`)}
                 >
                   Editar
                 </button>
                 <button
-                  className="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                  className="slot-card__button slot-card__button--delete"
                   onClick={() => handleDelete(slot._id)}
                 >
                   Borrar
@@ -191,6 +261,12 @@ const SlotList: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {slots.length === 0 && selectedField && (
+        <div className="slot-field-picker__empty mt-6">
+          Esta cancha no tiene partidos configurados todavia.
+        </div>
+      )}
     </div>
   );
 };
