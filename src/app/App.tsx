@@ -30,6 +30,9 @@ const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
 const OAuthCallback = lazy(() => import("../components/auth/OAuthCallback"));
 const Home = lazy(() => import("../pages/home/Home"));
+const TournamentsModule = lazy(
+  () => import("../tournaments-mfe/TournamentsModule")
+);
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
@@ -253,6 +256,14 @@ function AppRoutes() {
               element={
                 <PrivateRoute>
                   <SlotForm mode="edit" />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/tournaments/*"
+              element={
+                <PrivateRoute>
+                  <TournamentsModule />
                 </PrivateRoute>
               }
             />

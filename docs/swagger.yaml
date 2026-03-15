@@ -1,0 +1,4579 @@
+openapi: 3.0.3
+info:
+  title: Victory Craft Backend API
+  version: 1.0.0
+  description: >
+    Contrato OpenAPI del microservicio de Victory Craft para gestion de
+    usuarios, campos deportivos (football, tennis, padel), slots, reservas,
+    videos, imagenes y estadisticas.
+servers:
+  - url: http://localhost:5001
+    description: Local
+tags:
+  - name: System
+  - name: Users
+  - name: Fields
+  - name: Slots
+  - name: Reservations
+  - name: Videos
+  - name: Video Stats
+  - name: Tournaments
+  - name: Streaming
+  - name: Images
+  - name: Concerts
+  - name: Workers
+paths:
+  /healthz:
+    get:
+      tags: [System]
+      summary: Healthcheck de la API
+      responses:
+        "200":
+          description: API operativa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Listar usuarios
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Obtener usuario por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Users]
+      summary: Actualizar usuario
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateRequest"
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Users]
+      summary: Eliminar usuario
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Usuario eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /users/register:
+    post:
+      tags: [Users]
+      summary: Registrar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterRequest"
+      responses:
+        "201":
+          description: Usuario registrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /users/login:
+    post:
+      tags: [Users]
+      summary: Iniciar sesion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginRequest"
+      responses:
+        "200":
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Credenciales invalidas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/oauth2/google:
+    get:
+      tags: [Users]
+      summary: Iniciar OAuth 2.0 con Google
+      parameters:
+        - in: query
+          name: redirect_uri
+          required: true
+          schema:
+            type: string
+            format: uri
+        - in: query
+          name: return_to
+          required: false
+          schema:
+            type: string
+            default: /
+      responses:
+        "302":
+          description: Redireccion a Google OAuth consent screen
+        "400":
+          description: redirect_uri no permitido o configuracion invalida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/oauth2/google/callback:
+    get:
+      tags: [Users]
+      summary: Callback OAuth 2.0 de Google
+      parameters:
+        - in: query
+          name: code
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: state
+          required: false
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redireccion al frontend con token o error
+        "400":
+          description: Error en callback OAuth
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fields:
+    get:
+      tags: [Fields]
+      summary: Listar campos deportivos
+      responses:
+        "200":
+          description: Lista de campos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Field"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Fields]
+      summary: Crear campo deportivo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldInput"
+      responses:
+        "201":
+          description: Campo creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /fields/{id}:
+    get:
+      tags: [Fields]
+      summary: Obtener campo por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Campo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Fields]
+      summary: Actualizar campo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldUpdateRequest"
+      responses:
+        "200":
+          description: Campo actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Fields]
+      summary: Eliminar campo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Campo eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /fields/users/{userId}:
+    get:
+      tags: [Fields]
+      summary: Listar campos por usuario propietario
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de campos del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Field"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /fields/{id}/slots:
+    get:
+      tags: [Fields]
+      summary: Listar slots del campo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Slots del campo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slot"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /fields/{id}/videos:
+    get:
+      tags: [Fields]
+      summary: Listar videos del campo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Videos del campo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FieldVideo"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /slots:
+    get:
+      tags: [Slots]
+      summary: Listar todos los slots
+      responses:
+        "200":
+          description: Lista de slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slot"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Slots]
+      summary: Crear slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SlotInput"
+      responses:
+        "201":
+          description: Slot creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slot"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /slots/{id}:
+    get:
+      tags: [Slots]
+      summary: Obtener slot por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Slot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slot"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Slots]
+      summary: Actualizar slot
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SlotUpdateRequest"
+      responses:
+        "200":
+          description: Slot actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slot"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      tags: [Slots]
+      summary: Eliminar slot
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Slot eliminado
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /slots/{id}/field:
+    get:
+      tags: [Slots]
+      summary: Listar slots por field ID
+      description: >
+        En esta ruta, `id` representa el ID del campo (fieldId), aunque el
+        parametro se llame `id`.
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Lista de slots para el campo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slot"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: Listar reservas
+      responses:
+        "200":
+          description: Lista de reservas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Reservations]
+      summary: Crear reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationInput"
+      responses:
+        "201":
+          description: Reserva creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /reservations/{id}:
+    get:
+      tags: [Reservations]
+      summary: Obtener reserva por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Reserva
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Reservations]
+      summary: Actualizar reserva
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationUpdateRequest"
+      responses:
+        "200":
+          description: Reserva actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      tags: [Reservations]
+      summary: Eliminar reserva
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Reserva eliminada
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /reservations/user/{id}:
+    get:
+      tags: [Reservations]
+      summary: Listar reservas por usuario
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Reservas del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reservation"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos:
+    post:
+      tags: [Videos]
+      summary: Crear registro de video asociado a campo/slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoCreateRequest"
+      responses:
+        "201":
+          description: Video creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/library:
+    get:
+      tags: [Videos]
+      summary: Listar videos de biblioteca (paginado)
+      description: >
+        Devuelve items livianos para listado con URL firmada de reproduccion.
+        Si `searchTerm` viene, filtra globalmente antes de paginar por `s3Key` (contains
+        case-insensitive) y por coincidencia en `_id` convertido a string.
+        Tambien permite filtrar por `sportType`.
+        Ejemplo: `/videos/library?page=1&limit=20&searchTerm=padel&sportType=football`.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+          description: Texto de busqueda global (se aplica antes de paginar)
+        - in: query
+          name: sportType
+          required: false
+          schema:
+            type: string
+            enum: [football, padel, tennis, basketball, other]
+          description: Filtra por tipo de deporte del video
+      responses:
+        "200":
+          description: Lista paginada de videos de biblioteca
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoLibraryPaginatedResponse"
+              examples:
+                filtered:
+                  summary: Ejemplo con filtro por nombre
+                  value:
+                    items:
+                      - _id: "67ed8f71cf3e27c5fe0ce245"
+                        s3Key: "videoPadelTest.mp4"
+                        uploadedAt: "2025-04-02T19:26:41.417Z"
+                        videoUrl: "https://victory-craft.s3.amazonaws.com/videoPadelTest.mp4?X-Amz-..."
+                    pagination:
+                      page: 1
+                      limit: 20
+                      total: 1
+                      totalPages: 1
+                      hasNextPage: false
+                      hasPrevPage: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Videos]
+      summary: Crear registro de video para biblioteca (sin cancha)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoLibraryCreateRequest"
+      responses:
+        "201":
+          description: Video de biblioteca creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}:
+    put:
+      tags: [Videos]
+      summary: Actualizar video
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoUpdateRequest"
+      responses:
+        "200":
+          description: Video actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Videos]
+      summary: Eliminar video por id (S3 + DB relacionadas)
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Video eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  deletedVideoId:
+                    type: string
+                  deletedS3Key:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "502":
+          description: Error al borrar archivo en S3
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /videos/upload:
+    post:
+      tags: [Videos]
+      summary: Generar URL firmada para subir video a S3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectKeyRequest"
+      responses:
+        "200":
+          description: URL firmada de subida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/S3UploadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/sign-upload:
+    post:
+      tags: [Videos]
+      summary: Generar URL firmada para subir video a S3 (alias compatible frontend)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectKeyRequest"
+      responses:
+        "200":
+          description: URL firmada de subida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/S3UploadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{videoId}/analyze:
+    post:
+      tags: [Videos]
+      summary: Ejecutar analisis AI sobre video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resultado del analisis
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/gemini/tokens/last:
+    get:
+      tags: [Videos]
+      summary: Obtener resumen de consumo de tokens Gemini
+      description: >
+        Retorna el ultimo consumo registrado y acumulados persistidos en MongoDB.
+        Incluye `recent` con los ultimos 10 registros.
+      responses:
+        "200":
+          description: Resumen de uso de tokens capturado desde usageMetadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeminiTokenUsageSummaryResponse"
+        "404":
+          description: Aun no existe consumo registrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analyzeVideo:
+    post:
+      tags: [Videos]
+      summary: Crear job de analisis Gemini y encolar en SQS
+      description: >
+        Flujo de analisis basado en Gemini. Convive con `/videos/{id}/analyzeAgent`
+        y el frontend puede ofrecer ambas opciones al usuario segun el tipo de
+        procesamiento que quiera ejecutar.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeVideoJobRequest"
+      responses:
+        "201":
+          description: Job creado y encolado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  job:
+                    $ref: "#/components/schemas/AnalysisJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analyzeAgent:
+    post:
+      tags: [Videos]
+      summary: Crear job de analisis con worker-agent externo
+      description: >
+        Construye el evento `video.analysis.requested`, lo valida con zod y lo publica
+        en la cola SQS del worker-agent externo. Este flujo esta pensado para
+        analisis avanzados orquestados por un agente con tools externas, incluyendo
+        procesamiento mas robusto en Python y generacion de artefactos o videos
+        derivados. La respuesta incluye los ids de correlacion para seguimiento
+        end-to-end desde frontend o backend.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del video de biblioteca o de campo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeAgentVideoJobRequest"
+            examples:
+              e2e:
+                summary: Ejemplo real de prueba E2E
+                value:
+                  analysisType: agent_prompt
+                  prompt: Descarga el video desde S3, ejecuta render de detecciones YOLO con color de camiseta, genera un archivo JSON de estadísticas, sube los artifacts a S3 y analiza los artifacts generados para resumir si el procesamiento fue correcto y si hay hallazgos.
+                  maxAttempts: 5
+                  outputS3Prefix: video-analysis-results/agent-e2e-001
+                  localJobDir: /tmp/video-analysis/agent-e2e-001
+                  render:
+                    toolName: video.worker.render_yolo_boxes_with_jersey_color
+                    outputDir: /tmp/video-analysis/agent-e2e-001/out
+                    yoloModel: yolov8n.pt
+                    processFps: 5
+                    conf: 0.25
+                  stats:
+                    toolName: video.generate_stats_json
+                    outputPath: /tmp/video-analysis/agent-e2e-001/out/stats.json
+                  upload:
+                    toolName: video.upload_artifacts_to_s3
+                    bucket: victory-craft
+                    destinationPrefix: video-analysis-results/agent-e2e-001
+                  analysis:
+                    toolName: video.analyze_generated_artifacts
+                    analysisPrompt: Resume si los artefactos fueron generados correctamente y si hay hallazgos.
+      responses:
+        "201":
+          description: Job agent creado y publicado en SQS
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeAgentVideoJobResponse"
+              examples:
+                queued:
+                  summary: Respuesta real de job encolado
+                  value:
+                    message: Agent analysis job created and queued
+                    job:
+                      _id: 69adc6d72347dffa88e7fa00
+                      videoId: 67e48d85ebfc561722a57a22
+                      analysisType: agent_prompt
+                      status: queued
+                      input:
+                        prompt: Descarga el video desde S3, ejecuta render de detecciones YOLO con color de camiseta, genera un archivo JSON de estadísticas, sube los artifacts a S3 y analiza los artifacts generados para resumir si el procesamiento fue correcto y si hay hallazgos.
+                      createdAt: "2026-03-08T18:58:31.202Z"
+                      updatedAt: "2026-03-08T18:58:31.737Z"
+                      sqsMessageId: 0bb58429-2601-4abb-90a4-f5e6e1c88b66
+                      workerCorrelationId: 69adc6d72347dffa88e7fa00
+                      workerEventId: 6b08456e-a1d7-4b0a-a11f-b48350548093
+                      workerIdempotencyKey: victorycraft:video.analysis.requested:67e48d85ebfc561722a57a22:v1
+                      workerRequestId: 8f26d9f1-0ec5-4f2a-bcce-67a381dcb45d
+                      workerTraceId: 27119b2d-9a3f-4bb8-a25a-6b07b253a754
+                      workerEvent:
+                        contractVersion: "1.0"
+                        eventId: 6b08456e-a1d7-4b0a-a11f-b48350548093
+                        eventType: video.analysis.requested
+                        occurredAt: "2026-03-08T18:58:31.248Z"
+                        tracing:
+                          requestId: 8f26d9f1-0ec5-4f2a-bcce-67a381dcb45d
+                          correlationId: 69adc6d72347dffa88e7fa00
+                          traceId: 27119b2d-9a3f-4bb8-a25a-6b07b253a754
+                        idempotencyKey: victorycraft:video.analysis.requested:67e48d85ebfc561722a57a22:v1
+                        retry:
+                          attempt: 0
+                          maxAttempts: 5
+                        payload:
+                          videoId: 67e48d85ebfc561722a57a22
+                          jobId: 69adc6d72347dffa88e7fa00
+                          prompt: Descarga el video desde S3, ejecuta render de detecciones YOLO con color de camiseta, genera un archivo JSON de estadísticas, sube los artifacts a S3 y analiza los artifacts generados para resumir si el procesamiento fue correcto y si hay hallazgos.
+                          videoS3Uri: s3://victory-craft/videoFutbol2.mp4
+                          outputS3Prefix: video-analysis-results/agent-e2e-001
+                          localJobDir: /tmp/video-analysis/agent-e2e-001
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analyzeVideo/{jobId}/status:
+    get:
+      tags: [Videos]
+      summary: Polling de estado de job de analisis
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estado actual del job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analysis-results:
+    get:
+      tags: [Videos]
+      summary: Listar analisis exitosos por video
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Analisis por video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoAnalysisRecordPaginatedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analysis-results/{recordId}:
+    delete:
+      tags: [Videos]
+      summary: Eliminar un resultado puntual del historico de analisis
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: recordId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Registro del historico eliminado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteVideoAnalysisRecordResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analysis-artifacts:
+    get:
+      tags: [Videos]
+      summary: Listar artefactos de analisis persistidos por video
+      description: >
+        Devuelve el catalogo de archivos generados por los flujos de analisis
+        y almacenados en S3, incluyendo JSON, videos renderizados, imagenes
+        y otros artefactos.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Artefactos de analisis del video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisArtifactPaginatedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analysis-artifacts/{artifactId}/signed-url:
+    get:
+      tags: [Videos]
+      summary: Generar URL firmada de descarga para un artefacto de analisis
+      description: >
+        Resuelve el artefacto por `artifactId` (o por `_id` del documento) dentro
+        del video indicado y devuelve una URL de descarga firmada en S3 (GetObject).
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: artifactId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL firmada de descarga del artefacto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/S3DownloadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: Artefacto sin storage.s3Key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /videos/{id}/analyzeVideo/{jobId}/artifacts:
+    get:
+      tags: [Videos]
+      summary: Listar artefactos de analisis por job
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Artefactos del job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisArtifactPaginatedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /tournaments:
+    get:
+      tags: [Tournaments]
+      summary: Listar torneos
+      parameters:
+        - in: query
+          name: sport
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [draft, registration_open, in_progress, completed, cancelled]
+      responses:
+        "200":
+          description: Lista de torneos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentListResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Tournaments]
+      summary: Crear torneo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentCreateRequest"
+      responses:
+        "201":
+          description: Torneo creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Recurso duplicado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tournaments/{id}:
+    get:
+      tags: [Tournaments]
+      summary: Obtener torneo por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Torneo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Tournaments]
+      summary: Actualizar torneo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentUpdateRequest"
+      responses:
+        "200":
+          description: Torneo actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tournaments]
+      summary: Eliminar torneo (cascada de equipos, jugadores, partidos y stats)
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Torneo eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteTournamentResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/{id}/generate-matches:
+    post:
+      tags: [Tournaments]
+      summary: Generar fixture de partidos para un torneo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Fixture generado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateTournamentMatchesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/teams:
+    get:
+      tags: [Tournaments]
+      summary: Listar equipos de torneos
+      parameters:
+        - in: query
+          name: tournamentId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de equipos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentTeamListResponse"
+    post:
+      tags: [Tournaments]
+      summary: Crear equipo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentTeamCreateRequest"
+      responses:
+        "201":
+          description: Equipo creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentTeam"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/teams/{id}:
+    get:
+      tags: [Tournaments]
+      summary: Obtener equipo por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Equipo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentTeam"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Tournaments]
+      summary: Actualizar equipo
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentTeamUpdateRequest"
+      responses:
+        "200":
+          description: Equipo actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentTeam"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tournaments]
+      summary: Eliminar equipo (cascada de jugadores/partidos/stats asociados)
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Equipo eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteTeamResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/matches:
+    get:
+      tags: [Tournaments]
+      summary: Listar partidos
+      parameters:
+        - in: query
+          name: tournamentId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: teamId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [scheduled, in_progress, finished, cancelled]
+      responses:
+        "200":
+          description: Lista de partidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatchListResponse"
+    post:
+      tags: [Tournaments]
+      summary: Crear partido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentMatchCreateRequest"
+      responses:
+        "201":
+          description: Partido creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatch"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Recurso duplicado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tournaments/matches/{id}:
+    get:
+      tags: [Tournaments]
+      summary: Obtener partido por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Partido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatch"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Tournaments]
+      summary: Actualizar partido
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentMatchUpdateRequest"
+      responses:
+        "200":
+          description: Partido actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatch"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tournaments]
+      summary: Eliminar partido (cascada de stats asociadas)
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Partido eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteMatchResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/matches/players:
+    get:
+      tags: [Tournaments]
+      summary: Listar jugadores
+      parameters:
+        - in: query
+          name: tournamentId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: teamId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de jugadores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentPlayerListResponse"
+    post:
+      tags: [Tournaments]
+      summary: Crear jugador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentPlayerCreateRequest"
+      responses:
+        "201":
+          description: Jugador creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentPlayer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Recurso duplicado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /tournaments/matches/players/{id}:
+    get:
+      tags: [Tournaments]
+      summary: Obtener jugador por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Jugador
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentPlayer"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Tournaments]
+      summary: Actualizar jugador
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentPlayerUpdateRequest"
+      responses:
+        "200":
+          description: Jugador actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentPlayer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tournaments]
+      summary: Eliminar jugador
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Jugador eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletePlayerResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/matches/match-stats:
+    get:
+      tags: [Tournaments]
+      summary: Listar estadisticas de partido
+      parameters:
+        - in: query
+          name: tournamentId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: matchId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de estadisticas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatchStatListResponse"
+    post:
+      tags: [Tournaments]
+      summary: Crear estadistica de partido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentMatchStatCreateRequest"
+      responses:
+        "201":
+          description: Estadistica creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatchStat"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /tournaments/matches/match-stats/{id}:
+    get:
+      tags: [Tournaments]
+      summary: Obtener estadistica por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Estadistica
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatchStat"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Tournaments]
+      summary: Actualizar estadistica de partido
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentMatchStatUpdateRequest"
+      responses:
+        "200":
+          description: Estadistica actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TournamentMatchStat"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Tournaments]
+      summary: Eliminar estadistica de partido
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Estadistica eliminada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteMatchStatResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /workers/start:
+    post:
+      tags: [Workers]
+      summary: Encolar solicitud para encender workers ECS (demo/manual)
+      description: >
+        Publica un mensaje en la cola SQS de arranque manual de workers.
+        La Lambda consumidora escala el servicio ECS de workers a `desiredCount=1`.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  example: demo_frontend
+                metadata:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "202":
+          description: Solicitud de arranque encolada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Workers start request queued
+                  queueUrl:
+                    type: string
+                    example: https://sqs.us-east-1.amazonaws.com/123456789012/workers-start
+                  messageId:
+                    type: string
+                  payload:
+                    type: object
+                    additionalProperties: true
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /match-sessions:
+    get:
+      tags: [Streaming]
+      summary: Listar sesiones de partido del usuario autenticado
+      description: >
+        Devuelve las sesiones donde el usuario es owner o ha participado en
+        alguna sala. Incluye resumen de salas, clips y duracion acumulada.
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Listado de sesiones del usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchSessionListResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags: [Streaming]
+      summary: Crear sesion de partido
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMatchSessionRequest"
+      responses:
+        "201":
+          description: Sesion creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchSession"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /match-sessions/{id}:
+    delete:
+      tags: [Streaming]
+      summary: Eliminar sesion de partido y recursos asociados
+      description: >
+        Elimina la sesion si el usuario autenticado es el owner. Borra en cascada
+        salas, participantes, segmentos y los objetos S3 referenciados por esos segmentos.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Sesion eliminada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  deletedMatchSessionId:
+                    type: string
+                  deletedRoomsCount:
+                    type: integer
+                  deletedSegmentsCount:
+                    type: integer
+                  deletedS3ObjectsCount:
+                    type: integer
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "502":
+          description: Error al borrar uno o mas objetos en S3
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /match-sessions/{id}/rooms:
+    post:
+      tags: [Streaming]
+      summary: Crear sala para sesion
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "201":
+          description: Sala creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StreamRoom"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /match-sessions/{id}/segments:
+    post:
+      tags: [Streaming]
+      summary: Publicar segmento (clip 20-30s) en sesion/sala
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVideoSegmentRequest"
+      responses:
+        "201":
+          description: Segmento creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateVideoSegmentResponse"
+        "200":
+          description: Segmento idempotente ya existente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateVideoSegmentResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Conflicto de estado o regla de secuencia
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /match-sessions/{id}/timeline:
+    get:
+      tags: [Streaming]
+      summary: Obtener timeline completo de una sesion de partido
+      description: >
+        Devuelve todos los segmentos de la sesion ordenados por `sequence`,
+        incluyendo inicio y fin acumulado para reproducir los clips en secuencia
+        continua desde frontend.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Timeline completo de la sesion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchSessionTimelineResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}:
+    get:
+      tags: [Streaming]
+      summary: Obtener detalle de sala
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Sala y participantes activos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StreamRoomDetails"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}/segments:
+    get:
+      tags: [Streaming]
+      summary: Listar segmentos de sala (polling incremental)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+        - in: query
+          name: afterSequence
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: Segmentos ordenados por secuencia
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/VideoSegment"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}/join:
+    post:
+      tags: [Streaming]
+      summary: Unirse a una sala
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Participante activo en sala
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomParticipant"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}/leave:
+    post:
+      tags: [Streaming]
+      summary: Salir de una sala
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Participante marcado como left
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomParticipant"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}/close:
+    post:
+      tags: [Streaming]
+      summary: Cerrar transmision de sala y sesion asociada
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Stream cerrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CloseStreamResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /rooms/{id}/events:
+    get:
+      tags: [Streaming]
+      summary: Suscripcion SSE de eventos de sala
+      description: >
+        Stream de eventos en vivo. Emite `segment_uploaded` al publicarse
+        segmentos, `stream_closed` al cerrar, y `heartbeat` periodico.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Stream text/event-stream abierto
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /video-stats:
+    post:
+      tags: [Video Stats]
+      summary: Crear o actualizar estadisticas de video (unificado manual/AI)
+      description: >
+        Acepta payload legacy (`statistics.sportType`) y payload unificado con
+        `sportType`, `events`, `teamAName/teamBName`, `teams`, `matchStats`.
+        Si hay `events`, el backend recalcula `matchStats` y `teams` para
+        mantener consistencia. `matchStats` incluye globales por partido
+        (passes, shots, goals, fouls, others) y `teams[].stats` incluye
+        estadisticas por equipo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoStatsCreateRequest"
+      responses:
+        "201":
+          description: Estadisticas creadas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoStats"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /video-stats/football/videos-with-goals:
+    get:
+      tags: [Video Stats]
+      summary: Listar videos con estadisticas de futbol y al menos un gol
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Videos de futbol que tienen goles en estadisticas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FootballVideosWithGoalsResponse"
+              examples:
+                default:
+                  value:
+                    items:
+                      - videoId: "67ed8f71cf3e27c5fe0ce245"
+                        sportType: "football"
+                        teamAName: "Team A"
+                        teamBName: "Team B"
+                        goals:
+                          total: 2
+                          teamA: 1
+                          teamB: 1
+                        summary: "Partido con varias jugadas de gol"
+                        updatedAt: "2026-03-05T18:00:00.000Z"
+                        video:
+                          _id: "67ed8f71cf3e27c5fe0ce245"
+                          s3Key: "match-001.mp4"
+                          uploadedAt: "2026-03-05T17:30:00.000Z"
+                          videoType: "library"
+                          videoUrl: "https://victory-craft.s3.amazonaws.com/match-001.mp4?X-Amz-..."
+                    pagination:
+                      page: 1
+                      limit: 20
+                      total: 1
+                      totalPages: 1
+                      hasNextPage: false
+                      hasPrevPage: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /video-stats/{videoId}:
+    get:
+      tags: [Video Stats]
+      summary: Obtener estadisticas por videoId
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estadisticas del video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoStats"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Video Stats]
+      summary: Actualizar estadisticas por videoId
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoStatsUpdateRequest"
+      responses:
+        "200":
+          description: Estadisticas actualizadas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoStats"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      tags: [Video Stats]
+      summary: Eliminar estadisticas por videoId
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estadisticas eliminadas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /images/upload:
+    post:
+      tags: [Images]
+      summary: Generar URL firmada para subir imagen a S3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectKeyRequest"
+      responses:
+        "200":
+          description: URL firmada de subida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/S3UploadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /notifications:
+    get:
+      tags: [Users]
+      summary: Listar notificaciones (mas recientes primero)
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - in: query
+          name: videoId
+          required: false
+          schema:
+            type: string
+          description: Filtra notificaciones de un video concreto
+        - in: query
+          name: analysisJobId
+          required: false
+          schema:
+            type: string
+          description: Filtra notificaciones de un job concreto
+        - in: query
+          name: type
+          required: false
+          schema:
+            type: string
+            enum: [analysis_queued, analysis_completed, analysis_failed, info]
+          description: Filtra por tipo de notificacion
+      responses:
+        "200":
+          description: Lista de notificaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /notifications/{id}:
+    delete:
+      tags: [Users]
+      summary: Eliminar notificacion consumida
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Notificacion eliminada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /images/get:
+    post:
+      tags: [Images]
+      summary: Generar URL firmada para descargar imagen de S3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectKeyRequest"
+      responses:
+        "200":
+          description: URL firmada de descarga
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/S3DownloadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /concerts:
+    get:
+      tags: [Concerts]
+      summary: Listar conciertos
+      responses:
+        "200":
+          description: Lista de conciertos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Concert"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Concerts]
+      summary: Crear concierto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConcertInput"
+      responses:
+        "201":
+          description: Concierto creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Concert"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /concerts/{id}:
+    get:
+      tags: [Concerts]
+      summary: Obtener concierto por ID
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Concierto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Concert"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Concerts]
+      summary: Actualizar concierto
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConcertUpdateRequest"
+      responses:
+        "200":
+          description: Concierto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Concert"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    delete:
+      tags: [Concerts]
+      summary: Eliminar concierto
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Concierto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    GoogleOAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            openid: OpenID scope
+            email: User email
+            profile: Basic profile
+  parameters:
+    IdParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Solicitud invalida
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: victory-craft-backend
+        timestamp:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        googleSub:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+        profileImage:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserRegisterRequest:
+      type: object
+      required: [username, email, password, firstName, lastName]
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profileImage:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+
+    UserLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+
+    FieldLocation:
+      type: object
+      properties:
+        name:
+          type: string
+        lat:
+          type: number
+        long:
+          type: number
+
+    Field:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [football, padel, tennis]
+        location:
+          $ref: "#/components/schemas/FieldLocation"
+        pricePerHour:
+          type: number
+        imageS3Key:
+          type: string
+        imageUrl:
+          type: string
+        owner:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FieldInput:
+      type: object
+      required: [name, type, pricePerHour, owner]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [football, padel, tennis]
+        location:
+          $ref: "#/components/schemas/FieldLocation"
+        pricePerHour:
+          type: number
+        imageS3Key:
+          type: string
+        owner:
+          type: string
+
+    FieldUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [football, padel, tennis]
+        location:
+          $ref: "#/components/schemas/FieldLocation"
+        pricePerHour:
+          type: number
+        imageS3Key:
+          type: string
+        owner:
+          type: string
+
+    Slot:
+      type: object
+      properties:
+        _id:
+          type: string
+        field:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        isAvailable:
+          type: boolean
+        value:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SlotInput:
+      type: object
+      required: [field, startTime, endTime, value]
+      properties:
+        field:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        isAvailable:
+          type: boolean
+        value:
+          type: number
+
+    SlotUpdateRequest:
+      type: object
+      properties:
+        field:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        isAvailable:
+          type: boolean
+        value:
+          type: number
+
+    Reservation:
+      type: object
+      properties:
+        _id:
+          type: string
+        user:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+        slot:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ReservationInput:
+      type: object
+      required: [user, slot]
+      properties:
+        user:
+          type: string
+        slot:
+          type: string
+
+    ReservationUpdateRequest:
+      type: object
+      properties:
+        user:
+          type: string
+        slot:
+          type: string
+
+    Tournament:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        sport:
+          type: string
+        description:
+          type: string
+        ownerId:
+          type: string
+        status:
+          type: string
+          enum: [draft, registration_open, in_progress, completed, cancelled]
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TournamentCreateRequest:
+      type: object
+      required: [name, sport]
+      properties:
+        name:
+          type: string
+        sport:
+          type: string
+        description:
+          type: string
+        ownerId:
+          type: string
+        status:
+          type: string
+          enum: [draft, registration_open, in_progress, completed, cancelled]
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+
+    TournamentUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        sport:
+          type: string
+        description:
+          type: string
+        ownerId:
+          type: string
+        status:
+          type: string
+          enum: [draft, registration_open, in_progress, completed, cancelled]
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+
+    TournamentListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tournament"
+        total:
+          type: integer
+
+    TournamentTeam:
+      type: object
+      properties:
+        _id:
+          type: string
+        tournamentId:
+          type: string
+        name:
+          type: string
+        shortName:
+          type: string
+        logoUrl:
+          type: string
+        coachName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TournamentTeamCreateRequest:
+      type: object
+      required: [tournamentId, name]
+      properties:
+        tournamentId:
+          type: string
+        name:
+          type: string
+        shortName:
+          type: string
+        logoUrl:
+          type: string
+        coachName:
+          type: string
+
+    TournamentTeamUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        shortName:
+          type: string
+        logoUrl:
+          type: string
+        coachName:
+          type: string
+
+    TournamentTeamListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TournamentTeam"
+        total:
+          type: integer
+
+    TournamentPlayer:
+      type: object
+      properties:
+        _id:
+          type: string
+        teamId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        jerseyNumber:
+          type: number
+        position:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TournamentPlayerCreateRequest:
+      type: object
+      required: [teamId, firstName, lastName]
+      properties:
+        teamId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        jerseyNumber:
+          type: number
+        position:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+
+    TournamentPlayerUpdateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        jerseyNumber:
+          type: number
+        position:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+
+    TournamentPlayerListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TournamentPlayer"
+        total:
+          type: integer
+
+    TournamentMatchScore:
+      type: object
+      required: [home, away]
+      properties:
+        home:
+          type: number
+          minimum: 0
+        away:
+          type: number
+          minimum: 0
+
+    TournamentMatch:
+      type: object
+      properties:
+        _id:
+          type: string
+        homeTeamId:
+          type: string
+        awayTeamId:
+          type: string
+        pairKey:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        venue:
+          type: string
+        round:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, in_progress, finished, cancelled]
+        score:
+          $ref: "#/components/schemas/TournamentMatchScore"
+        winnerTeamId:
+          type: string
+        matchSessionId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TournamentMatchCreateRequest:
+      type: object
+      required: [homeTeamId, awayTeamId]
+      properties:
+        homeTeamId:
+          type: string
+        awayTeamId:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        venue:
+          type: string
+        round:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, in_progress, finished, cancelled]
+        matchSessionId:
+          type: string
+
+    TournamentMatchUpdateRequest:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          format: date-time
+        venue:
+          type: string
+        round:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, in_progress, finished, cancelled]
+        score:
+          $ref: "#/components/schemas/TournamentMatchScore"
+        winnerTeamId:
+          type: string
+        matchSessionId:
+          type: string
+
+    TournamentMatchListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TournamentMatch"
+        total:
+          type: integer
+
+    TournamentMatchStat:
+      type: object
+      properties:
+        _id:
+          type: string
+        matchId:
+          type: string
+        sport:
+          type: string
+        stats:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TournamentMatchStatCreateRequest:
+      type: object
+      required: [matchId, stats]
+      properties:
+        matchId:
+          type: string
+        sport:
+          type: string
+        stats:
+          type: object
+          additionalProperties: true
+
+    TournamentMatchStatUpdateRequest:
+      type: object
+      properties:
+        sport:
+          type: string
+        stats:
+          type: object
+          additionalProperties: true
+
+    TournamentMatchStatListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TournamentMatchStat"
+        total:
+          type: integer
+
+    DeleteTournamentResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        deletedTournamentId:
+          type: string
+        deletedTeamsCount:
+          type: integer
+        deletedMatchesCount:
+          type: integer
+
+    DeleteTeamResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        deletedTeamId:
+          type: string
+        deletedMatchesCount:
+          type: integer
+
+    DeletePlayerResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        deletedPlayerId:
+          type: string
+
+    DeleteMatchResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        deletedMatchId:
+          type: string
+        deletedStatsCount:
+          type: integer
+
+    DeleteMatchStatResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        deletedMatchStatId:
+          type: string
+
+    GenerateTournamentMatchesResponse:
+      type: object
+      properties:
+        tournamentId:
+          type: string
+        teamsCount:
+          type: integer
+        existingMatches:
+          type: integer
+        createdMatches:
+          type: integer
+        totalMatchesAfterGeneration:
+          type: integer
+
+    Video:
+      type: object
+      properties:
+        _id:
+          type: string
+        fieldId:
+          type: string
+          nullable: true
+        slotId:
+          type: string
+          nullable: true
+        videoType:
+          type: string
+          enum: [field, library]
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        s3Key:
+          type: string
+        s3Url:
+          type: string
+        googleAiFileId:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        videoUrl:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+
+    FieldVideo:
+      type: object
+      properties:
+        _id:
+          type: string
+        fieldId:
+          type: string
+        s3Key:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        videoUrl:
+          type: string
+
+    VideoCreateRequest:
+      type: object
+      required: [fieldId, slotId, s3Key]
+      properties:
+        fieldId:
+          type: string
+        slotId:
+          type: string
+        matchId:
+          type: string
+        s3Key:
+          type: string
+
+    VideoLibraryCreateRequest:
+      type: object
+      required: [s3Key]
+      properties:
+        s3Key:
+          type: string
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        s3Url:
+          type: string
+        videoUrl:
+          type: string
+
+    VideoLibraryListItem:
+      type: object
+      properties:
+        _id:
+          type: string
+        s3Key:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        videoUrl:
+          type: string
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+        hasNextPage:
+          type: boolean
+        hasPrevPage:
+          type: boolean
+
+    VideoLibraryPaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/VideoLibraryListItem"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    VideoUpdateRequest:
+      type: object
+      properties:
+        fieldId:
+          type: string
+        slotId:
+          type: string
+        videoType:
+          type: string
+          enum: [field, library]
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        s3Key:
+          type: string
+        s3Url:
+          type: string
+        googleAiFileId:
+          type: string
+
+    ObjectKeyRequest:
+      type: object
+      required: [objectKey]
+      properties:
+        objectKey:
+          type: string
+        fileType:
+          type: string
+        sessionId:
+          type: string
+        filename:
+          type: string
+        contentType:
+          type: string
+        durationSeconds:
+          type: number
+
+    S3UploadResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+        url:
+          type: string
+        presignedUrl:
+          type: string
+        signedUrl:
+          type: string
+        s3Url:
+          type: string
+        fileUrl:
+          type: string
+        publicUrl:
+          type: string
+        objectKey:
+          type: string
+        key:
+          type: string
+        method:
+          type: string
+          example: PUT
+        headers:
+          type: object
+          additionalProperties: true
+
+    S3DownloadResponse:
+      type: object
+      properties:
+        downloadUrl:
+          type: string
+          format: uri
+        objectKey:
+          type: string
+        expiresIn:
+          type: integer
+          description: Tiempo de expiracion de la URL firmada en segundos
+
+    TeamStats:
+      type: object
+      properties:
+        teamName:
+          type: string
+        stats:
+          type: object
+          additionalProperties:
+            type: number
+
+    VideoStats:
+      type: object
+      properties:
+        _id:
+          type: string
+        videoId:
+          type: string
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        teamAName:
+          type: string
+        teamBName:
+          type: string
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamStats"
+        matchStats:
+          type: object
+          properties:
+            passes:
+              $ref: "#/components/schemas/MatchMetric"
+            shots:
+              $ref: "#/components/schemas/MatchMetric"
+            goals:
+              $ref: "#/components/schemas/MatchMetric"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualEvent"
+        summary:
+          type: string
+        generatedByModel:
+          type: string
+          enum:
+            - manual
+            - OpenPose
+            - YOLOv8
+            - DeepSportAnalyzer
+            - BallTrackNet
+            - Gemini-2.0-Flash
+            - custom
+
+    FootballVideoWithGoalsItem:
+      type: object
+      properties:
+        videoId:
+          type: string
+        sportType:
+          type: string
+          enum: [football]
+        teamAName:
+          type: string
+        teamBName:
+          type: string
+        goals:
+          $ref: "#/components/schemas/MatchMetric"
+        summary:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        video:
+          type: object
+          nullable: true
+          properties:
+            _id:
+              type: string
+            s3Key:
+              type: string
+            uploadedAt:
+              type: string
+              format: date-time
+            videoType:
+              type: string
+              enum: [field, library]
+            videoUrl:
+              type: string
+
+    FootballVideosWithGoalsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FootballVideoWithGoalsItem"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+        statistics:
+          type: object
+          properties:
+            sportType:
+              type: string
+            teams:
+              type: array
+              items:
+                $ref: "#/components/schemas/TeamStats"
+            summary:
+              type: string
+            matchStats:
+              type: object
+              properties:
+                passes:
+                  $ref: "#/components/schemas/MatchMetric"
+                shots:
+                  $ref: "#/components/schemas/MatchMetric"
+                goals:
+                  $ref: "#/components/schemas/MatchMetric"
+                fouls:
+                  $ref: "#/components/schemas/MatchMetric"
+                others:
+                  $ref: "#/components/schemas/MatchMetric"
+            events:
+              type: array
+              items:
+                $ref: "#/components/schemas/ManualEvent"
+            teamAName:
+              type: string
+            teamBName:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VideoStatsCreateRequest:
+      type: object
+      required: [videoId]
+      properties:
+        videoId:
+          type: string
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        teamAName:
+          type: string
+        teamBName:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualEvent"
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamStats"
+        matchStats:
+          type: object
+          properties:
+            passes:
+              $ref: "#/components/schemas/MatchMetric"
+            shots:
+              $ref: "#/components/schemas/MatchMetric"
+            goals:
+              $ref: "#/components/schemas/MatchMetric"
+            fouls:
+              $ref: "#/components/schemas/MatchMetric"
+            others:
+              $ref: "#/components/schemas/MatchMetric"
+        summary:
+          type: string
+        statistics:
+          type: object
+          properties:
+            sportType:
+              type: string
+              enum: [football, padel, tennis, basketball, other]
+            teams:
+              type: array
+              items:
+                $ref: "#/components/schemas/TeamStats"
+            matchStats:
+              type: object
+              properties:
+                passes:
+                  $ref: "#/components/schemas/MatchMetric"
+                shots:
+                  $ref: "#/components/schemas/MatchMetric"
+                goals:
+                  $ref: "#/components/schemas/MatchMetric"
+                fouls:
+                  $ref: "#/components/schemas/MatchMetric"
+                others:
+                  $ref: "#/components/schemas/MatchMetric"
+            events:
+              type: array
+              items:
+                $ref: "#/components/schemas/ManualEvent"
+            teamAName:
+              type: string
+            teamBName:
+              type: string
+            summary:
+              type: string
+        generatedByModel:
+          type: string
+          enum:
+            - manual
+            - OpenPose
+            - YOLOv8
+            - DeepSportAnalyzer
+            - BallTrackNet
+            - Gemini-2.0-Flash
+            - custom
+
+    VideoStatsUpdateRequest:
+      type: object
+      properties:
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        teamAName:
+          type: string
+        teamBName:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualEvent"
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamStats"
+        matchStats:
+          type: object
+          properties:
+            passes:
+              $ref: "#/components/schemas/MatchMetric"
+            shots:
+              $ref: "#/components/schemas/MatchMetric"
+            goals:
+              $ref: "#/components/schemas/MatchMetric"
+            fouls:
+              $ref: "#/components/schemas/MatchMetric"
+            others:
+              $ref: "#/components/schemas/MatchMetric"
+        summary:
+          type: string
+        statistics:
+          type: object
+          properties:
+            sportType:
+              type: string
+              enum: [football, padel, tennis, basketball, other]
+            teams:
+              type: array
+              items:
+                $ref: "#/components/schemas/TeamStats"
+            matchStats:
+              type: object
+              properties:
+                passes:
+                  $ref: "#/components/schemas/MatchMetric"
+                shots:
+                  $ref: "#/components/schemas/MatchMetric"
+                goals:
+                  $ref: "#/components/schemas/MatchMetric"
+                fouls:
+                  $ref: "#/components/schemas/MatchMetric"
+                others:
+                  $ref: "#/components/schemas/MatchMetric"
+            events:
+              type: array
+              items:
+                $ref: "#/components/schemas/ManualEvent"
+            teamAName:
+              type: string
+            teamBName:
+              type: string
+            summary:
+              type: string
+        generatedByModel:
+          type: string
+          enum:
+            - manual
+            - OpenPose
+            - YOLOv8
+            - DeepSportAnalyzer
+            - BallTrackNet
+            - Gemini-2.0-Flash
+            - custom
+
+    ManualEvent:
+      type: object
+      required: [id, time, type, team]
+      properties:
+        id:
+          type: string
+        time:
+          type: number
+          minimum: 0
+        type:
+          type: string
+          enum: [pass, shot, goal, foul, other]
+        team:
+          type: string
+          enum: [A, B]
+        note:
+          type: string
+          maxLength: 500
+
+    MatchMetric:
+      type: object
+      required: [total, teamA, teamB]
+      properties:
+        total:
+          type: number
+        teamA:
+          type: number
+        teamB:
+          type: number
+
+    AnalyzeVideoJobRequest:
+      type: object
+      properties:
+        analysisType:
+          type: string
+          enum: [agent_prompt, custom]
+          default: agent_prompt
+        prompt:
+          type: string
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        input:
+          type: object
+          additionalProperties: true
+
+    LastGeminiTokenUsageResponse:
+      type: object
+      properties:
+        model:
+          type: string
+        at:
+          type: string
+          format: date-time
+        usageMetadata:
+          type: object
+          additionalProperties: true
+        totalTokenCount:
+          type: integer
+          nullable: true
+
+    GeminiTokenUsageSummaryResponse:
+      type: object
+      properties:
+        last:
+          $ref: "#/components/schemas/LastGeminiTokenUsageResponse"
+        totals:
+          type: object
+          properties:
+            requests:
+              type: integer
+            totalTokenCount:
+              type: integer
+            promptTokenCount:
+              type: integer
+            candidatesTokenCount:
+              type: integer
+        historySize:
+          type: integer
+        recent:
+          type: array
+          items:
+            $ref: "#/components/schemas/LastGeminiTokenUsageResponse"
+
+    WorkerToolConfig:
+      type: object
+      properties:
+        toolName:
+          type: string
+        outputDir:
+          type: string
+        yoloModel:
+          type: string
+        processFps:
+          type: number
+        conf:
+          type: number
+        outputPath:
+          type: string
+        bucket:
+          type: string
+        destinationPrefix:
+          type: string
+        analysisPrompt:
+          type: string
+
+    AnalyzeAgentVideoJobRequest:
+      type: object
+      required: [prompt]
+      properties:
+        analysisType:
+          type: string
+          enum: [agent_prompt, custom]
+          default: agent_prompt
+        prompt:
+          type: string
+        sportType:
+          type: string
+          enum: [football, padel, tennis, basketball, other]
+        input:
+          type: object
+          additionalProperties: true
+        correlationId:
+          type: string
+          description: >
+            ID estable para correlacion end-to-end. Si no se envia, el backend usa el `jobId`.
+        traceId:
+          type: string
+        maxAttempts:
+          type: integer
+          minimum: 1
+          default: 5
+        outputS3Prefix:
+          type: string
+        localJobDir:
+          type: string
+        render:
+          $ref: "#/components/schemas/WorkerToolConfig"
+        stats:
+          $ref: "#/components/schemas/WorkerToolConfig"
+        upload:
+          $ref: "#/components/schemas/WorkerToolConfig"
+        analysis:
+          $ref: "#/components/schemas/WorkerToolConfig"
+
+    WorkerTracing:
+      type: object
+      required: [requestId, correlationId, traceId]
+      properties:
+        requestId:
+          type: string
+        correlationId:
+          type: string
+        traceId:
+          type: string
+      additionalProperties: true
+
+    WorkerRetry:
+      type: object
+      required: [attempt, maxAttempts]
+      properties:
+        attempt:
+          type: integer
+        maxAttempts:
+          type: integer
+      additionalProperties: true
+
+    WorkerInboundEvent:
+      type: object
+      required:
+        [contractVersion, eventId, eventType, occurredAt, tracing, idempotencyKey, retry, payload]
+      properties:
+        contractVersion:
+          type: string
+          example: "1.0"
+        eventId:
+          type: string
+        eventType:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        tracing:
+          $ref: "#/components/schemas/WorkerTracing"
+        idempotencyKey:
+          type: string
+        retry:
+          $ref: "#/components/schemas/WorkerRetry"
+        payload:
+          type: object
+          additionalProperties: true
+      additionalProperties: true
+
+    AnalysisJob:
+      type: object
+      properties:
+        _id:
+          type: string
+        videoId:
+          type: string
+        analysisType:
+          type: string
+          enum: [agent_prompt, custom]
+        status:
+          type: string
+          enum: [queued, started, in_progress, completed, failed]
+        input:
+          type: object
+          additionalProperties: true
+        output:
+          type: object
+          additionalProperties: true
+        errorMessage:
+          type: string
+        sqsMessageId:
+          type: string
+        workerEventId:
+          type: string
+        workerRequestId:
+          type: string
+        workerCorrelationId:
+          type: string
+        workerTraceId:
+          type: string
+        workerIdempotencyKey:
+          type: string
+        workerExecutionId:
+          type: string
+        workerResultId:
+          type: string
+        workerResultStatus:
+          type: string
+          enum: [SUCCESS, PARTIAL_SUCCESS, FAILED]
+        workerProducedAt:
+          type: string
+          format: date-time
+        workerSummary:
+          type: string
+        primaryArtifact:
+          $ref: "#/components/schemas/AnalysisArtifactFrontendProjection"
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalysisArtifactFrontendProjection"
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AnalysisAgentJob:
+      allOf:
+        - $ref: "#/components/schemas/AnalysisJob"
+        - type: object
+          properties:
+            workerEvent:
+              $ref: "#/components/schemas/WorkerInboundEvent"
+
+    AnalyzeAgentVideoJobResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        job:
+          $ref: "#/components/schemas/AnalysisAgentJob"
+
+    CreateMatchSessionRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+
+    MatchSession:
+      type: object
+      properties:
+        _id:
+          type: string
+        ownerId:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum: [active, ended]
+        endedAt:
+          type: string
+          format: date-time
+        totalDurationSec:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MatchSessionListItem:
+      allOf:
+        - $ref: "#/components/schemas/MatchSession"
+        - type: object
+          properties:
+            accessRole:
+              type: string
+              enum: [owner, participant]
+            roomCount:
+              type: integer
+            clipCount:
+              type: integer
+            lastSequence:
+              type: integer
+            computedTotalDurationSec:
+              type: number
+
+    MatchSessionListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSessionListItem"
+        total:
+          type: integer
+
+    StreamRoom:
+      type: object
+      properties:
+        _id:
+          type: string
+        matchSessionId:
+          type: string
+        ownerId:
+          type: string
+        status:
+          type: string
+          enum: [active, closed]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    RoomParticipant:
+      type: object
+      properties:
+        _id:
+          type: string
+        roomId:
+          type: string
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [owner, participant]
+        joinedAt:
+          type: string
+          format: date-time
+        leftAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, left]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    StreamRoomDetails:
+      allOf:
+        - $ref: "#/components/schemas/StreamRoom"
+        - type: object
+          properties:
+            participants:
+              type: array
+              items:
+                $ref: "#/components/schemas/RoomParticipant"
+            matchSession:
+              $ref: "#/components/schemas/MatchSessionSummary"
+
+    CreateVideoSegmentRequest:
+      type: object
+      required:
+        [roomId, sequence, durationSec, startOffsetSec, endOffsetSec, s3Key, videoUrl]
+      properties:
+        roomId:
+          type: string
+        libraryVideoId:
+          type: string
+        sequence:
+          type: integer
+          minimum: 0
+        durationSec:
+          type: number
+          minimum: 0
+        startOffsetSec:
+          type: number
+          minimum: 0
+        endOffsetSec:
+          type: number
+          minimum: 0
+        s3Key:
+          type: string
+        videoUrl:
+          type: string
+          format: uri
+
+    VideoSegment:
+      type: object
+      properties:
+        _id:
+          type: string
+        matchSessionId:
+          type: string
+        roomId:
+          type: string
+        libraryVideoId:
+          type: string
+        sequence:
+          type: integer
+        durationSec:
+          type: number
+        startOffsetSec:
+          type: number
+        endOffsetSec:
+          type: number
+        s3Key:
+          type: string
+        videoUrl:
+          type: string
+        signedDownloadUrl:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateVideoSegmentResponse:
+      type: object
+      properties:
+        created:
+          type: boolean
+        totalDurationSec:
+          type: number
+        lastSequence:
+          type: integer
+        sequenceInfo:
+          type: object
+          properties:
+            expectedNextSequence:
+              type: integer
+            hasGap:
+              type: boolean
+        segment:
+          $ref: "#/components/schemas/VideoSegment"
+
+    MatchSessionTimelineItem:
+      allOf:
+        - $ref: "#/components/schemas/VideoSegment"
+        - type: object
+          properties:
+            timelineStartSec:
+              type: number
+            timelineEndSec:
+              type: number
+            sequenceGapFromPrevious:
+              type: integer
+            isContiguousWithPrevious:
+              type: boolean
+
+    MatchSessionTimelineResponse:
+      type: object
+      properties:
+        matchSession:
+          type: object
+          properties:
+            _id:
+              type: string
+            ownerId:
+              type: string
+            title:
+              type: string
+            status:
+              type: string
+              enum: [active, ended]
+            endedAt:
+              type: string
+              format: date-time
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            persistedTotalDurationSec:
+              type: number
+            computedTotalDurationSec:
+              type: number
+            roomCount:
+              type: integer
+        timeline:
+          type: object
+          properties:
+            clipCount:
+              type: integer
+            totalDurationSec:
+              type: number
+            firstSequence:
+              type: integer
+            lastSequence:
+              type: integer
+            expectedSegmentCount:
+              type: integer
+            missingSegmentsCount:
+              type: integer
+            hasSequenceGaps:
+              type: boolean
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSessionTimelineItem"
+
+    MatchSessionSummary:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum: [active, ended]
+        totalDurationSec:
+          type: number
+        endedAt:
+          type: string
+          format: date-time
+
+    CloseStreamResponse:
+      type: object
+      properties:
+        roomId:
+          type: string
+        matchSessionId:
+          type: string
+        endedAt:
+          type: string
+          format: date-time
+        totalDurationSec:
+          type: number
+        lastSequence:
+          type: integer
+        status:
+          type: string
+          enum: [closed]
+
+    Notification:
+      type: object
+      properties:
+        _id:
+          type: string
+        type:
+          type: string
+          enum: [analysis_queued, analysis_completed, analysis_failed, info]
+        message:
+          type: string
+        videoId:
+          type: string
+        analysisJobId:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+          description: >
+            En el flujo `analyzeAgent` incluye metadata de seguimiento como
+            `flow`, `provider`, `stage`, `requestId`, `correlationId`,
+            `traceId`, `eventId`, `executionId`, `resultId` e `idempotencyKey`.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VideoAnalysisRecord:
+      type: object
+      properties:
+        _id:
+          type: string
+        videoId:
+          type: string
+        analysisJobId:
+          type: string
+        analysisType:
+          type: string
+          enum: [agent_prompt, custom]
+        input:
+          type: object
+          additionalProperties: true
+        output:
+          type: object
+          additionalProperties: true
+        params:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VideoAnalysisRecordPaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/VideoAnalysisRecord"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    DeleteVideoAnalysisRecordResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Analysis record deleted
+        record:
+          $ref: "#/components/schemas/VideoAnalysisRecord"
+
+    AnalysisArtifactFrontendProjection:
+      type: object
+      properties:
+        artifactId:
+          type: string
+        artifactType:
+          type: string
+          enum: [json_result, json_stats, rendered_video, image, text_report, zip, other]
+        role:
+          type: string
+          enum: [primary_output, supporting_output, debug, preview, final_report]
+        title:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        stepName:
+          type: string
+        toolName:
+          type: string
+        isPrimary:
+          type: boolean
+        mimeType:
+          type: string
+        storage:
+          $ref: "#/components/schemas/ArtifactStorage"
+        preview:
+          type: object
+          additionalProperties: true
+
+    ArtifactStorage:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [s3]
+        status:
+          type: string
+          enum: [generated, uploaded, failed]
+        s3Bucket:
+          type: string
+        s3Key:
+          type: string
+        s3Uri:
+          type: string
+
+    AnalysisArtifact:
+      type: object
+      properties:
+        _id:
+          type: string
+        videoId:
+          type: string
+        analysisJobId:
+          type: string
+        flow:
+          type: string
+          enum: [gemini, agent]
+        producer:
+          type: string
+          enum: [gemini, mcp_worker_agent, unknown]
+        executionId:
+          type: string
+        resultId:
+          type: string
+        artifactId:
+          type: string
+        artifactType:
+          type: string
+          enum: [json_result, json_stats, rendered_video, image, text_report, zip, other]
+        role:
+          type: string
+          enum: [primary_output, supporting_output, debug, preview, final_report]
+        promptKey:
+          type: string
+        promptVersion:
+          type: string
+        storage:
+          $ref: "#/components/schemas/ArtifactStorage"
+        mimeType:
+          type: string
+        fileSizeBytes:
+          type: number
+        filename:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        stepName:
+          type: string
+        toolName:
+          type: string
+        isPrimary:
+          type: boolean
+        schemaName:
+          type: string
+        schemaVersion:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        preview:
+          type: object
+          additionalProperties: true
+        requestId:
+          type: string
+        correlationId:
+          type: string
+        resultStatus:
+          type: string
+          enum: [SUCCESS, PARTIAL_SUCCESS, FAILED]
+        summary:
+          type: string
+        producedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AnalysisArtifactPaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalysisArtifact"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    ConcertLocation:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    Concert:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        ensemble:
+          type: string
+        repertoire:
+          type: array
+          items:
+            type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          $ref: "#/components/schemas/ConcertLocation"
+        venue:
+          type: string
+        ticketPrice:
+          type: number
+        description:
+          type: string
+        imageUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ConcertInput:
+      type: object
+      required:
+        [name, ensemble, repertoire, date, location, venue, ticketPrice]
+      properties:
+        name:
+          type: string
+        ensemble:
+          type: string
+        repertoire:
+          type: array
+          items:
+            type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          $ref: "#/components/schemas/ConcertLocation"
+        venue:
+          type: string
+        ticketPrice:
+          type: number
+        description:
+          type: string
+        imageUrl:
+          type: string
+
+    ConcertUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        ensemble:
+          type: string
+        repertoire:
+          type: array
+          items:
+            type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          $ref: "#/components/schemas/ConcertLocation"
+        venue:
+          type: string
+        ticketPrice:
+          type: number
+        description:
+          type: string
+        imageUrl:
+          type: string

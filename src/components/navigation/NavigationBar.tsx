@@ -122,6 +122,13 @@ const NavigationBar: React.FC = () => {
               >
                 Partidos
               </button>
+              <button
+                type="button"
+                className={getNavLinkClassName("/tournaments")}
+                onClick={() => handleNavigate("/tournaments")}
+              >
+                Torneos
+              </button>
 
               <button
                 type="button"
