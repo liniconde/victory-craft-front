@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import type { Field } from "../../../../interfaces/FieldInterfaces";
 import { useAuth } from "../../../../context/AuthContext";
+import { getFields } from "../../../../services/field/fieldService";
 import { useTournamentsModule } from "../../../hooks/useTournamentsModule";
 import {
   MATCH_STATUS_OPTIONS,
@@ -66,6 +69,7 @@ const createPlayerInitialState = (): TournamentPlayerCreateRequest => ({
 const createMatchInitialState = (): TournamentMatchCreateRequest => ({
   homeTeamId: "",
   awayTeamId: "",
+  fieldId: undefined,
   scheduledAt: "",
   venue: "",
   round: "",
@@ -133,14 +137,17 @@ interface TournamentsDashboardDataContextValue {
   players: TournamentPlayer[];
   matches: TournamentMatch[];
   matchStats: TournamentMatchStat[];
+  fieldCatalog: Field[];
   teamCatalog: TournamentTeam[];
   matchCatalog: TournamentMatch[];
   tournamentMap: Map<string, Tournament>;
   teamMap: Map<string, TournamentTeam>;
+  fieldMap: Map<string, Field>;
   tournamentOptions: { value: string; label: string }[];
   playerTeamOptions: { value: string; label: string }[];
   matchTeamOptions: { value: string; label: string }[];
   statMatchOptions: { value: string; label: string }[];
+  fieldOptions: { value: string; label: string }[];
   tournamentFilters: TournamentFilters;
   setTournamentFilters: React.Dispatch<React.SetStateAction<TournamentFilters>>;
   teamFilters: TeamFilters;
@@ -217,6 +224,7 @@ interface TournamentsDashboardDataContextValue {
   loadMatchStats: () => Promise<void>;
   loadTeamCatalog: () => Promise<void>;
   loadMatchCatalog: () => Promise<void>;
+  loadFieldCatalog: () => Promise<void>;
 }
 
 const TournamentsDashboardDataContext = createContext<TournamentsDashboardDataContextValue | undefined>(undefined);
@@ -230,6 +238,7 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
   const [players, setPlayers] = useState<TournamentPlayer[]>([]);
   const [matches, setMatches] = useState<TournamentMatch[]>([]);
   const [matchStats, setMatchStats] = useState<TournamentMatchStat[]>([]);
+  const [fieldCatalog, setFieldCatalog] = useState<Field[]>([]);
   const [teamCatalog, setTeamCatalog] = useState<TournamentTeam[]>([]);
   const [matchCatalog, setMatchCatalog] = useState<TournamentMatch[]>([]);
 
@@ -269,6 +278,7 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
 
   const tournamentMap = useMemo(() => new Map(tournaments.map((item) => [item._id, item])), [tournaments]);
   const teamMap = useMemo(() => new Map(teamCatalog.map((item) => [item._id, item])), [teamCatalog]);
+  const fieldMap = useMemo(() => new Map(fieldCatalog.map((item) => [item._id, item])), [fieldCatalog]);
 
   const setLoading = (setter: React.Dispatch<React.SetStateAction<SectionFeedback>>) =>
     setter({ loading: true, error: null, success: null });
@@ -365,12 +375,21 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
     }
   };
 
+  const loadFieldCatalog = async () => {
+    try {
+      const response = await getFields();
+      setFieldCatalog(response || []);
+    } catch (error) {
+      console.error("Error loading field catalog:", error);
+    }
+  };
+
   useEffect(() => { void loadTournaments(); }, [tournamentFilters.sport, tournamentFilters.status]);
   useEffect(() => { void loadTeams(); }, [teamFilters.tournamentId]);
   useEffect(() => { void loadPlayers(); }, [playerFilters.tournamentId, playerFilters.teamId]);
   useEffect(() => { void loadMatches(); }, [matchFilters.tournamentId, matchFilters.teamId, matchFilters.status]);
   useEffect(() => { void loadMatchStats(); }, [matchStatFilters.tournamentId, matchStatFilters.matchId]);
-  useEffect(() => { void loadTeamCatalog(); void loadMatchCatalog(); }, []);
+  useEffect(() => { void loadTeamCatalog(); void loadMatchCatalog(); void loadFieldCatalog(); }, []);
 
   const resetTournamentForm = () => {
     setEditingTournament(null);
@@ -485,19 +504,26 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
 
   const handleMatchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const payload = {
+    const basePayload = {
       ...matchForm,
       scheduledAt: toApiDateTime(matchForm.scheduledAt),
       matchSessionId: matchForm.matchSessionId || undefined,
     };
-    const errors = validateMatch(payload);
+    const errors = validateMatch(basePayload);
+    if (typeof matchForm.fieldId === "string" && matchForm.fieldId && !fieldMap.has(matchForm.fieldId)) {
+      errors.fieldId = "La cancha seleccionada no existe en el sistema.";
+    }
     setMatchErrors(errors);
     if (Object.keys(errors).length > 0) return;
     setLoading(setMatchFeedback);
     try {
       if (editingMatch) {
+        const updatePayload = {
+          ...basePayload,
+          fieldId: matchForm.fieldId ? matchForm.fieldId : null,
+        };
         await api.updateMatch(editingMatch._id, {
-          ...payload,
+          ...updatePayload,
           score:
             matchForm.status === "finished" || editingMatch.score
               ? { home: matchFormScoreHome, away: matchFormScoreAway }
@@ -506,13 +532,33 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
         });
         setMatchFeedback({ loading: false, error: null, success: "Partido actualizado." });
       } else {
-        await api.createMatch(payload);
+        const createPayload = {
+          ...basePayload,
+          fieldId: matchForm.fieldId ? matchForm.fieldId : undefined,
+        };
+        await api.createMatch(createPayload);
         setMatchFeedback({ loading: false, error: null, success: "Partido creado." });
       }
       resetMatchForm();
       await Promise.all([loadMatches(), loadMatchCatalog()]);
     } catch (error) {
       console.error("Error saving match:", error);
+      if (
+        axios.isAxiosError(error) &&
+        error.response?.status === 404 &&
+        error.response.data?.code === "field_not_found"
+      ) {
+        setMatchErrors((current) => ({
+          ...current,
+          fieldId: "La cancha seleccionada ya no existe.",
+        }));
+        setMatchFeedback({
+          loading: false,
+          error: "La cancha seleccionada ya no existe.",
+          success: null,
+        });
+        return;
+      }
       setMatchFeedback({ loading: false, error: "No se pudo guardar el partido.", success: null });
     }
   };
@@ -581,6 +627,17 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
     label: `${team.name}${team.shortName ? ` (${team.shortName})` : ""}`,
   }));
 
+  const fieldOptions = fieldCatalog.map((field) => ({
+    value: field._id,
+    label: [
+      field.name,
+      field.location?.name || "",
+      field.type || "",
+    ]
+      .filter(Boolean)
+      .join(" · "),
+  }));
+
   const playerTeamOptions = teamCatalog
     .filter((team) => !playerFilters.tournamentId || team.tournamentId === playerFilters.tournamentId)
     .map((team) => ({ value: team._id, label: team.name }));
@@ -602,14 +659,17 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
     players,
     matches,
     matchStats,
+    fieldCatalog,
     teamCatalog,
     matchCatalog,
     tournamentMap,
     teamMap,
+    fieldMap,
     tournamentOptions,
     playerTeamOptions,
     matchTeamOptions,
     statMatchOptions,
+    fieldOptions,
     tournamentFilters,
     setTournamentFilters,
     teamFilters,
@@ -686,6 +746,7 @@ export const TournamentsDashboardDataProvider: React.FC<{ children: React.ReactN
     loadMatchStats,
     loadTeamCatalog,
     loadMatchCatalog,
+    loadFieldCatalog,
   } satisfies TournamentsDashboardDataContextValue;
 
   return (

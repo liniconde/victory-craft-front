@@ -288,15 +288,431 @@ export const PlayersSection: React.FC = () => {
 
 export const MatchesSection: React.FC = () => {
   const data = useTournamentsDashboardData();
-  const { matches, teamMap, tournamentOptions, matchTeamOptions, matchFilters, setMatchFilters, matchFeedback, editingMatch, setEditingMatch, matchForm, setMatchForm, matchFormScoreHome, setMatchFormScoreHome, matchFormScoreAway, setMatchFormScoreAway, matchFormWinnerTeamId, setMatchFormWinnerTeamId, matchErrors, resetMatchForm, handleMatchSubmit, deleteWithConfirmation, api, MATCH_STATUS_OPTIONS, loadMatches, loadMatchCatalog, loadMatchStats } = data;
+  const {
+    matches,
+    teamMap,
+    fieldMap,
+    tournamentOptions,
+    matchTeamOptions,
+    fieldOptions,
+    matchFilters,
+    setMatchFilters,
+    matchFeedback,
+    editingMatch,
+    setEditingMatch,
+    matchForm,
+    setMatchForm,
+    matchFormScoreHome,
+    setMatchFormScoreHome,
+    matchFormScoreAway,
+    setMatchFormScoreAway,
+    matchFormWinnerTeamId,
+    setMatchFormWinnerTeamId,
+    matchErrors,
+    resetMatchForm,
+    handleMatchSubmit,
+    deleteWithConfirmation,
+    api,
+    MATCH_STATUS_OPTIONS,
+    loadMatches,
+    loadMatchCatalog,
+    loadMatchStats,
+  } = data;
+
+  const syncVenueFromField = (fieldId: string, currentVenue?: string) =>
+    fieldId ? fieldMap.get(fieldId)?.name || currentVenue || "" : currentVenue || "";
+
+  const buildMatchLabel = (homeTeamId: string, awayTeamId: string) =>
+    `${teamMap.get(homeTeamId)?.name || homeTeamId} vs ${teamMap.get(awayTeamId)?.name || awayTeamId}`;
+
+  const openMatchSessionTimeline = (matchSessionId: string) => {
+    const url = `/fields/videos/subpages/streaming/timeline?matchSessionId=${encodeURIComponent(matchSessionId)}`;
+    window.location.assign(url);
+  };
+
+  const openRecordingSetup = (matchId: string, homeTeamId: string, awayTeamId: string) => {
+    const matchLabel = buildMatchLabel(homeTeamId, awayTeamId);
+    const params = new URLSearchParams({
+      tournamentMatchId: matchId,
+      title: matchLabel,
+      autoCreateSession: "1",
+    });
+    window.location.assign(`/fields/videos/subpages/streaming/recording?${params.toString()}`);
+  };
+
   return (
     <article className="tournaments-section-card">
-      <div className="tournaments-section-card__header"><div><h2>Partidos</h2><p>Programacion, session streaming y marcador.</p></div></div>
-      <div className="tournaments-filters tournaments-filters--three"><select className="tournaments-input" value={matchFilters.tournamentId || ""} onChange={(event)=>setMatchFilters((current: MatchFilters)=>({...current,tournamentId:event.target.value,teamId:""}))}><option value="">Todos los torneos</option>{tournamentOptions.map((option)=><option key={option.value} value={option.value}>{option.label}</option>)}</select><select className="tournaments-input" value={matchFilters.teamId || ""} onChange={(event)=>setMatchFilters((current: MatchFilters)=>({...current,teamId:event.target.value}))}><option value="">Todos los equipos</option>{matchTeamOptions.map((option)=><option key={option.value} value={option.value}>{option.label}</option>)}</select><select className="tournaments-input" value={matchFilters.status || ""} onChange={(event)=>setMatchFilters((current: MatchFilters)=>({...current,status:event.target.value as MatchFilters["status"]}))}><option value="">Todos los estados</option>{MATCH_STATUS_OPTIONS.map((status)=><option key={status} value={status}>{humanizeLabel(status)}</option>)}</select></div>
+      <div className="tournaments-section-card__header">
+        <div>
+          <h2>Partidos</h2>
+          <p>Programacion, session streaming, cancha y marcador.</p>
+        </div>
+      </div>
+
+      <div className="tournaments-filters tournaments-filters--three">
+        <select
+          className="tournaments-input"
+          value={matchFilters.tournamentId || ""}
+          onChange={(event) =>
+            setMatchFilters((current: MatchFilters) => ({
+              ...current,
+              tournamentId: event.target.value,
+              teamId: "",
+            }))
+          }
+        >
+          <option value="">Todos los torneos</option>
+          {tournamentOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="tournaments-input"
+          value={matchFilters.teamId || ""}
+          onChange={(event) =>
+            setMatchFilters((current: MatchFilters) => ({
+              ...current,
+              teamId: event.target.value,
+            }))
+          }
+        >
+          <option value="">Todos los equipos</option>
+          {matchTeamOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="tournaments-input"
+          value={matchFilters.status || ""}
+          onChange={(event) =>
+            setMatchFilters((current: MatchFilters) => ({
+              ...current,
+              status: event.target.value as MatchFilters["status"],
+            }))
+          }
+        >
+          <option value="">Todos los estados</option>
+          {MATCH_STATUS_OPTIONS.map((status) => (
+            <option key={status} value={status}>
+              {humanizeLabel(status)}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {matchFeedback.error && <SectionNotice type="error" message={matchFeedback.error} />}
       {matchFeedback.success && <SectionNotice type="success" message={matchFeedback.success} />}
-      <div className="tournaments-table-shell"><table className="tournaments-table"><thead><tr><th>Partido</th><th>Fecha</th><th>Estado</th><th>Streaming</th><th>Acciones</th></tr></thead><tbody>{matches.map((item)=><tr key={item._id}><td>{teamMap.get(item.homeTeamId)?.name || item.homeTeamId} vs {teamMap.get(item.awayTeamId)?.name || item.awayTeamId}</td><td>{formatDateTime(item.scheduledAt)}</td><td>{humanizeLabel(item.status)}</td><td>{item.matchSessionId || "-"}</td><td><div className="tournaments-actions"><button className="tournaments-button tournaments-button--ghost" onClick={()=>{setEditingMatch(item);setMatchForm({homeTeamId:item.homeTeamId,awayTeamId:item.awayTeamId,scheduledAt:toInputDateTime(item.scheduledAt),venue:item.venue||"",round:item.round||"",status:item.status||"scheduled",matchSessionId:item.matchSessionId||""});setMatchFormScoreHome(item.score?.home || 0);setMatchFormScoreAway(item.score?.away || 0);setMatchFormWinnerTeamId(item.winnerTeamId || "");}}>Editar</button><button className="tournaments-button tournaments-button--danger" onClick={()=>deleteWithConfirmation("el partido", async()=>{await api.deleteMatch(item._id);await Promise.all([loadMatches(), loadMatchCatalog(), loadMatchStats()]);})}>Eliminar</button></div></td></tr>)}</tbody></table>{!matchFeedback.loading && matches.length===0 && <div className="tournaments-empty">No hay partidos para los filtros actuales.</div>}</div>
-      <form className="tournaments-form" onSubmit={handleMatchSubmit}><div className="tournaments-form__header"><h3>{editingMatch ? "Editar partido" : "Crear partido"}</h3>{editingMatch && <button type="button" className="tournaments-link-button" onClick={resetMatchForm}>Cancelar edicion</button>}</div><div className="tournaments-form-grid"><label><span>Equipo local</span><select className="tournaments-input" value={matchForm.homeTeamId} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,homeTeamId:event.target.value}))}><option value="">Selecciona equipo</option>{matchTeamOptions.map((option)=><option key={option.value} value={option.value}>{option.label}</option>)}</select>{matchErrors.homeTeamId && <small>{matchErrors.homeTeamId}</small>}</label><label><span>Equipo visitante</span><select className="tournaments-input" value={matchForm.awayTeamId} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,awayTeamId:event.target.value}))}><option value="">Selecciona equipo</option>{matchTeamOptions.map((option)=><option key={option.value} value={option.value}>{option.label}</option>)}</select>{matchErrors.awayTeamId && <small>{matchErrors.awayTeamId}</small>}</label><label><span>Programado para</span><input type="datetime-local" className="tournaments-input" value={matchForm.scheduledAt || ""} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,scheduledAt:event.target.value}))} /></label><label><span>Estado</span><select className="tournaments-input" value={matchForm.status || "scheduled"} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,status:event.target.value as TournamentMatchCreateRequest["status"]}))}>{MATCH_STATUS_OPTIONS.map((status)=><option key={status} value={status}>{humanizeLabel(status)}</option>)}</select></label><label><span>Ronda</span><input className="tournaments-input" value={matchForm.round || ""} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,round:event.target.value}))} /></label><label><span>Venue</span><input className="tournaments-input" value={matchForm.venue || ""} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,venue:event.target.value}))} /></label><label><span>matchSessionId</span><input className="tournaments-input" value={matchForm.matchSessionId || ""} onChange={(event)=>setMatchForm((current: TournamentMatchCreateRequest)=>({...current,matchSessionId:event.target.value}))} /></label>{editingMatch && <><label><span>Marcador local</span><input type="number" className="tournaments-input" value={matchFormScoreHome} onChange={(event)=>setMatchFormScoreHome(Number(event.target.value) || 0)} /></label><label><span>Marcador visitante</span><input type="number" className="tournaments-input" value={matchFormScoreAway} onChange={(event)=>setMatchFormScoreAway(Number(event.target.value) || 0)} /></label><label><span>Ganador</span><select className="tournaments-input" value={matchFormWinnerTeamId} onChange={(event)=>setMatchFormWinnerTeamId(event.target.value)}><option value="">Sin ganador</option>{matchTeamOptions.map((option)=><option key={option.value} value={option.value}>{option.label}</option>)}</select></label></>}</div><div className="tournaments-actions tournaments-actions--end"><button className="tournaments-button" type="submit">{editingMatch ? "Guardar partido" : "Crear partido"}</button></div></form>
+
+      <div className="tournaments-table-shell">
+        <table className="tournaments-table">
+          <thead>
+            <tr>
+              <th>Partido</th>
+              <th>Cancha</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Streaming</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matches.map((item) => (
+              <tr key={item._id}>
+                <td>
+                  {teamMap.get(item.homeTeamId)?.name || item.homeTeamId} vs{" "}
+                  {teamMap.get(item.awayTeamId)?.name || item.awayTeamId}
+                </td>
+                <td>{item.fieldId ? fieldMap.get(item.fieldId)?.name || item.fieldId : "Sin cancha"}</td>
+                <td>{formatDateTime(item.scheduledAt)}</td>
+                <td>{humanizeLabel(item.status)}</td>
+                <td>
+                  {item.matchSessionId ? (
+                    <button
+                      type="button"
+                      className="tournaments-button tournaments-button--secondary"
+                      onClick={() => openMatchSessionTimeline(item.matchSessionId as string)}
+                    >
+                      Ir al match session
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="tournaments-button"
+                      onClick={() =>
+                        openRecordingSetup(item._id, item.homeTeamId, item.awayTeamId)
+                      }
+                    >
+                      Crear match session
+                    </button>
+                  )}
+                </td>
+                <td>
+                  <div className="tournaments-actions">
+                    <button
+                      className="tournaments-button tournaments-button--ghost"
+                      onClick={() => {
+                        setEditingMatch(item);
+                        setMatchForm({
+                          homeTeamId: item.homeTeamId,
+                          awayTeamId: item.awayTeamId,
+                          fieldId: item.fieldId || undefined,
+                          scheduledAt: toInputDateTime(item.scheduledAt),
+                          venue: item.venue || "",
+                          round: item.round || "",
+                          status: item.status || "scheduled",
+                        });
+                        setMatchFormScoreHome(item.score?.home || 0);
+                        setMatchFormScoreAway(item.score?.away || 0);
+                        setMatchFormWinnerTeamId(item.winnerTeamId || "");
+                      }}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="tournaments-button tournaments-button--danger"
+                      onClick={() =>
+                        deleteWithConfirmation("el partido", async () => {
+                          await api.deleteMatch(item._id);
+                          await Promise.all([loadMatches(), loadMatchCatalog(), loadMatchStats()]);
+                        })
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!matchFeedback.loading && matches.length === 0 && (
+          <div className="tournaments-empty">No hay partidos para los filtros actuales.</div>
+        )}
+      </div>
+
+      <form className="tournaments-form" onSubmit={handleMatchSubmit}>
+        <div className="tournaments-form__header">
+          <h3>{editingMatch ? "Editar partido" : "Crear partido"}</h3>
+          {editingMatch && (
+            <button type="button" className="tournaments-link-button" onClick={resetMatchForm}>
+              Cancelar edicion
+            </button>
+          )}
+        </div>
+
+        <div className="tournaments-form-grid">
+          <label>
+            <span>Equipo local</span>
+            <select
+              className="tournaments-input"
+              value={matchForm.homeTeamId}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  homeTeamId: event.target.value,
+                }))
+              }
+            >
+              <option value="">Selecciona equipo</option>
+              {matchTeamOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {matchErrors.homeTeamId && <small>{matchErrors.homeTeamId}</small>}
+          </label>
+
+          <label>
+            <span>Equipo visitante</span>
+            <select
+              className="tournaments-input"
+              value={matchForm.awayTeamId}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  awayTeamId: event.target.value,
+                }))
+              }
+            >
+              <option value="">Selecciona equipo</option>
+              {matchTeamOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {matchErrors.awayTeamId && <small>{matchErrors.awayTeamId}</small>}
+          </label>
+
+          <label>
+            <span>Cancha</span>
+            <select
+              className="tournaments-input"
+              value={matchForm.fieldId || ""}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  fieldId: event.target.value || undefined,
+                  venue: syncVenueFromField(event.target.value, current.venue),
+                }))
+              }
+            >
+              <option value="">Sin cancha asignada</option>
+              {fieldOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {matchErrors.fieldId && <small>{matchErrors.fieldId}</small>}
+          </label>
+
+          <label>
+            <span>Programado para</span>
+            <input
+              type="datetime-local"
+              className="tournaments-input"
+              value={matchForm.scheduledAt || ""}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  scheduledAt: event.target.value,
+                }))
+              }
+            />
+          </label>
+
+          <label>
+            <span>Estado</span>
+            <select
+              className="tournaments-input"
+              value={matchForm.status || "scheduled"}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  status: event.target.value as TournamentMatchCreateRequest["status"],
+                }))
+              }
+            >
+              {MATCH_STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>
+                  {humanizeLabel(status)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span>Ronda</span>
+            <input
+              className="tournaments-input"
+              value={matchForm.round || ""}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  round: event.target.value,
+                }))
+              }
+            />
+          </label>
+
+          <label>
+            <span>Venue</span>
+            <input
+              className="tournaments-input"
+              value={matchForm.venue || ""}
+              onChange={(event) =>
+                setMatchForm((current: TournamentMatchCreateRequest) => ({
+                  ...current,
+                  venue: event.target.value,
+                }))
+              }
+            />
+          </label>
+
+          {editingMatch && (
+            <>
+              <label className="tournaments-form-grid__full">
+                <span>Streaming del partido</span>
+                <div className="tournaments-actions">
+                  {editingMatch.matchSessionId ? (
+                    <button
+                      type="button"
+                      className="tournaments-button tournaments-button--secondary"
+                      onClick={() => openMatchSessionTimeline(editingMatch.matchSessionId as string)}
+                    >
+                      Ir al match session
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="tournaments-button"
+                      onClick={() =>
+                        openRecordingSetup(
+                          editingMatch._id,
+                          editingMatch.homeTeamId,
+                          editingMatch.awayTeamId
+                        )
+                      }
+                    >
+                      Crear match session
+                    </button>
+                  )}
+                </div>
+              </label>
+
+              <label>
+                <span>Marcador local</span>
+                <input
+                  type="number"
+                  className="tournaments-input"
+                  value={matchFormScoreHome}
+                  onChange={(event) => setMatchFormScoreHome(Number(event.target.value) || 0)}
+                />
+              </label>
+
+              <label>
+                <span>Marcador visitante</span>
+                <input
+                  type="number"
+                  className="tournaments-input"
+                  value={matchFormScoreAway}
+                  onChange={(event) => setMatchFormScoreAway(Number(event.target.value) || 0)}
+                />
+              </label>
+
+              <label>
+                <span>Ganador</span>
+                <select
+                  className="tournaments-input"
+                  value={matchFormWinnerTeamId}
+                  onChange={(event) => setMatchFormWinnerTeamId(event.target.value)}
+                >
+                  <option value="">Sin ganador</option>
+                  {matchTeamOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
+        </div>
+
+        <div className="tournaments-actions tournaments-actions--end">
+          <button className="tournaments-button" type="submit">
+            {editingMatch ? "Guardar partido" : "Crear partido"}
+          </button>
+        </div>
+      </form>
     </article>
   );
 };

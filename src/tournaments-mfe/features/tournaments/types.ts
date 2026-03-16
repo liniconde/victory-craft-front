@@ -128,6 +128,7 @@ export interface TournamentMatch {
   _id: string;
   homeTeamId: string;
   awayTeamId: string;
+  fieldId?: string | null;
   pairKey?: string;
   scheduledAt?: string;
   venue?: string;
@@ -143,6 +144,7 @@ export interface TournamentMatch {
 export interface TournamentMatchCreateRequest {
   homeTeamId: string;
   awayTeamId: string;
+  fieldId?: string | null;
   scheduledAt?: string;
   venue?: string;
   round?: string;
@@ -151,6 +153,7 @@ export interface TournamentMatchCreateRequest {
 }
 
 export interface TournamentMatchUpdateRequest {
+  fieldId?: string | null;
   scheduledAt?: string;
   venue?: string;
   round?: string;

@@ -3033,6 +3033,9 @@ components:
           type: string
         awayTeamId:
           type: string
+        fieldId:
+          type: string
+          nullable: true
         pairKey:
           type: string
         scheduledAt:
@@ -3066,6 +3069,9 @@ components:
           type: string
         awayTeamId:
           type: string
+        fieldId:
+          type: string
+          nullable: true
         scheduledAt:
           type: string
           format: date-time
@@ -3082,6 +3088,9 @@ components:
     TournamentMatchUpdateRequest:
       type: object
       properties:
+        fieldId:
+          type: string
+          nullable: true
         scheduledAt:
           type: string
           format: date-time
