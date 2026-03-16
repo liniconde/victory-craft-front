@@ -198,7 +198,7 @@ export const TournamentsSection: React.FC = () => {
         )}
       </div>
 
-      <form className="tournaments-form" onSubmit={handleTournamentSubmit}>
+      <form id="tournament-form" className="tournaments-form" onSubmit={handleTournamentSubmit}>
         <div className="tournaments-form__header">
           <h3>{editingTournament ? "Editar torneo" : "Crear torneo"}</h3>
           {editingTournament && (

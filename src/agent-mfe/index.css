@@ -1,0 +1,218 @@
+.agent-widget {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.agent-widget__launcher {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 35%),
+    linear-gradient(135deg, #0f172a, #2563eb);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.28);
+}
+
+.agent-widget__robot-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.agent-widget__panel {
+  width: min(380px, calc(100vw - 32px));
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(241, 245, 249, 0.96));
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.agent-widget__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.agent-widget__header-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.agent-widget__header strong,
+.agent-widget__message strong {
+  display: block;
+  color: #0f172a;
+}
+
+.agent-widget__capabilities {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.agent-widget__capabilities-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.agent-widget__capabilities-header span {
+  min-width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.agent-widget__capabilities-list {
+  display: grid;
+  gap: 10px;
+}
+
+.agent-widget__capability {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.agent-widget__capability p,
+.agent-widget__capability small {
+  margin: 4px 0 0;
+  color: #475569;
+  display: block;
+  line-height: 1.4;
+}
+
+.agent-widget__capabilities-more {
+  color: #1e40af;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.agent-widget__header p {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 0.88rem;
+}
+
+.agent-widget__header span {
+  align-self: flex-start;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: #1e293b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.agent-widget__minimize {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.agent-widget__history {
+  max-height: 320px;
+  overflow: auto;
+  padding: 14px 18px 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.agent-widget__message {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.agent-widget__message--user {
+  background: rgba(219, 234, 254, 0.92);
+}
+
+.agent-widget__message p {
+  margin: 6px 0 0;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.agent-widget__form {
+  display: grid;
+  gap: 10px;
+  padding: 14px 18px 18px;
+}
+
+.agent-widget__input {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.agent-widget__submit {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #0f172a;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agent-widget__submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+@media (max-width: 768px) {
+  .agent-widget {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    align-items: stretch;
+  }
+
+  .agent-widget__panel {
+    width: 100%;
+  }
+
+  .agent-widget__launcher {
+    align-self: flex-end;
+  }
+}

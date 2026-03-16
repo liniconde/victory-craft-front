@@ -11,6 +11,7 @@ servers:
     description: Local
 tags:
   - name: System
+  - name: Agent
   - name: Users
   - name: Fields
   - name: Slots
@@ -34,6 +35,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+
+  /agent/plan:
+    post:
+      tags: [Agent]
+      summary: Plan frontend agent actions from user intent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentPlanRequest"
+            examples:
+              default:
+                value:
+                  prompt: take me to tournaments registration and create a tournament
+                  currentPath: /fields
+                  actions:
+                    - name: navigation.go_to
+                      description: Navigate to an internal route
+                      parameters:
+                        - name: path
+                          type: string
+                          description: Target path
+                          required: true
+                      returns:
+                        - name: message
+                          type: string
+                          description: Navigation confirmation
+                      tags:
+                        - navigation
+      responses:
+        "200":
+          description: Executable action plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentPlanResponse"
+              examples:
+                normalPlan:
+                  value:
+                    summary: Navigate to the requested page.
+                    calls:
+                      - name: navigation.go_to
+                        arguments:
+                          path: /tournaments/subpages/dashboard#tournament-form
+                fallback:
+                  value:
+                    summary: No valid action could be planned.
+                    calls: []
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "502":
+          $ref: "#/components/responses/BadGateway"
 
   /users:
     get:
@@ -2518,6 +2574,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+    BadGateway:
+      description: Error del proveedor externo o gateway aguas arriba
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     ErrorResponse:
       type: object
@@ -2526,6 +2588,91 @@ components:
           type: string
         error:
           type: string
+
+    AgentActionParameter:
+      type: object
+      required: [name, type, description]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [string, number, boolean, object]
+        description:
+          type: string
+        required:
+          type: boolean
+        enum:
+          type: array
+          items:
+            type: string
+
+    AgentActionResultField:
+      type: object
+      required: [name, type, description]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [string, number, boolean, object]
+        description:
+          type: string
+
+    AgentActionDefinition:
+      type: object
+      required: [name, description]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentActionParameter"
+        returns:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentActionResultField"
+        tags:
+          type: array
+          items:
+            type: string
+
+    AgentFunctionCall:
+      type: object
+      required: [name, arguments]
+      properties:
+        name:
+          type: string
+        arguments:
+          type: object
+          additionalProperties: true
+
+    AgentPlanRequest:
+      type: object
+      required: [prompt, currentPath, actions]
+      properties:
+        prompt:
+          type: string
+        currentPath:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentActionDefinition"
+
+    AgentPlanResponse:
+      type: object
+      required: [summary, calls]
+      properties:
+        summary:
+          type: string
+        calls:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentFunctionCall"
 
     MessageResponse:
       type: object

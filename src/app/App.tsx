@@ -4,6 +4,7 @@ import {
   useLocation,
   Routes,
   Route,
+  useNavigate,
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
@@ -11,6 +12,9 @@ import { AuthProvider } from "../context/AuthContext";
 import NavigationBar from "../components/navigation/NavigationBar";
 import "./App.css";
 import Footer from "../components/footer/footer";
+import AgentModule from "../agent-mfe/AgentModule";
+import { createBackendAgentAdapter } from "./agent/adapters/backendAgentAdapter";
+import { TournamentsAgentActions } from "../tournaments-mfe/agent/TournamentsAgentActions";
 
 // 📌 Rutas con Lazy Loading
 const Users = lazy(() => import("../pages/Users"));
@@ -36,6 +40,7 @@ const TournamentsModule = lazy(
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
+const agentPlannerAdapter = createBackendAgentAdapter();
 
 type VideosMode = "list" | "create" | "edit";
 const VIDEO_MFE_PREFIXES = ["/subpages", "/fields", "/videos"];
@@ -73,16 +78,23 @@ const LoadingScreen = () => (
 );
 function AppRoutes() {
   const location = useLocation();
+  const navigate = useNavigate();
   const hideNavbarPaths = ["/login", "/register", "/auth/callback"];
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
   // 📌 Componente para manejar las rutas
   return (
-    <>
-      {!shouldHideNavbar && <NavigationBar />}
-      <div className="page-container">
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
+    <AgentModule
+      currentPath={location.pathname}
+      navigate={navigate}
+      llmAdapter={agentPlannerAdapter}
+    >
+      <>
+        <TournamentsAgentActions />
+        {!shouldHideNavbar && <NavigationBar />}
+        <div className="page-container">
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
             {/* ✅ Rutas Públicas */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -275,11 +287,12 @@ function AppRoutes() {
                 </PrivateRoute>
               }
             />
-          </Routes>
-        </Suspense>
-      </div>
-      <Footer />
-    </>
+            </Routes>
+          </Suspense>
+        </div>
+        <Footer />
+      </>
+    </AgentModule>
   );
 }
 

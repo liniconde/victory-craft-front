@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:agent": "node scripts/run-agent-tests.mjs",
     "build:mfe-videos": "vite build --config apps/videos-mfe/vite.config.ts",
     "dev:mfe-videos": "vite --config apps/videos-mfe/vite.config.ts",
     "preview:mfe-videos": "vite preview --config apps/videos-mfe/vite.config.ts --port 4173",

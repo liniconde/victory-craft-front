@@ -2,10 +2,14 @@ import axios from "axios";
 
 // 📌 Definir constantes globales
 const IMAGES_BUCKET = "images-tfm2";
+const viteEnv =
+  typeof import.meta !== "undefined"
+    ? (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+    : undefined;
 
 // 📌 Tipado para la API principal
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001", // Cambia esto a la URL de tu API
+  baseURL: viteEnv?.VITE_API_URL || "http://localhost:5001", // Cambia esto a la URL de tu API
 });
 
 export const s3Api = axios.create();
