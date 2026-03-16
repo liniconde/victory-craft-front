@@ -1,42 +1,155 @@
 .tournaments-dashboard {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.4rem;
 }
 
 .tournaments-hero {
-  padding: 1.35rem 1.4rem;
-  border-radius: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+  gap: 1.2rem;
+  padding: 1.55rem;
+  border-radius: 32px;
   background:
-    radial-gradient(circle at top left, rgba(80, 187, 115, 0.18), transparent 28%),
-    linear-gradient(180deg, #f8fcf9 0%, #eef7f0 100%);
+    radial-gradient(circle at top left, rgba(80, 187, 115, 0.2), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(35, 90, 44, 0.12), transparent 32%),
+    linear-gradient(135deg, #f8fcf9 0%, #eef7f0 56%, #e3f2e7 100%);
   border: 1px solid rgba(80, 187, 115, 0.18);
   box-shadow: 0 18px 46px rgba(35, 90, 44, 0.08);
 }
 
-.tournaments-hero__eyebrow {
-  display: inline-flex;
-  margin-bottom: 0.6rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(35, 90, 44, 0.1);
-  color: #235a2c;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.tournaments-hero__copy {
+  display: grid;
+  align-content: center;
 }
 
 .tournaments-hero h1 {
   margin: 0;
   color: #16381b;
-  font-size: clamp(2rem, 2vw, 2.6rem);
+  font-size: clamp(2.3rem, 4vw, 3.3rem);
+  line-height: 1;
 }
 
 .tournaments-hero p {
-  max-width: 52rem;
-  margin: 0.8rem 0 0;
+  max-width: 44rem;
+  margin: 0.95rem 0 0;
+  color: #4e6753;
+  line-height: 1.65;
+  font-size: 1rem;
+}
+
+.tournaments-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.tournaments-hero__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: #235a2c;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 12px 26px rgba(35, 90, 44, 0.18);
+}
+
+.tournaments-hero__action--ghost {
+  background: rgba(255, 255, 255, 0.8);
+  color: #16381b;
+  box-shadow: none;
+  border: 1px solid rgba(35, 90, 44, 0.12);
+}
+
+.tournaments-hero__highlights {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tournaments-highlight-card {
+  padding: 1.1rem 1.15rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(35, 90, 44, 0.1);
+  box-shadow: 0 18px 32px rgba(35, 90, 44, 0.08);
+}
+
+.tournaments-highlight-card--accent {
+  background: linear-gradient(135deg, #235a2c, #50bb73);
+  color: #fff;
+}
+
+.tournaments-highlight-card span,
+.tournaments-insight-card__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.tournaments-highlight-card strong,
+.tournaments-insight-card strong {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  color: inherit;
+}
+
+.tournaments-highlight-card p,
+.tournaments-insight-card p {
+  margin: 0.55rem 0 0;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.tournaments-overview-grid,
+.tournaments-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.tournaments-overview-card,
+.tournaments-insight-card {
+  padding: 1.15rem 1.1rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(80, 187, 115, 0.16);
+  box-shadow: 0 16px 38px rgba(35, 90, 44, 0.08);
+  text-decoration: none;
+}
+
+.tournaments-overview-card strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  color: #16381b;
+}
+
+.tournaments-overview-card span {
+  display: block;
+  margin-top: 0.65rem;
+  color: #16381b;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tournaments-overview-card p {
+  margin: 0.45rem 0 0;
   color: #58725d;
-  line-height: 1.6;
+  line-height: 1.55;
+}
+
+.tournaments-insight-card--feature {
+  background:
+    radial-gradient(circle at top right, rgba(80, 187, 115, 0.18), transparent 35%),
+    linear-gradient(180deg, #ffffff 0%, #f4fbf6 100%);
 }
 
 .tournaments-section-grid {
@@ -217,6 +330,12 @@
 .tournaments-input:focus {
   border-color: rgba(35, 90, 44, 0.44);
   box-shadow: 0 0 0 4px rgba(80, 187, 115, 0.14);
+}
+
+@media (max-width: 900px) {
+  .tournaments-hero {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tournaments-textarea {

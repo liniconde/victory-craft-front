@@ -10,7 +10,6 @@ const ViewModeSwitcher: React.FC<{
   className?: string;
 }> = ({ viewRole, setViewRole, className = "" }) => (
   <div className={`view-mode-switcher ${className}`.trim()}>
-    <span className="view-mode-switcher__label">Vista</span>
     <div className="view-mode-switcher__controls">
       <button
         type="button"

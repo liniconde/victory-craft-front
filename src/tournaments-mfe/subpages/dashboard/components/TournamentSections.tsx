@@ -22,25 +22,89 @@ export const SectionNotice: React.FC<{ type: "error" | "success"; message: strin
 
 export const DashboardOverviewSection: React.FC = () => {
   const { tournaments, teams, players, matches, matchStats } = useTournamentsDashboardData();
+  const activeTournaments = tournaments.filter((item) => item.status === "in_progress").length;
+  const registrationOpenTournaments = tournaments.filter(
+    (item) => item.status === "registration_open"
+  ).length;
+  const totalAssets = teams.length + players.length + matches.length + matchStats.length;
+  const upcomingMatch = [...matches]
+    .filter((item) => item.scheduledAt && new Date(item.scheduledAt).getTime() >= Date.now())
+    .sort(
+      (first, second) =>
+        new Date(first.scheduledAt || "").getTime() - new Date(second.scheduledAt || "").getTime()
+    )[0];
 
   const cards = [
-    { title: "Torneos", value: tournaments.length, to: "/tournaments/subpages/tournaments" },
-    { title: "Equipos", value: teams.length, to: "/tournaments/subpages/teams" },
-    { title: "Jugadores", value: players.length, to: "/tournaments/subpages/players" },
-    { title: "Partidos", value: matches.length, to: "/tournaments/subpages/matches" },
-    { title: "Estadísticas", value: matchStats.length, to: "/tournaments/subpages/match-stats" },
+    {
+      title: "Torneos",
+      value: tournaments.length,
+      description: "Visión general de todas las competiciones cargadas.",
+      to: "/tournaments/subpages/tournaments",
+    },
+    {
+      title: "Equipos",
+      value: teams.length,
+      description: "Plantillas y participantes asociados a cada torneo.",
+      to: "/tournaments/subpages/teams",
+    },
+    {
+      title: "Jugadores",
+      value: players.length,
+      description: "Jugadores registrados y listos para competir.",
+      to: "/tournaments/subpages/players",
+    },
+    {
+      title: "Partidos",
+      value: matches.length,
+      description: "Agenda competitiva, cruces y seguimiento del fixture.",
+      to: "/tournaments/subpages/matches",
+    },
+    {
+      title: "Estadísticas",
+      value: matchStats.length,
+      description: "Eventos y métricas guardadas por partido.",
+      to: "/tournaments/subpages/match-stats",
+    },
   ];
 
   return (
     <div className="tournaments-dashboard">
       <div className="tournaments-hero">
-        <div>
-          <span className="tournaments-hero__eyebrow">Nuevo modulo</span>
-          <h1>Torneos</h1>
+        <div className="tournaments-hero__copy">
+          <h1>Centro de torneos</h1>
           <p>
-            Gestiona torneos, equipos, jugadores, partidos y estadisticas desde un
-            panel preparado para futura extraccion a microfrontend.
+            Organiza el calendario competitivo, prepara equipos, registra jugadores
+            y sigue la actividad del módulo desde una única vista de control.
           </p>
+          <div className="tournaments-hero__actions">
+            <Link to="/tournaments/subpages/tournaments" className="tournaments-hero__action">
+              Ver gestión de torneos
+            </Link>
+            <Link to="/tournaments/subpages/matches" className="tournaments-hero__action tournaments-hero__action--ghost">
+              Revisar partidos
+            </Link>
+          </div>
+        </div>
+
+        <div className="tournaments-hero__highlights">
+          <article className="tournaments-highlight-card">
+            <span>Actividad actual</span>
+            <strong>{activeTournaments}</strong>
+            <p>
+              {activeTournaments > 0
+                ? "torneos se están disputando ahora mismo."
+                : "No hay torneos en curso en este momento."}
+            </p>
+          </article>
+          <article className="tournaments-highlight-card tournaments-highlight-card--accent">
+            <span>Registro abierto</span>
+            <strong>{registrationOpenTournaments}</strong>
+            <p>
+              {registrationOpenTournaments > 0
+                ? "torneos admiten nuevos participantes."
+                : "No hay inscripciones abiertas actualmente."}
+            </p>
+          </article>
         </div>
       </div>
 
@@ -49,8 +113,43 @@ export const DashboardOverviewSection: React.FC = () => {
           <Link key={card.title} to={card.to} className="tournaments-overview-card">
             <strong>{card.value}</strong>
             <span>{card.title}</span>
+            <p>{card.description}</p>
           </Link>
         ))}
+      </section>
+
+      <section className="tournaments-insights-grid">
+        <article className="tournaments-insight-card">
+          <span className="tournaments-insight-card__label">Próximo hito</span>
+          <strong>
+            {upcomingMatch?.scheduledAt
+              ? formatDateTime(upcomingMatch.scheduledAt)
+              : "Sin partidos programados"}
+          </strong>
+          <p>
+            {upcomingMatch?.scheduledAt
+              ? "El siguiente partido agendado marca el próximo punto operativo del módulo."
+              : "Cuando registres o generes nuevos cruces, aparecerán aquí los próximos encuentros."}
+          </p>
+        </article>
+
+        <article className="tournaments-insight-card">
+          <span className="tournaments-insight-card__label">Cobertura del módulo</span>
+          <strong>{totalAssets} registros vinculados</strong>
+          <p>
+            Equipos, jugadores, partidos y estadísticas reflejan el nivel de detalle
+            con el que ya se está gestionando la competición.
+          </p>
+        </article>
+
+        <article className="tournaments-insight-card tournaments-insight-card--feature">
+          <span className="tournaments-insight-card__label">Qué puedes hacer aquí</span>
+          <strong>Preparar, operar y analizar</strong>
+          <p>
+            Crea torneos, arma el fixture, completa plantillas y mantén la operación
+            competitiva ordenada antes, durante y después de cada jornada.
+          </p>
+        </article>
       </section>
     </div>
   );
