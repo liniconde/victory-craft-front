@@ -425,7 +425,7 @@ export const MatchesSection: React.FC = () => {
     `${teamMap.get(homeTeamId)?.name || homeTeamId} vs ${teamMap.get(awayTeamId)?.name || awayTeamId}`;
 
   const openMatchSessionTimeline = (matchSessionId: string) => {
-    const url = `/fields/videos/subpages/streaming/timeline?matchSessionId=${encodeURIComponent(matchSessionId)}`;
+    const url = `/videos/subpages/streaming/timeline?matchSessionId=${encodeURIComponent(matchSessionId)}`;
     window.location.assign(url);
   };
 
@@ -436,7 +436,7 @@ export const MatchesSection: React.FC = () => {
       title: matchLabel,
       autoCreateSession: "1",
     });
-    window.location.assign(`/fields/videos/subpages/streaming/recording?${params.toString()}`);
+    window.location.assign(`/videos/subpages/streaming/recording?${params.toString()}`);
   };
 
   return (

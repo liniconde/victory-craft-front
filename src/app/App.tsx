@@ -43,7 +43,7 @@ const ReservationsList = lazy(
 const agentPlannerAdapter = createBackendAgentAdapter();
 
 type VideosMode = "list" | "create" | "edit";
-const VIDEO_MFE_PREFIXES = ["/subpages", "/fields", "/videos"];
+const VIDEO_MFE_PREFIXES = ["/videos", "/fields/videos", "/subpages"];
 
 const isVideosMfePath = (pathname: string) =>
   VIDEO_MFE_PREFIXES.some(
@@ -52,6 +52,8 @@ const isVideosMfePath = (pathname: string) =>
 
 const inferVideosModeFromPath = (pathname: string): VideosMode => {
   if (/^\/videos\/[^/]+\/update\/?$/.test(pathname)) return "edit";
+  if (/^\/videos\/fields\/[^/]+\/videos\/create\/?$/.test(pathname)) return "create";
+  if (/^\/videos\/fields\/[^/]+\/videos\/[^/]+\/edit\/?$/.test(pathname)) return "create";
   if (/^\/fields\/[^/]+\/videos\/create\/?$/.test(pathname)) return "create";
   if (/^\/fields\/[^/]+\/videos\/[^/]+\/edit\/?$/.test(pathname)) return "create";
   return "list";
@@ -168,10 +170,18 @@ function AppRoutes() {
               }
             />
             <Route
-              path="/fields/videos/"
+              path="/videos"
               element={
                 <PrivateRoute>
                   <VideosRouteHandler />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/fields/videos/"
+              element={
+                <PrivateRoute>
+                  <Navigate to="/videos/subpages/dashboard" replace />
                 </PrivateRoute>
               }
             />
@@ -179,7 +189,7 @@ function AppRoutes() {
               path="/fields/videos/*"
               element={
                 <PrivateRoute>
-                  <VideosRouteHandler />
+                  <Navigate to="/videos/subpages/dashboard" replace />
                 </PrivateRoute>
               }
             />
@@ -187,7 +197,7 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/create"
               element={
                 <PrivateRoute>
-                  <VideosRouteHandler />
+                  <Navigate to={`/videos${location.pathname}`} replace />
                 </PrivateRoute>
               }
             />
@@ -195,7 +205,7 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/*"
               element={
                 <PrivateRoute>
-                  <VideosRouteHandler />
+                  <Navigate to={`/videos${location.pathname}`} replace />
                 </PrivateRoute>
               }
             />
@@ -219,7 +229,7 @@ function AppRoutes() {
               path="/fields/:fieldId/videos/:videoId/edit"
               element={
                 <PrivateRoute>
-                  <VideosRouteHandler />
+                  <Navigate to={`/videos${location.pathname}`} replace />
                 </PrivateRoute>
               }
             />
@@ -227,7 +237,7 @@ function AppRoutes() {
               path="/subpages/*"
               element={
                 <PrivateRoute>
-                  <VideosRouteHandler />
+                  <Navigate to={`/videos${location.pathname}`} replace />
                 </PrivateRoute>
               }
             />

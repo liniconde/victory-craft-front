@@ -131,8 +131,8 @@ const NavigationBar: React.FC = () => {
 
               <button
                 type="button"
-                className={getNavLinkClassName("/fields/videos")}
-                onClick={() => handleNavigate("/fields/videos")}
+                className={getNavLinkClassName("/videos")}
+                onClick={() => handleNavigate("/videos")}
               >
                 Vídeos
               </button>
