@@ -20,6 +20,46 @@ const TournamentsLayout: React.FC = () => {
           >
             Dashboard
           </NavLink>
+          <NavLink
+            to="/tournaments/subpages/tournaments"
+            className={({ isActive }) =>
+              `tournaments-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Torneos
+          </NavLink>
+          <NavLink
+            to="/tournaments/subpages/teams"
+            className={({ isActive }) =>
+              `tournaments-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Equipos
+          </NavLink>
+          <NavLink
+            to="/tournaments/subpages/players"
+            className={({ isActive }) =>
+              `tournaments-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Jugadores
+          </NavLink>
+          <NavLink
+            to="/tournaments/subpages/matches"
+            className={({ isActive }) =>
+              `tournaments-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Partidos
+          </NavLink>
+          <NavLink
+            to="/tournaments/subpages/match-stats"
+            className={({ isActive }) =>
+              `tournaments-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Estadísticas
+          </NavLink>
         </nav>
       </aside>
 
