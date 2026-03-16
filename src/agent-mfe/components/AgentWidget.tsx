@@ -24,8 +24,9 @@ const RobotIcon = () => (
 );
 
 export const AgentWidget = () => {
-  const { actions, executePrompt, history, isRunning, llmAdapterName } = useAgent();
+  const { actions, executePrompt, history, isRunning } = useAgent();
   const [isOpen, setIsOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
 
   const recentHistory = history.slice(-HISTORY_LIMIT);
@@ -60,11 +61,14 @@ export const AgentWidget = () => {
         <section className="agent-widget__panel" aria-label="Floating agent chat">
           <header className="agent-widget__header">
             <div>
-              <strong>Front Agent</strong>
-              <p>Floating action chat for the current app</p>
+              <strong>Jarvis</strong>
+              <p>
+                Hola soy Jarvis y estoy aca para ayudarte con las tareas que necesites
+                hacer en Victory Craft, dime con que tarea quieres que te ayude y
+                comenzamos a trabajar.
+              </p>
             </div>
             <div className="agent-widget__header-actions">
-              <span>{llmAdapterName}</span>
               <button
                 type="button"
                 className="agent-widget__minimize"
@@ -72,47 +76,54 @@ export const AgentWidget = () => {
                 aria-label="Minimize agent"
                 title="Minimize"
               >
-                _
+                -
               </button>
             </div>
           </header>
 
           <div className="agent-widget__capabilities">
-            <div className="agent-widget__capabilities-header">
-              <strong>Available actions</strong>
-              <span>{actions.length}</span>
-            </div>
-            <div className="agent-widget__capabilities-list">
-              {featuredActions.map((action) => (
-                <article key={action.name} className="agent-widget__capability">
-                  <strong>{action.name}</strong>
-                  <p>{action.description}</p>
-                  {action.parameters && action.parameters.length > 0 && (
-                    <small>
-                      Inputs:{" "}
-                      {action.parameters
-                        .map((parameter) =>
-                          `${parameter.name}:${parameter.type}${parameter.required ? "*" : ""}`
-                        )
-                        .join(", ")}
-                    </small>
-                  )}
-                  {action.returns && action.returns.length > 0 && (
-                    <small>
-                      Outputs:{" "}
-                      {action.returns
-                        .map((field) => `${field.name}:${field.type}`)
-                        .join(", ")}
-                    </small>
-                  )}
-                </article>
-              ))}
-              {remainingActions > 0 && (
-                <div className="agent-widget__capabilities-more">
-                  +{remainingActions} more registered actions
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              className="agent-widget__capabilities-toggle"
+              onClick={() => setIsToolsOpen((current) => !current)}
+              aria-expanded={isToolsOpen}
+            >
+              <strong>Tools</strong>
+              <span>{isToolsOpen ? "Hide" : `Show (${actions.length})`}</span>
+            </button>
+            {isToolsOpen && (
+              <div className="agent-widget__capabilities-list">
+                {featuredActions.map((action) => (
+                  <article key={action.name} className="agent-widget__capability">
+                    <strong>{action.name}</strong>
+                    <p>{action.description}</p>
+                    {action.parameters && action.parameters.length > 0 && (
+                      <small>
+                        Inputs:{" "}
+                        {action.parameters
+                          .map((parameter) =>
+                            `${parameter.name}:${parameter.type}${parameter.required ? "*" : ""}`
+                          )
+                          .join(", ")}
+                      </small>
+                    )}
+                    {action.returns && action.returns.length > 0 && (
+                      <small>
+                        Outputs:{" "}
+                        {action.returns
+                          .map((field) => `${field.name}:${field.type}`)
+                          .join(", ")}
+                      </small>
+                    )}
+                  </article>
+                ))}
+                {remainingActions > 0 && (
+                  <div className="agent-widget__capabilities-more">
+                    +{remainingActions} more registered actions
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="agent-widget__history">
@@ -127,7 +138,7 @@ export const AgentWidget = () => {
           <form className="agent-widget__form" onSubmit={handleSubmit}>
             <textarea
               className="agent-widget__input"
-              placeholder='Example: {"name":"navigation.go_to","arguments":{"path":"/fields"}}'
+              placeholder="Example: go to videos page"
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
               rows={4}
