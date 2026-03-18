@@ -91,16 +91,17 @@
 
 .fifa-card__top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   min-height: 300px;
+  gap: 1rem;
 }
 
 .fifa-card__meta {
   width: 82px;
-  padding-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .fifa-card__rating {
@@ -143,15 +144,18 @@
 .fifa-card__player-wrapper {
   flex: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
+  border-radius: 24px;
 }
 
 .fifa-card__player-image,
 .fifa-card__player-fallback {
   width: 240px;
   max-height: 300px;
+  border-radius: 22px;
 }
 
 .fifa-card__player-image {
@@ -167,7 +171,7 @@
 }
 
 .fifa-card__bottom {
-  margin-top: 6px;
+  margin-top: 0;
   padding: 8px 10px 0;
 }
 

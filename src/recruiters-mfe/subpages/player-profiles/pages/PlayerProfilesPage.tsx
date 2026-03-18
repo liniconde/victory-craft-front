@@ -107,6 +107,7 @@ const PlayerProfilesPage: React.FC = () => {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [profileVideosCount, setProfileVideosCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAlternativeCard, setShowAlternativeCard] = useState(false);
 
   useEffect(() => {
     getPlayerProfilesCatalog()
@@ -329,76 +330,94 @@ const PlayerProfilesPage: React.FC = () => {
 
       {profileCardVisible ? (
         <>
-          <section className="player-profile-card">
-            <div className="player-profile-card__media">
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
-                  className="player-profile-card__avatar"
-                />
-              ) : (
-                <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
-                  <FaUserCircle aria-hidden="true" />
-                </div>
-              )}
+          <section className="player-profile-display-toggle">
+            <div>
+              <p className="player-profile-display-toggle__eyebrow">Visualización</p>
+              <h3>Comparar estilos de ficha</h3>
             </div>
-
-            <div className="player-profile-card__body">
-              <div>
-                <p className="player-profile-card__eyebrow">Ficha actual</p>
-                <h3>{form.fullName || "Jugador sin nombre"}</h3>
-                <p className="player-profile-card__subtitle">
-                  {form.team || "Sin equipo"} · {form.sportType || "Sin deporte"} ·{" "}
-                  {form.category || "Sin categoría"}
-                </p>
-              </div>
-
-              <div className="player-profile-card__stats">
-                <article>
-                  <span>Posición</span>
-                  <strong>{form.primaryPosition || "N/D"}</strong>
-                </article>
-                <article>
-                  <span>Secundaria</span>
-                  <strong>{form.secondaryPosition || "N/D"}</strong>
-                </article>
-                <article>
-                  <span>Perfil</span>
-                  <strong>{form.dominantProfile || "N/D"}</strong>
-                </article>
-                <article>
-                  <span>Ubicación</span>
-                  <strong>{[form.city, form.country].filter(Boolean).join(", ") || "N/D"}</strong>
-                </article>
-              </div>
-
-              <div className="player-profile-card__footer">
-                <div>
-                  <span>Estado</span>
-                  <strong>{form.status || "active"}</strong>
-                </div>
-                <div>
-                  <span>Videos vinculados</span>
-                  <strong>{profileVideosCount}</strong>
-                </div>
-              </div>
-            </div>
+            <button
+              type="button"
+              className={`player-profile-display-toggle__button ${
+                showAlternativeCard ? "is-active" : ""
+              }`}
+              onClick={() => setShowAlternativeCard((current) => !current)}
+            >
+              {showAlternativeCard ? "Ocultar card alternativa" : "Mostrar card alternativa"}
+            </button>
           </section>
 
-          <PlayerCard
-            fullName={form.fullName}
-            primaryPosition={form.primaryPosition}
-            secondaryPosition={form.secondaryPosition}
-            country={form.country}
-            team={form.team}
-            category={form.category}
-            dominantProfile={form.dominantProfile}
-            sportType={form.sportType}
-            avatarUrl={avatarPreview}
-            status={form.status}
-            profileVideosCount={profileVideosCount}
-          />
+          {showAlternativeCard ? (
+            <PlayerCard
+              fullName={form.fullName}
+              primaryPosition={form.primaryPosition}
+              secondaryPosition={form.secondaryPosition}
+              country={form.country}
+              team={form.team}
+              category={form.category}
+              dominantProfile={form.dominantProfile}
+              sportType={form.sportType}
+              avatarUrl={avatarPreview}
+              status={form.status}
+              profileVideosCount={profileVideosCount}
+            />
+          ) : (
+            <section className="player-profile-card">
+              <div className="player-profile-card__media">
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
+                    className="player-profile-card__avatar"
+                  />
+                ) : (
+                  <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
+                    <FaUserCircle aria-hidden="true" />
+                  </div>
+                )}
+              </div>
+
+              <div className="player-profile-card__body">
+                <div>
+                  <p className="player-profile-card__eyebrow">Ficha actual</p>
+                  <h3>{form.fullName || "Jugador sin nombre"}</h3>
+                  <p className="player-profile-card__subtitle">
+                    {form.team || "Sin equipo"} · {form.sportType || "Sin deporte"} ·{" "}
+                    {form.category || "Sin categoría"}
+                  </p>
+                </div>
+
+                <div className="player-profile-card__stats">
+                  <article>
+                    <span>Posición</span>
+                    <strong>{form.primaryPosition || "N/D"}</strong>
+                  </article>
+                  <article>
+                    <span>Secundaria</span>
+                    <strong>{form.secondaryPosition || "N/D"}</strong>
+                  </article>
+                  <article>
+                    <span>Perfil</span>
+                    <strong>{form.dominantProfile || "N/D"}</strong>
+                  </article>
+                  <article>
+                    <span>Ubicación</span>
+                    <strong>{[form.city, form.country].filter(Boolean).join(", ") || "N/D"}</strong>
+                  </article>
+                </div>
+
+                <div className="player-profile-card__footer">
+                  <div>
+                    <span>Estado</span>
+                    <strong>{form.status || "active"}</strong>
+                  </div>
+                  <div>
+                    <span>Videos vinculados</span>
+                    <strong>{profileVideosCount}</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
         </>
       ) : null}
 

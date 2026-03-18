@@ -24,6 +24,14 @@ export interface RecruiterVideoLibraryResponse {
   pagination: RecruiterPagination;
 }
 
+export interface RecruiterVideoLibraryCreatePayload {
+  s3Key: string;
+  sportType?: string;
+  ownerUserId?: string;
+  s3Url?: string;
+  videoUrl?: string;
+}
+
 export interface RecruiterS3UploadResponse {
   uploadUrl?: string;
   url?: string;

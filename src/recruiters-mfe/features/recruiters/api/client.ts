@@ -4,6 +4,7 @@ import type {
   RecruiterFiltersCatalog,
   RecruiterRankingItem,
   RecruiterS3UploadResponse,
+  RecruiterVideoLibraryCreatePayload,
   RecruiterPlayerProfile,
   RecruiterPlayerProfilesCatalog,
   RecruiterPlayerProfilesQuery,
@@ -289,6 +290,48 @@ const normalizeS3UploadResponse = (value: unknown): RecruiterS3UploadResponse =>
 };
 
 export const recruitersApi = {
+  uploadLibraryVideoFile: async (
+    file: File,
+    scope = "videos/library"
+  ): Promise<{ s3Key: string; s3Url?: string; videoUrl?: string }> => {
+    try {
+      const safeName = file.name.replace(/\s+/g, "-");
+      const objectKey = `${scope}/${Date.now()}-${safeName}`;
+      const response = await api.post("/videos/upload", { objectKey });
+      const upload = normalizeS3UploadResponse(response.data);
+      const uploadUrl = upload.uploadUrl || upload.presignedUrl || upload.signedUrl;
+      const s3Key = upload.objectKey || upload.key || objectKey;
+
+      if (!uploadUrl) {
+        throw new Error("El backend no devolvió una URL válida para subir el video.");
+      }
+
+      await s3Api.put(uploadUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+          ...(upload.headers || {}),
+        },
+      });
+
+      return {
+        s3Key,
+        s3Url: upload.s3Url || upload.publicUrl || upload.fileUrl || upload.url,
+        videoUrl: upload.publicUrl || upload.fileUrl || upload.url || upload.s3Url,
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo subir el video a library.");
+    }
+  },
+  createLibraryVideo: async (
+    payload: RecruiterVideoLibraryCreatePayload
+  ): Promise<RecruiterVideoLibraryItem> => {
+    try {
+      const response = await api.post("/videos/library", payload);
+      return normalizeVideo(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo registrar el video en library.");
+    }
+  },
   uploadPlayerAvatar: async (
     file: File,
     scope = "player-profiles"
