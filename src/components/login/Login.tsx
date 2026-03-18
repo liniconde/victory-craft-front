@@ -41,7 +41,12 @@ const Login: React.FC = () => {
       showLoading();
       const data = await loginUser(username, password);
       if (data) {
-        login(data.token);
+        const authenticated = login(data.token);
+        if (!authenticated) {
+          setError("El backend no devolvió un JWT válido.");
+          showError("No se pudo iniciar sesión porque el token recibido es inválido.");
+          return;
+        }
         navigate("/");
       } else {
         setError("Login fallido. Por favor, intente de nuevo.");

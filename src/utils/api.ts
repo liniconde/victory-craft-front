@@ -1,4 +1,8 @@
 import axios from "axios";
+import {
+  clearPersistedAuthSessionAndNotify,
+} from "./authSession";
+import { isValidJwtToken } from "./jwtUtil";
 
 // 📌 Definir constantes globales
 const IMAGES_BUCKET = "images-tfm2";
@@ -11,6 +15,44 @@ const viteEnv =
 export const api = axios.create({
   baseURL: viteEnv?.VITE_API_URL || "http://localhost:5001", // Cambia esto a la URL de tu API
 });
+
+api.interceptors.request.use((config) => {
+  const authorization =
+    typeof config.headers?.Authorization === "string"
+      ? config.headers.Authorization
+      : typeof config.headers?.authorization === "string"
+        ? config.headers.authorization
+        : "";
+
+  if (authorization.startsWith("Bearer ")) {
+    const token = authorization.slice("Bearer ".length).trim();
+    if (!isValidJwtToken(token) && config.headers) {
+      delete config.headers.Authorization;
+      delete config.headers.authorization;
+    }
+  }
+
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const authorization =
+      typeof error?.config?.headers?.Authorization === "string"
+        ? error.config.headers.Authorization
+        : typeof error?.config?.headers?.authorization === "string"
+          ? error.config.headers.authorization
+          : "";
+
+    if (status === 401 && authorization.startsWith("Bearer ")) {
+      clearPersistedAuthSessionAndNotify();
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const s3Api = axios.create();
 

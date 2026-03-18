@@ -26,11 +26,11 @@ const RecruitersDashboardPage: React.FC = () => {
         <div>
           <p className="recruiters-dashboard__eyebrow">Scouting Workspace</p>
           <h2>Dashboard del dominio scouting</h2>
-          <p>Desde aquí entramos al ranking, a library y al detalle recruiter sin mezclarnos con videos.</p>
+          <p>Desde aqui entramos al ranking publico, a library y al recruiter view sin usar el flujo legacy.</p>
         </div>
         <div className="recruiters-dashboard__stats">
           <strong>{topVideos.length}</strong>
-          <span>videos destacados</span>
+          <span>videos publicados destacados</span>
         </div>
       </header>
 
@@ -43,8 +43,15 @@ const RecruitersDashboardPage: React.FC = () => {
           </button>
         </article>
         <article>
+          <h3>Player profiles</h3>
+          <p>Gestiona la ficha base del jugador antes de vincular videos y publicarlos.</p>
+          <button type="button" onClick={() => navigate("/scouting/subpages/player-profiles")}>
+            Abrir perfiles
+          </button>
+        </article>
+        <article>
           <h3>Rankings</h3>
-          <p>Consulta el ranking recruiter con filtros del backend.</p>
+          <p>Consulta el ranking publico de videos publicados con filtros del backend.</p>
           <button type="button" onClick={() => navigate("/scouting/subpages/rankings")}>
             Abrir rankings
           </button>
@@ -62,9 +69,9 @@ const RecruitersDashboardPage: React.FC = () => {
             <div>
               <h4>{item.scoutingProfile?.title || item.video.s3Key}</h4>
               <p>
-                {item.scoutingProfile?.playerName || "Jugador"} ·{" "}
-                {item.scoutingProfile?.playerPosition || "Posición"} ·{" "}
-                {item.scoutingProfile?.city || "Ciudad"}
+                {item.playerProfile?.fullName || "Jugador"} ·{" "}
+                {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
+                {item.playerProfile?.city || "Ciudad"}
               </p>
             </div>
             <span>{item.ranking.netVotes} votos netos</span>

@@ -82,31 +82,49 @@ const RecruiterVideoPage: React.FC = () => {
               <p>Net votes: {summary?.netVotes ?? 0}</p>
               <button
                 type="button"
-                onClick={() => navigate(`/scouting/subpages/profile/${data.video?._id}`)}
+                onClick={() =>
+                  navigate(
+                    data.playerProfile?._id
+                      ? `/scouting/subpages/profile/${data.video?._id}?playerProfileId=${data.playerProfile._id}`
+                      : `/scouting/subpages/profile/${data.video?._id}`
+                  )
+                }
               >
-                {data.scoutingProfile ? "Editar profile" : "Crear profile"}
+                {data.scoutingProfile ? "Editar metadata de publicación" : "Publicar en ranking"}
               </button>
             </aside>
           </div>
 
           <section className="recruiters-dashboard__table">
             <div className="recruiters-dashboard__table-header">
-              <h3>Scouting profile</h3>
+              <h3>Detalle recruiter</h3>
             </div>
+            {data.playerProfile ? (
+              <div className="recruiters-dashboard__row">
+                <div>
+                  <h4>{data.playerProfile.fullName || "Player profile"}</h4>
+                  <p>
+                    {data.playerProfile.team || "Sin equipo"} ·{" "}
+                    {data.playerProfile.primaryPosition || "Sin posición"} ·{" "}
+                    {data.playerProfile.category || "Sin categoría"}
+                  </p>
+                </div>
+              </div>
+            ) : null}
             {data.scoutingProfile ? (
               <div className="recruiters-dashboard__row">
                 <div>
-                  <h4>{data.scoutingProfile.playerName || "Sin jugador"}</h4>
+                  <h4>{data.scoutingProfile.title || "Scouting profile"}</h4>
                   <p>
-                    {data.scoutingProfile.playerPosition || "Sin posición"} ·{" "}
-                    {data.scoutingProfile.playerTeam || "Sin equipo"} ·{" "}
-                    {data.scoutingProfile.city || "Sin ciudad"}
+                    {data.scoutingProfile.publicationStatus || "draft"} ·{" "}
+                    {data.scoutingProfile.tournamentType || "Sin tipo de torneo"} ·{" "}
+                    {data.scoutingProfile.tournamentName || "Sin torneo"}
                   </p>
-                  <p>{data.scoutingProfile.notes || "Sin notas"}</p>
+                  <p>{data.scoutingProfile.notes || "Sin notas editoriales"}</p>
                 </div>
               </div>
             ) : (
-              <p>Este video aún no tiene profile de scouting.</p>
+              <p>Este video aun no tiene scouting profile editorial.</p>
             )}
           </section>
 
@@ -123,8 +141,8 @@ const RecruiterVideoPage: React.FC = () => {
                 <div>
                   <h4>{item.scoutingProfile?.title || item.video?.s3Key}</h4>
                   <p>
-                    {item.scoutingProfile?.playerName || "Jugador"} ·{" "}
-                    {item.scoutingProfile?.country || "País"}
+                    {item.playerProfile?.fullName || "Jugador"} ·{" "}
+                    {item.playerProfile?.country || "Pais"}
                   </p>
                 </div>
                 <button

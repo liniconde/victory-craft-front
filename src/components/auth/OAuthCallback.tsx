@@ -29,7 +29,12 @@ const OAuthCallback: React.FC = () => {
       return;
     }
 
-    login(token);
+    const authenticated = login(token);
+    if (!authenticated) {
+      showError("Se recibió un token OAuth inválido.");
+      navigate("/login", { replace: true });
+      return;
+    }
     navigate(returnTo, { replace: true });
   }, [location.hash, location.search, login, navigate, showError]);
 

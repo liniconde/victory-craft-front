@@ -3,14 +3,19 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
-import { getDecodedToken } from "../utils/jwtUtil";
+import {
+  clearPersistedAuthSession,
+  AUTH_INVALIDATED_EVENT,
+} from "../utils/authSession";
+import { getDecodedToken, isValidJwtToken } from "../utils/jwtUtil";
 
 // 📌 Interfaz para el contexto de autenticación
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (token: string) => boolean;
   logout: () => void;
   token: string;
   authReady: boolean;
@@ -52,20 +57,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [actualRole, setActualRole] = useState<string | null>(null);
   const [viewRole, setViewRoleState] = useState<"user" | "admin" | null>(null);
 
-  useEffect(() => {
-    const storageToken = localStorage.getItem("token");
-    console.log("Token from storage:", storageToken);
-    if (storageToken) {
-      authenticateFromStorage(storageToken);
-    }
-    const storedViewRole = localStorage.getItem("viewRole");
-    if (storedViewRole === "admin" || storedViewRole === "user") {
-      setViewRoleState(storedViewRole);
-    }
+  const resetAuthState = useCallback((): void => {
+    setIsAuthenticated(false);
+    setToken("");
+    setUserId(null);
+    setEmail(null);
+    setExp(0);
+    setActualRole(null);
+    setViewRoleState(null);
     setAuthReady(true);
   }, []);
 
-  const authenticateFromStorage = (storageToken: string): void => {
+  const authenticateFromStorage = useCallback((storageToken: string): void => {
+    if (!isValidJwtToken(storageToken)) {
+      clearPersistedAuthSession();
+      resetAuthState();
+      return;
+    }
+
     const decodedToken = getDecodedToken(storageToken);
     // Verificar si el token ha expirado
     const currentTime = Math.floor(Date.now() / 1000);
@@ -81,40 +90,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : 0
       );
       console.log("User ID from storage:", localStorage.getItem("userId"));
+      return;
     }
-  };
 
-  const login = (newToken: string): void => {
-    localStorage.setItem("token", newToken || "");
-    if (newToken) {
-      const decoded = getDecodedToken(newToken);
-      console.log("Token decoded:", decoded);
-      localStorage.setItem("userId", decoded?.id || "");
-      localStorage.setItem("email", decoded?.email || "");
-      localStorage.setItem("role", decoded?.role || "");
-      localStorage.setItem("exp", decoded?.exp ? decoded?.exp + "" : "0");
-      setUserId(decoded?.id || "");
-      setEmail(decoded?.id || "");
-      setExp(decoded?.exp || 0);
-      setActualRole(decoded?.role || "");
+    clearPersistedAuthSession();
+    resetAuthState();
+  }, [resetAuthState]);
+
+  useEffect(() => {
+    const storageToken = localStorage.getItem("token");
+    console.log("Token from storage:", storageToken);
+    if (storageToken) {
+      authenticateFromStorage(storageToken);
     }
+    const storedViewRole = localStorage.getItem("viewRole");
+    if (storedViewRole === "admin" || storedViewRole === "user") {
+      setViewRoleState(storedViewRole);
+    }
+
+    const handleSessionInvalidated = () => {
+      resetAuthState();
+    };
+
+    window.addEventListener(AUTH_INVALIDATED_EVENT, handleSessionInvalidated);
+    setAuthReady(true);
+
+    return () => {
+      window.removeEventListener(AUTH_INVALIDATED_EVENT, handleSessionInvalidated);
+    };
+  }, [authenticateFromStorage, resetAuthState]);
+
+  const login = (newToken: string): boolean => {
+    if (!isValidJwtToken(newToken)) {
+      clearPersistedAuthSession();
+      resetAuthState();
+      return false;
+    }
+
+    const decoded = getDecodedToken(newToken);
+    if (!decoded) {
+      clearPersistedAuthSession();
+      resetAuthState();
+      return false;
+    }
+
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("userId", decoded.id || "");
+    localStorage.setItem("email", decoded.email || "");
+    localStorage.setItem("role", decoded.role || "");
+    localStorage.setItem("exp", decoded.exp ? `${decoded.exp}` : "0");
+    setUserId(decoded.id || "");
+    setEmail(decoded.email || "");
+    setExp(decoded.exp || 0);
+    setActualRole(decoded.role || "");
     setToken(newToken);
     setIsAuthenticated(true);
     setAuthReady(true);
+    return true;
   };
 
   const logout = (): void => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("email");
-    localStorage.removeItem("exp");
-    localStorage.removeItem("viewRole");
-    setIsAuthenticated(false);
-    setToken("");
-    setUserId(null);
-    setActualRole(null);
-    setViewRoleState(null);
-    setAuthReady(true);
+    clearPersistedAuthSession();
+    resetAuthState();
   };
 
   const setViewRole = (nextRole: "user" | "admin" | null): void => {

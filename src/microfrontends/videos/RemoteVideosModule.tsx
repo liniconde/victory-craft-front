@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAppFeedback } from "../../hooks/useAppFeedback";
+import { useAuth } from "../../context/AuthContext";
 
 type RemoteMode = "list" | "create" | "edit";
 
@@ -159,6 +160,7 @@ export const RemoteVideosModule: React.FC<RemoteVideosModuleProps> = ({
   const location = useLocation();
   const params = useParams();
   const feedback = useAppFeedback();
+  const { token } = useAuth();
   const remoteScriptUrl = import.meta.env.VITE_VIDEOS_MFE_SCRIPT_URL as
     | string
     | undefined;
@@ -193,11 +195,11 @@ export const RemoteVideosModule: React.FC<RemoteVideosModuleProps> = ({
       path: location.pathname,
       search: location.search,
       params: stableParams,
-      token: localStorage.getItem("token"),
+      token: token || null,
       apiBaseUrl: import.meta.env.VITE_API_URL || "",
       feedback: feedbackBridge,
     }),
-    [mode, location.pathname, location.search, stableParams, feedbackBridge],
+    [mode, location.pathname, location.search, stableParams, token, feedbackBridge],
   );
 
   useEffect(() => {

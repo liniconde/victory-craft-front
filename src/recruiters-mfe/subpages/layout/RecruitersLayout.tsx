@@ -29,6 +29,14 @@ const RecruitersLayout: React.FC = () => {
             Library
           </NavLink>
           <NavLink
+            to="/scouting/subpages/player-profiles"
+            className={({ isActive }) =>
+              `recruiters-sidebar__link ${isActive ? "is-active" : ""}`
+            }
+          >
+            Player Profiles
+          </NavLink>
+          <NavLink
             to="/scouting/subpages/rankings"
             className={({ isActive }) =>
               `recruiters-sidebar__link ${isActive ? "is-active" : ""}`

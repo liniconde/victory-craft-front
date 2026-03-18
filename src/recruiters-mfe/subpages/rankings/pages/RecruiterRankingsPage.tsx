@@ -121,13 +121,13 @@ const RecruiterRankingsPage: React.FC = () => {
           <p className="recruiters-dashboard__eyebrow">Scouting Board</p>
           <h2>Panel editorial de reclutamiento</h2>
           <p>
-            El orden ya viene resuelto por backend: score descendente y, en empate,
-            clips más recientes primero. Aquí trabajamos el board encima de esa jerarquía.
+            El orden ya viene resuelto por backend: score descendente y, en empate, clips mas
+            recientes primero. Este board representa solo videos publicados en el ranking publico.
           </p>
         </div>
         <div className="recruiters-dashboard__stats">
           <strong>{pagination.total}</strong>
-          <span>clips evaluables</span>
+          <span>videos publicados</span>
         </div>
       </header>
 
@@ -170,8 +170,8 @@ const RecruiterRankingsPage: React.FC = () => {
             <span className="recruiters-board__top-rank">Top {index + 1}</span>
             <strong>{item.scoutingProfile?.title || item.video.s3Key}</strong>
             <p>
-              {item.scoutingProfile?.playerName || "Jugador"} ·{" "}
-              {item.scoutingProfile?.playerPosition || "Posición"}
+              {item.playerProfile?.fullName || "Jugador"} ·{" "}
+              {item.playerProfile?.primaryPosition || "Posicion"}
             </p>
             <small>
               {item.ranking.score} pts · {item.ranking.netVotes} netos
@@ -340,6 +340,7 @@ const RecruiterRankingsPage: React.FC = () => {
                 <option value="upvotes">Upvotes</option>
               </select>
             </label>
+
           </div>
         </aside>
 
@@ -372,10 +373,9 @@ const RecruiterRankingsPage: React.FC = () => {
                       <span>{item.ranking.score} pts</span>
                     </div>
                     <p>
-                      {item.scoutingProfile?.playerName || "Jugador"} ·{" "}
-                      {item.scoutingProfile?.playerPosition || "Posición"} ·{" "}
-                      {item.scoutingProfile?.country || "País"} ·{" "}
-                      {item.scoutingProfile?.city || "Ciudad"}
+                      {item.playerProfile?.fullName || "Jugador"} ·{" "}
+                      {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
+                      {item.playerProfile?.country || "Pais"} · {item.playerProfile?.city || "Ciudad"}
                     </p>
                     <div className="recruiters-board__chips">
                       <span>{item.scoutingProfile?.sportType || item.video.sportType || "sport"}</span>
@@ -464,11 +464,11 @@ const RecruiterRankingsPage: React.FC = () => {
               <div className="recruiters-board__preview-copy">
                 <strong>{selectedItem.scoutingProfile?.title || selectedItem.video.s3Key}</strong>
                 <p>
-                  {selectedItem.scoutingProfile?.playerName || "Jugador"} ·{" "}
-                  {selectedItem.scoutingProfile?.playerTeam || "Equipo"} ·{" "}
+                  {selectedItem.playerProfile?.fullName || "Jugador"} ·{" "}
+                  {selectedItem.playerProfile?.team || "Equipo"} ·{" "}
                   {selectedItem.scoutingProfile?.tournamentName || "Torneo"}
                 </p>
-                <p>{selectedItem.scoutingProfile?.notes || "Sin notas del perfil."}</p>
+                <p>{selectedItem.scoutingProfile?.notes || "Sin notas editoriales."}</p>
               </div>
 
               <div className="recruiters-board__preview-stats">
@@ -512,6 +512,18 @@ const RecruiterRankingsPage: React.FC = () => {
                 </button>
               </div>
 
+              {selectedItem.playerProfile ? (
+                <section className="recruiters-board__player-profile">
+                  <span>Player profile asociado</span>
+                  <strong>{selectedItem.playerProfile.fullName || "Sin nombre"}</strong>
+                  <p>
+                    {selectedItem.playerProfile.team || "Sin equipo"} ·{" "}
+                    {selectedItem.playerProfile.sportType || "Sin deporte"} ·{" "}
+                    {selectedItem.playerProfile.category || "Sin categoría"}
+                  </p>
+                </section>
+              ) : null}
+
               <div className="scouting-form__actions">
                 <button
                   type="button"
@@ -523,7 +535,7 @@ const RecruiterRankingsPage: React.FC = () => {
                   type="button"
                   onClick={() => navigate(`/scouting/subpages/profile/${selectedItem.video._id}`)}
                 >
-                  Editar profile
+                  Editar metadata
                 </button>
               </div>
             </div>

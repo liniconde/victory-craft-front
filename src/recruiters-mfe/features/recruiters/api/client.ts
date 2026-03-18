@@ -3,6 +3,16 @@ import { api } from "../../../../utils/api";
 import type {
   RecruiterFiltersCatalog,
   RecruiterRankingItem,
+  RecruiterPlayerProfile,
+  RecruiterPlayerProfilesCatalog,
+  RecruiterPlayerProfilesQuery,
+  RecruiterPlayerProfilesResponse,
+  RecruiterPlayerProfileSummary,
+  RecruiterPlayerProfilePayload,
+  RecruiterPlayerProfileVideoLink,
+  RecruiterPlayerProfileVideoLinkPayload,
+  RecruiterPlayerProfileVideoLinkResponse,
+  RecruiterPlayerProfileVideosResponse,
   RecruiterRankingsQuery,
   RecruiterRankingsResponse,
   RecruiterScoutingProfile,
@@ -26,17 +36,12 @@ const toValidationMessage = (issues: unknown): string | null => {
   if (!Array.isArray(issues) || issues.length === 0) return null;
 
   const labels: Record<string, string> = {
+    playerProfileId: "Player profile",
+    publicationStatus: "Estado de publicación",
     title: "Título",
     sportType: "Deporte",
     playType: "Tipo de jugada",
     tournamentType: "Tipo de torneo",
-    playerName: "Jugador",
-    playerPosition: "Posición",
-    playerTeam: "Equipo",
-    playerCategory: "Categoría",
-    dominantProfile: "Perfil dominante",
-    country: "País",
-    city: "Ciudad",
     tournamentName: "Torneo",
     recordedAt: "Fecha del clip",
   };
@@ -99,6 +104,7 @@ const normalizeVideo = (item: unknown, index = 0): RecruiterVideoLibraryItem => 
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
     sportType: typeof raw.sportType === "string" ? raw.sportType : undefined,
+    ownerUserId: typeof raw.ownerUserId === "string" ? raw.ownerUserId : undefined,
   };
 };
 
@@ -119,20 +125,20 @@ const normalizeProfile = (value: unknown): RecruiterScoutingProfile => {
   return {
     _id: typeof raw._id === "string" ? raw._id : undefined,
     videoId: typeof raw.videoId === "string" ? raw.videoId : "",
+    playerProfileId:
+      typeof raw.playerProfileId === "string" ? raw.playerProfileId : raw.playerProfileId === null ? null : undefined,
+    publicationStatus:
+      raw.publicationStatus === "draft" ||
+      raw.publicationStatus === "published" ||
+      raw.publicationStatus === "archived"
+        ? raw.publicationStatus
+        : undefined,
     title: typeof raw.title === "string" ? raw.title : undefined,
     sportType: typeof raw.sportType === "string" ? raw.sportType : undefined,
     playType: typeof raw.playType === "string" ? raw.playType : undefined,
     tournamentType: typeof raw.tournamentType === "string" ? raw.tournamentType : undefined,
-    playerName: typeof raw.playerName === "string" ? raw.playerName : undefined,
     playerAge: typeof raw.playerAge === "number" ? raw.playerAge : undefined,
-    playerPosition: typeof raw.playerPosition === "string" ? raw.playerPosition : undefined,
-    playerTeam: typeof raw.playerTeam === "string" ? raw.playerTeam : undefined,
-    playerCategory: typeof raw.playerCategory === "string" ? raw.playerCategory : undefined,
     jerseyNumber: typeof raw.jerseyNumber === "number" ? raw.jerseyNumber : undefined,
-    dominantProfile:
-      typeof raw.dominantProfile === "string" ? raw.dominantProfile : undefined,
-    country: typeof raw.country === "string" ? raw.country : undefined,
-    city: typeof raw.city === "string" ? raw.city : undefined,
     tournamentName:
       typeof raw.tournamentName === "string" ? raw.tournamentName : undefined,
     notes: typeof raw.notes === "string" ? raw.notes : undefined,
@@ -142,6 +148,78 @@ const normalizeProfile = (value: unknown): RecruiterScoutingProfile => {
     recordedAt: typeof raw.recordedAt === "string" ? raw.recordedAt : undefined,
     createdBy: typeof raw.createdBy === "string" ? raw.createdBy : undefined,
     updatedBy: typeof raw.updatedBy === "string" ? raw.updatedBy : undefined,
+    createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizePlayerProfileSummary = (value: unknown): RecruiterPlayerProfileSummary => {
+  const raw = toRecord(value);
+  const status = raw.status;
+  return {
+    _id: typeof raw._id === "string" ? raw._id : "",
+    userId:
+      typeof raw.userId === "string" ? raw.userId : raw.userId === null ? null : undefined,
+    email: typeof raw.email === "string" ? raw.email : raw.email === null ? null : undefined,
+    fullName: typeof raw.fullName === "string" ? raw.fullName : undefined,
+    sportType: typeof raw.sportType === "string" ? raw.sportType : undefined,
+    primaryPosition:
+      typeof raw.primaryPosition === "string" ? raw.primaryPosition : undefined,
+    secondaryPosition:
+      typeof raw.secondaryPosition === "string" ? raw.secondaryPosition : undefined,
+    team: typeof raw.team === "string" ? raw.team : undefined,
+    category: typeof raw.category === "string" ? raw.category : undefined,
+    country: typeof raw.country === "string" ? raw.country : undefined,
+    city: typeof raw.city === "string" ? raw.city : undefined,
+    avatarUrl: typeof raw.avatarUrl === "string" ? raw.avatarUrl : undefined,
+    status:
+      status === "draft" || status === "active" || status === "archived"
+        ? status
+        : undefined,
+  };
+};
+
+const normalizePlayerProfile = (value: unknown): RecruiterPlayerProfile => {
+  const raw = toRecord(value);
+  const summary = normalizePlayerProfileSummary(value);
+  return {
+    ...summary,
+    birthDate: typeof raw.birthDate === "string" ? raw.birthDate : undefined,
+    dominantProfile:
+      typeof raw.dominantProfile === "string" ? raw.dominantProfile : undefined,
+    bio: typeof raw.bio === "string" ? raw.bio : undefined,
+    createdBy:
+      typeof raw.createdBy === "string" ? raw.createdBy : raw.createdBy === null ? null : undefined,
+    updatedBy:
+      typeof raw.updatedBy === "string" ? raw.updatedBy : raw.updatedBy === null ? null : undefined,
+    createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizePlayerProfileListItem = (value: unknown) => {
+  const raw = toRecord(value);
+  return {
+    ...normalizePlayerProfileSummary(value),
+    userName: typeof raw.userName === "string" ? raw.userName : undefined,
+  };
+};
+
+const normalizePlayerProfileVideoLink = (
+  value: unknown
+): RecruiterPlayerProfileVideoLink => {
+  const raw = toRecord(value);
+  return {
+    _id: typeof raw._id === "string" ? raw._id : undefined,
+    playerProfileId:
+      typeof raw.playerProfileId === "string" ? raw.playerProfileId : undefined,
+    videoId: typeof raw.videoId === "string" ? raw.videoId : undefined,
+    linkedBy:
+      typeof raw.linkedBy === "string" ? raw.linkedBy : raw.linkedBy === null ? null : undefined,
+    notes: typeof raw.notes === "string" ? raw.notes : undefined,
+    tags: Array.isArray(raw.tags)
+      ? raw.tags.filter((item): item is string => typeof item === "string")
+      : undefined,
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
   };
@@ -167,6 +245,7 @@ const normalizeRankingItem = (value: unknown): RecruiterRankingItem => {
   return {
     video: normalizeVideo(raw.video),
     scoutingProfile: raw.scoutingProfile ? normalizeProfile(raw.scoutingProfile) : null,
+    playerProfile: raw.playerProfile ? normalizePlayerProfileSummary(raw.playerProfile) : null,
     ranking: {
       score: numberOrZero(rankingRaw.score),
       upvotes: numberOrZero(rankingRaw.upvotes),
@@ -205,6 +284,162 @@ export const recruitersApi = {
       return normalizeLibraryResponse(response.data);
     } catch (error) {
       throw mapError(error, "No se pudo cargar la biblioteca.");
+    }
+  },
+  getMyLibrary: async (
+    page = 1,
+    limit = 20,
+    searchTerm = "",
+    sportType?: string
+  ): Promise<RecruiterVideoLibraryResponse> => {
+    try {
+      const response = await api.get("/videos/library/mine", {
+        params: {
+          page,
+          limit,
+          ...(searchTerm.trim() ? { searchTerm: searchTerm.trim() } : {}),
+          ...(sportType?.trim() ? { sportType: sportType.trim() } : {}),
+        },
+      });
+      return normalizeLibraryResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar tu biblioteca.");
+    }
+  },
+  getMyPlayerProfile: async (): Promise<RecruiterPlayerProfile> => {
+    try {
+      const response = await api.get("/recruiters/player-profiles/me");
+      return normalizePlayerProfile(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar tu player profile.");
+    }
+  },
+  listPlayerProfiles: async (
+    query: RecruiterPlayerProfilesQuery = {}
+  ): Promise<RecruiterPlayerProfilesResponse> => {
+    try {
+      const response = await api.get("/recruiters/player-profiles", { params: query });
+      const raw = toRecord(response.data);
+      const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
+      return {
+        items: itemsRaw.map(normalizePlayerProfileListItem),
+        pagination: normalizePagination(raw.pagination),
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo buscar player profiles.");
+    }
+  },
+  getPlayerProfilesCatalog: async (): Promise<RecruiterPlayerProfilesCatalog> => {
+    try {
+      const response = await api.get("/recruiters/player-profiles/catalog");
+      const raw = toRecord(response.data);
+      const array = (value: unknown) =>
+        Array.isArray(value)
+          ? value.filter((item): item is string => typeof item === "string")
+          : [];
+      return {
+        sportTypes: array(raw.sportTypes),
+        positions: array(raw.positions),
+        categories: array(raw.categories),
+        countries: array(raw.countries),
+        cities: array(raw.cities),
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar el catálogo de player profiles.");
+    }
+  },
+  getPlayerProfile: async (profileId: string): Promise<RecruiterPlayerProfile> => {
+    try {
+      const response = await api.get(`/recruiters/player-profiles/${profileId}`);
+      return normalizePlayerProfile(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar el player profile.");
+    }
+  },
+  createPlayerProfile: async (
+    payload: RecruiterPlayerProfilePayload
+  ): Promise<RecruiterPlayerProfile> => {
+    try {
+      const response = await api.post("/recruiters/player-profiles", payload);
+      return normalizePlayerProfile(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo crear el player profile.");
+    }
+  },
+  updatePlayerProfile: async (
+    profileId: string,
+    payload: RecruiterPlayerProfilePayload
+  ): Promise<RecruiterPlayerProfile> => {
+    try {
+      const response = await api.put(`/recruiters/player-profiles/${profileId}`, payload);
+      return normalizePlayerProfile(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo actualizar el player profile.");
+    }
+  },
+  linkVideoToPlayerProfile: async (
+    profileId: string,
+    payload: RecruiterPlayerProfileVideoLinkPayload
+  ): Promise<RecruiterPlayerProfileVideoLinkResponse> => {
+    try {
+      const response = await api.post(`/recruiters/player-profiles/${profileId}/videos`, payload);
+      const raw = toRecord(response.data);
+      return {
+        link: raw.link ? normalizePlayerProfileVideoLink(raw.link) : undefined,
+        playerProfile: raw.playerProfile
+          ? normalizePlayerProfileSummary(raw.playerProfile)
+          : undefined,
+        video: raw.video ? normalizeVideo(raw.video) : undefined,
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo vincular el video al player profile.");
+    }
+  },
+  getPlayerProfileVideos: async (
+    profileId: string,
+    page = 1,
+    limit = 20
+  ): Promise<RecruiterPlayerProfileVideosResponse> => {
+    try {
+      const response = await api.get(`/recruiters/player-profiles/${profileId}/videos`, {
+        params: { page, limit },
+      });
+      const raw = toRecord(response.data);
+      const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
+      return {
+        playerProfile: raw.playerProfile
+          ? normalizePlayerProfileSummary(raw.playerProfile)
+          : undefined,
+        items: itemsRaw.map((item) => {
+          const itemRaw = toRecord(item);
+          return {
+            link: itemRaw.link ? normalizePlayerProfileVideoLink(itemRaw.link) : undefined,
+            video: itemRaw.video ? normalizeVideo(itemRaw.video) : undefined,
+          };
+        }),
+        pagination: normalizePagination(raw.pagination),
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudieron cargar los videos del player profile.");
+    }
+  },
+  unlinkVideoFromPlayerProfile: async (
+    profileId: string,
+    videoId: string
+  ): Promise<RecruiterPlayerProfileVideoLinkResponse> => {
+    try {
+      const response = await api.delete(
+        `/recruiters/player-profiles/${profileId}/videos/${videoId}`
+      );
+      const raw = toRecord(response.data);
+      return {
+        playerProfile: raw.playerProfile
+          ? normalizePlayerProfileSummary(raw.playerProfile)
+          : undefined,
+        video: raw.video ? normalizeVideo(raw.video) : undefined,
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo desvincular el video del player profile.");
     }
   },
   getScoutingProfile: async (videoId: string): Promise<RecruiterScoutingProfileEnvelope> => {
@@ -343,6 +578,7 @@ export const recruitersApi = {
       return {
         video: raw.video ? normalizeVideo(raw.video) : undefined,
         scoutingProfile: raw.scoutingProfile ? normalizeProfile(raw.scoutingProfile) : null,
+        playerProfile: raw.playerProfile ? normalizePlayerProfileSummary(raw.playerProfile) : null,
         ranking: raw.ranking ? normalizeSummary(raw.ranking) : undefined,
         relatedVideos: related.map((item) => {
           const relatedRaw = toRecord(item);
@@ -350,6 +586,9 @@ export const recruitersApi = {
             video: relatedRaw.video ? normalizeVideo(relatedRaw.video) : undefined,
             scoutingProfile: relatedRaw.scoutingProfile
               ? normalizeProfile(relatedRaw.scoutingProfile)
+              : null,
+            playerProfile: relatedRaw.playerProfile
+              ? normalizePlayerProfileSummary(relatedRaw.playerProfile)
               : null,
           };
         }),

@@ -19,3 +19,13 @@ export const getDecodedToken = (token: string): DecodedToken | null => {
     return null;
   }
 };
+
+export const hasJwtFormat = (token: string): boolean => {
+  const value = token.trim();
+  if (!value) return false;
+  const parts = value.split(".");
+  return parts.length === 3 && parts.every((part) => part.trim().length > 0);
+};
+
+export const isValidJwtToken = (token: string): boolean =>
+  hasJwtFormat(token) && getDecodedToken(token) !== null;

@@ -16,6 +16,7 @@ export interface RecruiterVideoLibraryItem {
   createdAt?: string;
   updatedAt?: string;
   sportType?: string;
+  ownerUserId?: string;
 }
 
 export interface RecruiterVideoLibraryResponse {
@@ -26,19 +27,14 @@ export interface RecruiterVideoLibraryResponse {
 export interface RecruiterScoutingProfile {
   _id?: string;
   videoId: string;
+  playerProfileId?: string | null;
+  publicationStatus?: "draft" | "published" | "archived";
   title?: string;
   sportType?: string;
   playType?: string;
   tournamentType?: string;
-  playerName?: string;
   playerAge?: number;
-  playerPosition?: string;
-  playerTeam?: string;
-  playerCategory?: string;
   jerseyNumber?: number;
-  dominantProfile?: string;
-  country?: string;
-  city?: string;
   tournamentName?: string;
   notes?: string;
   tags?: string[];
@@ -55,19 +51,14 @@ export interface RecruiterScoutingProfileEnvelope {
 }
 
 export interface RecruiterScoutingProfilePayload {
+  playerProfileId?: string;
+  publicationStatus?: "draft" | "published" | "archived";
   title?: string;
   sportType?: string;
   playType?: string;
   tournamentType?: string;
-  playerName?: string;
   playerAge?: number;
-  playerPosition?: string;
-  playerTeam?: string;
-  playerCategory?: string;
   jerseyNumber?: number;
-  dominantProfile?: string;
-  country?: string;
-  city?: string;
   tournamentName?: string;
   notes?: string;
   tags?: string[];
@@ -107,6 +98,7 @@ export interface RecruiterRankingMetrics {
 export interface RecruiterRankingItem {
   video: RecruiterVideoLibraryItem;
   scoutingProfile?: RecruiterScoutingProfile | null;
+  playerProfile?: RecruiterPlayerProfileSummary | null;
   ranking: RecruiterRankingMetrics;
   myVote?: -1 | 1 | null;
 }
@@ -131,10 +123,12 @@ export interface RecruiterFiltersCatalog {
 export interface RecruiterViewResponse {
   video?: RecruiterVideoLibraryItem;
   scoutingProfile?: RecruiterScoutingProfile | null;
+  playerProfile?: RecruiterPlayerProfileSummary | null;
   ranking?: RecruiterVotesSummary;
   relatedVideos: Array<{
     video?: RecruiterVideoLibraryItem;
     scoutingProfile?: RecruiterScoutingProfile | null;
+    playerProfile?: RecruiterPlayerProfileSummary | null;
   }>;
 }
 
@@ -151,5 +145,112 @@ export interface RecruiterRankingsQuery {
   sortBy?: "score" | "recent" | "upvotes";
   page?: number;
   limit?: number;
-  includeWithoutProfile?: boolean;
+}
+
+export interface RecruiterPlayerProfileSummary {
+  _id: string;
+  userId?: string | null;
+  email?: string | null;
+  fullName?: string;
+  sportType?: string;
+  primaryPosition?: string;
+  secondaryPosition?: string;
+  team?: string;
+  category?: string;
+  country?: string;
+  city?: string;
+  avatarUrl?: string;
+  status?: "draft" | "active" | "archived";
+}
+
+export interface RecruiterPlayerProfile extends RecruiterPlayerProfileSummary {
+  birthDate?: string;
+  dominantProfile?: string;
+  bio?: string;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface RecruiterPlayerProfilePayload {
+  userId?: string;
+  email?: string;
+  fullName?: string;
+  sportType?: string;
+  primaryPosition?: string;
+  secondaryPosition?: string;
+  team?: string;
+  category?: string;
+  country?: string;
+  city?: string;
+  birthDate?: string;
+  dominantProfile?: string;
+  bio?: string;
+  avatarUrl?: string;
+  status?: "draft" | "active" | "archived";
+}
+
+export interface RecruiterPlayerProfileListItem
+  extends RecruiterPlayerProfileSummary {
+  userName?: string;
+}
+
+export interface RecruiterPlayerProfilesQuery {
+  page?: number;
+  limit?: number;
+  email?: string;
+  userName?: string;
+  fullName?: string;
+  team?: string;
+  sportType?: string;
+  country?: string;
+  city?: string;
+  category?: string;
+  status?: "draft" | "active" | "archived" | "";
+}
+
+export interface RecruiterPlayerProfilesResponse {
+  items: RecruiterPlayerProfileListItem[];
+  pagination: RecruiterPagination;
+}
+
+export interface RecruiterPlayerProfilesCatalog {
+  sportTypes: string[];
+  positions: string[];
+  categories: string[];
+  countries: string[];
+  cities: string[];
+}
+
+export interface RecruiterPlayerProfileVideoLink {
+  _id?: string;
+  playerProfileId?: string;
+  videoId?: string;
+  linkedBy?: string | null;
+  notes?: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface RecruiterPlayerProfileVideoLinkPayload {
+  videoId: string;
+  notes?: string;
+  tags?: string[];
+}
+
+export interface RecruiterPlayerProfileVideoLinkResponse {
+  link?: RecruiterPlayerProfileVideoLink;
+  playerProfile?: RecruiterPlayerProfileSummary;
+  video?: RecruiterVideoLibraryItem;
+}
+
+export interface RecruiterPlayerProfileVideosResponse {
+  playerProfile?: RecruiterPlayerProfileSummary;
+  items: Array<{
+    link?: RecruiterPlayerProfileVideoLink;
+    video?: RecruiterVideoLibraryItem;
+  }>;
+  pagination: RecruiterPagination;
 }
