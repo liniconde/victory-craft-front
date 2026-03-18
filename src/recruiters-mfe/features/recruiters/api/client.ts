@@ -1,8 +1,9 @@
 import axios from "axios";
-import { api } from "../../../../utils/api";
+import { api, s3Api } from "../../../../utils/api";
 import type {
   RecruiterFiltersCatalog,
   RecruiterRankingItem,
+  RecruiterS3UploadResponse,
   RecruiterPlayerProfile,
   RecruiterPlayerProfilesCatalog,
   RecruiterPlayerProfilesQuery,
@@ -265,7 +266,67 @@ const normalizeLibraryResponse = (value: unknown): RecruiterVideoLibraryResponse
   };
 };
 
+const normalizeS3UploadResponse = (value: unknown): RecruiterS3UploadResponse => {
+  const raw = toRecord(value);
+  const headersRaw = toRecord(raw.headers);
+  const headers = Object.fromEntries(
+    Object.entries(headersRaw).filter((entry): entry is [string, string] => typeof entry[1] === "string")
+  );
+
+  return {
+    uploadUrl: typeof raw.uploadUrl === "string" ? raw.uploadUrl : undefined,
+    url: typeof raw.url === "string" ? raw.url : undefined,
+    presignedUrl: typeof raw.presignedUrl === "string" ? raw.presignedUrl : undefined,
+    signedUrl: typeof raw.signedUrl === "string" ? raw.signedUrl : undefined,
+    s3Url: typeof raw.s3Url === "string" ? raw.s3Url : undefined,
+    fileUrl: typeof raw.fileUrl === "string" ? raw.fileUrl : undefined,
+    publicUrl: typeof raw.publicUrl === "string" ? raw.publicUrl : undefined,
+    objectKey: typeof raw.objectKey === "string" ? raw.objectKey : undefined,
+    key: typeof raw.key === "string" ? raw.key : undefined,
+    method: typeof raw.method === "string" ? raw.method : undefined,
+    headers,
+  };
+};
+
 export const recruitersApi = {
+  uploadPlayerAvatar: async (
+    file: File,
+    scope = "player-profiles"
+  ): Promise<{ avatarUrl: string; objectKey?: string }> => {
+    try {
+      const safeName = file.name.replace(/\s+/g, "-");
+      const objectKey = `${scope}/${Date.now()}-${safeName}`;
+      const response = await api.post("/images/upload", { objectKey });
+      const upload = normalizeS3UploadResponse(response.data);
+      const uploadUrl = upload.uploadUrl || upload.presignedUrl || upload.signedUrl;
+
+      if (!uploadUrl) {
+        throw new Error("El backend no devolvió una URL válida para subir la imagen.");
+      }
+
+      await s3Api.put(uploadUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+          ...(upload.headers || {}),
+        },
+      });
+
+      const avatarUrl =
+        upload.publicUrl ||
+        upload.fileUrl ||
+        upload.s3Url ||
+        upload.url ||
+        "";
+
+      if (!avatarUrl) {
+        throw new Error("La subida terminó pero no se recibió una URL pública para el avatar.");
+      }
+
+      return { avatarUrl, objectKey: upload.objectKey || upload.key };
+    } catch (error) {
+      throw mapError(error, "No se pudo subir la foto del jugador.");
+    }
+  },
   getLibrary: async (
     page = 1,
     limit = 20,

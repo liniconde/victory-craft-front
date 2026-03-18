@@ -24,6 +24,20 @@ export interface RecruiterVideoLibraryResponse {
   pagination: RecruiterPagination;
 }
 
+export interface RecruiterS3UploadResponse {
+  uploadUrl?: string;
+  url?: string;
+  presignedUrl?: string;
+  signedUrl?: string;
+  s3Url?: string;
+  fileUrl?: string;
+  publicUrl?: string;
+  objectKey?: string;
+  key?: string;
+  method?: string;
+  headers?: Record<string, string>;
+}
+
 export interface RecruiterScoutingProfile {
   _id?: string;
   videoId: string;

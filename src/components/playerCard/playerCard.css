@@ -1,0 +1,295 @@
+.fifa-card-shell {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 18px 44px rgba(16, 37, 48, 0.08);
+}
+
+.fifa-card-shell__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+}
+
+.fifa-card-shell__header h3,
+.fifa-card-shell__header p,
+.fifa-card-shell__header span {
+  margin: 0;
+}
+
+.fifa-card-shell__eyebrow {
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0f7b6c;
+}
+
+.fifa-card-shell__header span {
+  color: #607682;
+  font-size: 0.9rem;
+}
+
+.fifa-card {
+  position: relative;
+  width: min(100%, 340px);
+  min-height: 560px;
+  margin: 0 auto;
+  padding: 18px 18px 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: #3f2f0f;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.45), transparent 35%),
+    linear-gradient(180deg, #f8f0bf 0%, #ecd675 45%, #d9b950 100%);
+  border: 3px solid #f4e7a3;
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  clip-path: polygon(12% 0%, 88% 0%, 100% 7%, 100% 88%, 50% 100%, 0% 88%, 0% 7%);
+}
+
+.fifa-card::before,
+.fifa-card::after {
+  content: "";
+  position: absolute;
+  top: 54px;
+  width: 72px;
+  height: 72px;
+  background: rgba(18, 22, 26, 0.65);
+  z-index: 0;
+  border-radius: 50%;
+}
+
+.fifa-card::before {
+  left: -34px;
+}
+
+.fifa-card::after {
+  right: -34px;
+}
+
+.fifa-card__shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 55%, rgba(255, 255, 255, 0.28) 68%, transparent 78%),
+    linear-gradient(155deg, transparent 60%, rgba(255, 255, 255, 0.18) 72%, transparent 82%);
+  z-index: 1;
+}
+
+.fifa-card__top,
+.fifa-card__bottom {
+  position: relative;
+  z-index: 2;
+}
+
+.fifa-card__top {
+  display: flex;
+  align-items: flex-start;
+  min-height: 300px;
+}
+
+.fifa-card__meta {
+  width: 82px;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fifa-card__rating {
+  font-size: 4rem;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.fifa-card__position {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.fifa-card__line {
+  width: 32px;
+  height: 2px;
+  background: rgba(63, 47, 15, 0.35);
+  margin: 8px 0 12px;
+}
+
+.fifa-card__nation {
+  font-size: 1.3rem;
+  line-height: 1;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.fifa-card__status {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(63, 47, 15, 0.14);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fifa-card__player-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.fifa-card__player-image,
+.fifa-card__player-fallback {
+  width: 240px;
+  max-height: 300px;
+}
+
+.fifa-card__player-image {
+  object-fit: contain;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.15));
+}
+
+.fifa-card__player-fallback {
+  display: grid;
+  place-items: center;
+  color: rgba(63, 47, 15, 0.46);
+  font-size: 12rem;
+}
+
+.fifa-card__bottom {
+  margin-top: 6px;
+  padding: 8px 10px 0;
+}
+
+.fifa-card__name,
+.fifa-card__subtitle {
+  margin: 0;
+  text-align: center;
+}
+
+.fifa-card__name {
+  font-size: 2.2rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.fifa-card__subtitle {
+  margin-top: 0.35rem;
+  color: rgba(63, 47, 15, 0.82);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.fifa-card__name-divider {
+  width: 100%;
+  height: 2px;
+  background: rgba(63, 47, 15, 0.25);
+  margin: 12px 0 18px;
+}
+
+.fifa-card__stats {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.fifa-card__stats-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 95px;
+}
+
+.fifa-card__stats-divider {
+  width: 2px;
+  background: rgba(63, 47, 15, 0.2);
+}
+
+.fifa-card__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.fifa-card__stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  min-width: 38px;
+  text-align: right;
+}
+
+.fifa-card__stat-label {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.fifa-card__details {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.fifa-card__details span {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(63, 47, 15, 0.11);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .fifa-card-shell__header {
+    display: grid;
+  }
+
+  .fifa-card {
+    width: min(100%, 300px);
+    min-height: 520px;
+  }
+
+  .fifa-card__rating {
+    font-size: 3.2rem;
+  }
+
+  .fifa-card__position {
+    font-size: 1rem;
+  }
+
+  .fifa-card__player-image,
+  .fifa-card__player-fallback {
+    width: 208px;
+    max-height: 260px;
+  }
+
+  .fifa-card__player-fallback {
+    font-size: 10rem;
+  }
+
+  .fifa-card__name {
+    font-size: 1.85rem;
+  }
+
+  .fifa-card__stat-value {
+    font-size: 1.55rem;
+  }
+
+  .fifa-card__stat-label {
+    font-size: 1.05rem;
+  }
+}

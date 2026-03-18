@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
+import PlayerCard from "../../../../components/playerCard/playerCard";
 import type {
   RecruiterPlayerProfile,
   RecruiterPlayerProfilesCatalog,
@@ -90,6 +92,7 @@ const PlayerProfilesPage: React.FC = () => {
       getPlayerProfile,
       getPlayerProfileVideos,
       getPlayerProfilesCatalog,
+      uploadPlayerAvatar,
       updatePlayerProfile,
     },
     feedback,
@@ -101,6 +104,7 @@ const PlayerProfilesPage: React.FC = () => {
   const [form, setForm] = useState<RecruiterPlayerProfilePayload>(emptyForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [profileVideosCount, setProfileVideosCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -206,6 +210,36 @@ const PlayerProfilesPage: React.FC = () => {
     return "Crear player profile";
   }, [currentProfile?._id]);
 
+  const profileCardVisible = Boolean(currentProfile?._id || form.fullName?.trim());
+  const avatarPreview = form.avatarUrl?.trim() || currentProfile?.avatarUrl || "";
+
+  const handleAvatarSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      feedback.showError("Selecciona un archivo de imagen válido.");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const scope = currentProfile?._id
+        ? `player-profiles/${currentProfile._id}`
+        : "player-profiles/drafts";
+      const upload = await uploadPlayerAvatar(file, scope);
+      setForm((current) => ({ ...current, avatarUrl: upload.avatarUrl }));
+    } catch (error) {
+      feedback.showError(
+        error instanceof Error ? error.message : "No se pudo subir la foto del jugador."
+      );
+    } finally {
+      setIsUploadingAvatar(false);
+      event.target.value = "";
+    }
+  };
+
   const saveProfile = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSaving(true);
@@ -292,6 +326,81 @@ const PlayerProfilesPage: React.FC = () => {
           </article>
         ) : null}
       </section>
+
+      {profileCardVisible ? (
+        <>
+          <section className="player-profile-card">
+            <div className="player-profile-card__media">
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
+                  className="player-profile-card__avatar"
+                />
+              ) : (
+                <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
+                  <FaUserCircle aria-hidden="true" />
+                </div>
+              )}
+            </div>
+
+            <div className="player-profile-card__body">
+              <div>
+                <p className="player-profile-card__eyebrow">Ficha actual</p>
+                <h3>{form.fullName || "Jugador sin nombre"}</h3>
+                <p className="player-profile-card__subtitle">
+                  {form.team || "Sin equipo"} · {form.sportType || "Sin deporte"} ·{" "}
+                  {form.category || "Sin categoría"}
+                </p>
+              </div>
+
+              <div className="player-profile-card__stats">
+                <article>
+                  <span>Posición</span>
+                  <strong>{form.primaryPosition || "N/D"}</strong>
+                </article>
+                <article>
+                  <span>Secundaria</span>
+                  <strong>{form.secondaryPosition || "N/D"}</strong>
+                </article>
+                <article>
+                  <span>Perfil</span>
+                  <strong>{form.dominantProfile || "N/D"}</strong>
+                </article>
+                <article>
+                  <span>Ubicación</span>
+                  <strong>{[form.city, form.country].filter(Boolean).join(", ") || "N/D"}</strong>
+                </article>
+              </div>
+
+              <div className="player-profile-card__footer">
+                <div>
+                  <span>Estado</span>
+                  <strong>{form.status || "active"}</strong>
+                </div>
+                <div>
+                  <span>Videos vinculados</span>
+                  <strong>{profileVideosCount}</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <PlayerCard
+            fullName={form.fullName}
+            primaryPosition={form.primaryPosition}
+            secondaryPosition={form.secondaryPosition}
+            country={form.country}
+            team={form.team}
+            category={form.category}
+            dominantProfile={form.dominantProfile}
+            sportType={form.sportType}
+            avatarUrl={avatarPreview}
+            status={form.status}
+            profileVideosCount={profileVideosCount}
+          />
+        </>
+      ) : null}
 
       <form className="scouting-form" onSubmit={saveProfile}>
         <section className="scouting-form__section">
@@ -451,6 +560,41 @@ const PlayerProfilesPage: React.FC = () => {
             </label>
 
             <label className="scouting-form__field">
+              <span>Foto del jugador</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarSelected}
+                disabled={isUploadingAvatar}
+              />
+              <small className="player-profile-upload__hint">
+                Opcional. Se sube a S3 y se guarda su `avatarUrl` en el perfil.
+              </small>
+            </label>
+
+            <article className="scouting-form__field scouting-form__field--placeholder">
+              <span>Vista previa del avatar</span>
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt={form.fullName ? `Avatar de ${form.fullName}` : "Avatar del jugador"}
+                  className="player-profile-upload__preview"
+                />
+              ) : (
+                <div className="player-profile-upload__empty">
+                  <FaUserCircle aria-hidden="true" />
+                </div>
+              )}
+              <p>
+                {isUploadingAvatar
+                  ? "Subiendo foto..."
+                  : avatarPreview
+                    ? "La foto quedará visible en la ficha del jugador."
+                    : "Si no subes una foto, mostraremos una silueta por defecto."}
+              </p>
+            </article>
+
+            <label className="scouting-form__field scouting-form__field--full">
               <span>Avatar URL</span>
               <input
                 type="url"
@@ -458,6 +602,7 @@ const PlayerProfilesPage: React.FC = () => {
                 onChange={(event) =>
                   setForm((current) => ({ ...current, avatarUrl: event.target.value }))
                 }
+                placeholder="Se completa automáticamente al subir una foto"
               />
             </label>
 
@@ -492,8 +637,14 @@ const PlayerProfilesPage: React.FC = () => {
         </section>
 
         <div className="scouting-form__actions">
-          <button type="submit" disabled={isSaving || isLoading}>
-            {isSaving ? "Guardando..." : currentProfile?._id ? "Actualizar perfil" : "Crear perfil"}
+          <button type="submit" disabled={isSaving || isLoading || isUploadingAvatar}>
+            {isUploadingAvatar
+              ? "Subiendo foto..."
+              : isSaving
+                ? "Guardando..."
+                : currentProfile?._id
+                  ? "Actualizar perfil"
+                  : "Crear perfil"}
           </button>
           {isElevated ? (
             <button
