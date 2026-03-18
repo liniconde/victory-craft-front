@@ -11,7 +11,6 @@ servers:
     description: Local
 tags:
   - name: System
-  - name: Agent
   - name: Users
   - name: Fields
   - name: Slots
@@ -23,6 +22,7 @@ tags:
   - name: Images
   - name: Concerts
   - name: Workers
+  - name: Agent Planning
 paths:
   /healthz:
     get:
@@ -35,61 +35,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
-
-  /agent/plan:
-    post:
-      tags: [Agent]
-      summary: Plan frontend agent actions from user intent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AgentPlanRequest"
-            examples:
-              default:
-                value:
-                  prompt: take me to tournaments registration and create a tournament
-                  currentPath: /fields
-                  actions:
-                    - name: navigation.go_to
-                      description: Navigate to an internal route
-                      parameters:
-                        - name: path
-                          type: string
-                          description: Target path
-                          required: true
-                      returns:
-                        - name: message
-                          type: string
-                          description: Navigation confirmation
-                      tags:
-                        - navigation
-      responses:
-        "200":
-          description: Executable action plan
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AgentPlanResponse"
-              examples:
-                normalPlan:
-                  value:
-                    summary: Navigate to the requested page.
-                    calls:
-                      - name: navigation.go_to
-                        arguments:
-                          path: /tournaments/subpages/dashboard#tournament-form
-                fallback:
-                  value:
-                    summary: No valid action could be planned.
-                    calls: []
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "500":
-          $ref: "#/components/responses/InternalError"
-        "502":
-          $ref: "#/components/responses/BadGateway"
 
   /users:
     get:
@@ -730,6 +675,399 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "500":
           $ref: "#/components/responses/InternalError"
+
+  /videos/library/{videoId}/scouting-profile:
+    post:
+      tags: [Videos]
+      summary: Crear perfil de scouting para un video de biblioteca
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoScoutingProfileCreateRequest"
+            examples:
+              create:
+                value:
+                  title: "Highlights U17"
+                  sportType: "football"
+                  playType: "attacking_transition"
+                  tournamentType: "league"
+                  playerName: "Juan Perez"
+                  playerAge: 17
+                  playerPosition: "RW"
+                  playerTeam: "CD Norte"
+                  playerCategory: "U17"
+                  jerseyNumber: 11
+                  dominantProfile: "right-footed"
+                  country: "Spain"
+                  city: "Madrid"
+                  tournamentName: "Madrid Youth League"
+                  notes: "Strong 1v1 profile"
+                  tags: ["speed", "duels", "transition"]
+                  recordedAt: "2026-03-15T10:00:00.000Z"
+      responses:
+        "201":
+          description: Perfil de scouting creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoScoutingProfileEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No autorizado para crear perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Ya existe perfil para este video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      tags: [Videos]
+      summary: Obtener perfil de scouting por video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perfil de scouting encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoScoutingProfileEnvelope"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Videos]
+      summary: Actualizar perfil de scouting por video
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoScoutingProfileUpdateRequest"
+      responses:
+        "200":
+          description: Perfil de scouting actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scoutingProfile:
+                    $ref: "#/components/schemas/VideoScoutingProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No autorizado para actualizar perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /videos/library/{videoId}/votes:
+    post:
+      tags: [Videos]
+      summary: Crear o actualizar voto del usuario autenticado
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoVoteUpsertRequest"
+            examples:
+              upvote:
+                value:
+                  value: 1
+      responses:
+        "200":
+          description: Voto aplicado y resumen actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoVoteUpsertResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /videos/library/{videoId}/votes/me:
+    delete:
+      tags: [Videos]
+      summary: Eliminar voto del usuario autenticado
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Voto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoVoteDeleteResponse"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /videos/library/{videoId}/votes/{userId}:
+    delete:
+      tags: [Videos]
+      summary: Eliminar voto de un usuario (admin/recruiter o mismo usuario)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Voto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoVoteDeleteResponse"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /videos/library/{videoId}/votes/summary:
+    get:
+      tags: [Videos]
+      summary: Resumen agregado de votos por video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resumen de votos y score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoVotesSummary"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /videos/library/rankings:
+    get:
+      tags: [Videos]
+      summary: Ranking de videos de biblioteca para recruiters
+      parameters:
+        - in: query
+          name: sportType
+          schema: { type: string }
+        - in: query
+          name: playType
+          schema: { type: string }
+        - in: query
+          name: country
+          schema: { type: string }
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: tournamentType
+          schema: { type: string }
+        - in: query
+          name: playerPosition
+          schema: { type: string }
+        - in: query
+          name: playerCategory
+          schema: { type: string }
+        - in: query
+          name: tournamentName
+          schema: { type: string }
+        - in: query
+          name: searchTerm
+          schema: { type: string }
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [score, recent, upvotes]
+            default: score
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: includeWithoutProfile
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Lista rankeada paginada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoRankingPaginatedResponse"
+
+  /videos/library/rankings/top:
+    get:
+      tags: [Videos]
+      summary: Top videos rankeados para dashboard recruiter
+      parameters:
+        - in: query
+          name: sportType
+          schema: { type: string }
+        - in: query
+          name: playType
+          schema: { type: string }
+        - in: query
+          name: country
+          schema: { type: string }
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: tournamentType
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+        - in: query
+          name: includeWithoutProfile
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Top N de videos rankeados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/VideoRankingItem"
+
+  /videos/library/filters/catalog:
+    get:
+      tags: [Videos]
+      summary: Catalogo de filtros de scouting para frontend
+      responses:
+        "200":
+          description: Valores posibles de filtros
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoFiltersCatalogResponse"
+
+  /videos/library/{videoId}/recruiter-view:
+    get:
+      tags: [Videos]
+      summary: Vista agregada recruiter por video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Detalle unificado de recruiter view
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoRecruiterViewResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /videos/{id}:
     put:
@@ -2480,6 +2818,34 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
 
+  /agent/plan:
+    post:
+      tags: [Agent Planning]
+      summary: Planificar acciones frontend con LLM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentPlanRequest"
+      responses:
+        "200":
+          description: Plan de acciones normalizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentPlanResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "502":
+          description: Error del proveedor LLM
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
   /concerts/{id}:
     get:
       tags: [Concerts]
@@ -2574,12 +2940,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
-    BadGateway:
-      description: Error del proveedor externo o gateway aguas arriba
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     ErrorResponse:
       type: object
@@ -2588,91 +2948,6 @@ components:
           type: string
         error:
           type: string
-
-    AgentActionParameter:
-      type: object
-      required: [name, type, description]
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum: [string, number, boolean, object]
-        description:
-          type: string
-        required:
-          type: boolean
-        enum:
-          type: array
-          items:
-            type: string
-
-    AgentActionResultField:
-      type: object
-      required: [name, type, description]
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum: [string, number, boolean, object]
-        description:
-          type: string
-
-    AgentActionDefinition:
-      type: object
-      required: [name, description]
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        parameters:
-          type: array
-          items:
-            $ref: "#/components/schemas/AgentActionParameter"
-        returns:
-          type: array
-          items:
-            $ref: "#/components/schemas/AgentActionResultField"
-        tags:
-          type: array
-          items:
-            type: string
-
-    AgentFunctionCall:
-      type: object
-      required: [name, arguments]
-      properties:
-        name:
-          type: string
-        arguments:
-          type: object
-          additionalProperties: true
-
-    AgentPlanRequest:
-      type: object
-      required: [prompt, currentPath, actions]
-      properties:
-        prompt:
-          type: string
-        currentPath:
-          type: string
-        actions:
-          type: array
-          items:
-            $ref: "#/components/schemas/AgentActionDefinition"
-
-    AgentPlanResponse:
-      type: object
-      required: [summary, calls]
-      properties:
-        summary:
-          type: string
-        calls:
-          type: array
-          items:
-            $ref: "#/components/schemas/AgentFunctionCall"
 
     MessageResponse:
       type: object
@@ -2692,6 +2967,94 @@ components:
         timestamp:
           type: string
           format: date-time
+
+    AgentParameter:
+      type: object
+      required: [name, type, description]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [string, number, boolean, object, array]
+        description:
+          type: string
+        required:
+          type: boolean
+        enum:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+
+    AgentReturn:
+      type: object
+      required: [name, type, description]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [string, number, boolean, object, array]
+        description:
+          type: string
+
+    AgentAction:
+      type: object
+      required: [name, description]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentParameter"
+        returns:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentReturn"
+        tags:
+          type: array
+          items:
+            type: string
+
+    AgentPlanRequest:
+      type: object
+      required: [prompt, currentPath, actions]
+      properties:
+        prompt:
+          type: string
+        currentPath:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentAction"
+
+    AgentPlanCall:
+      type: object
+      required: [name, arguments]
+      properties:
+        name:
+          type: string
+        arguments:
+          type: object
+          additionalProperties: true
+
+    AgentPlanResponse:
+      type: object
+      required: [summary, calls]
+      properties:
+        summary:
+          type: string
+        calls:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentPlanCall"
 
     User:
       type: object
@@ -3489,6 +3852,190 @@ components:
             $ref: "#/components/schemas/VideoLibraryListItem"
         pagination:
           $ref: "#/components/schemas/PaginationMeta"
+
+    VideoScoutingProfile:
+      type: object
+      properties:
+        _id: { type: string }
+        videoId: { type: string }
+        title: { type: string }
+        sportType: { type: string }
+        playType: { type: string }
+        tournamentType: { type: string }
+        playerName: { type: string }
+        playerAge: { type: integer }
+        playerPosition: { type: string }
+        playerTeam: { type: string }
+        playerCategory: { type: string }
+        jerseyNumber: { type: integer }
+        dominantProfile: { type: string }
+        country: { type: string }
+        city: { type: string }
+        tournamentName: { type: string }
+        notes: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        recordedAt:
+          type: string
+          format: date-time
+        createdBy: { type: string }
+        updatedBy: { type: string }
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VideoScoutingProfileCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        sportType: { type: string }
+        playType: { type: string }
+        tournamentType: { type: string }
+        playerName: { type: string }
+        playerAge: { type: integer, minimum: 0, maximum: 100 }
+        playerPosition: { type: string }
+        playerTeam: { type: string }
+        playerCategory: { type: string }
+        jerseyNumber: { type: integer, minimum: 0, maximum: 99 }
+        dominantProfile: { type: string }
+        country: { type: string }
+        city: { type: string }
+        tournamentName: { type: string }
+        notes: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        recordedAt:
+          type: string
+          format: date-time
+
+    VideoScoutingProfileUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/VideoScoutingProfileCreateRequest"
+
+    VideoScoutingProfileEnvelope:
+      type: object
+      properties:
+        video:
+          $ref: "#/components/schemas/VideoLibraryListItem"
+        scoutingProfile:
+          $ref: "#/components/schemas/VideoScoutingProfile"
+
+    VideoVoteUpsertRequest:
+      type: object
+      required: [value]
+      properties:
+        value:
+          type: integer
+          enum: [-1, 0, 1]
+
+    VideoVotesSummary:
+      type: object
+      properties:
+        videoId: { type: string }
+        upvotes: { type: integer }
+        downvotes: { type: integer }
+        netVotes: { type: integer }
+        score: { type: number }
+        myVote:
+          type: integer
+          enum: [-1, 1]
+          nullable: true
+
+    VideoVoteUpsertResponse:
+      type: object
+      properties:
+        vote:
+          type: object
+          properties:
+            videoId: { type: string }
+            userId: { type: string }
+            value:
+              type: integer
+              enum: [-1, 1]
+              nullable: true
+        summary:
+          $ref: "#/components/schemas/VideoVotesSummary"
+
+    VideoVoteDeleteResponse:
+      type: object
+      properties:
+        message: { type: string }
+        summary:
+          $ref: "#/components/schemas/VideoVotesSummary"
+
+    VideoRankingMetrics:
+      type: object
+      properties:
+        score: { type: number }
+        upvotes: { type: integer }
+        downvotes: { type: integer }
+        netVotes: { type: integer }
+
+    VideoRankingItem:
+      type: object
+      properties:
+        video:
+          $ref: "#/components/schemas/VideoLibraryListItem"
+        scoutingProfile:
+          allOf:
+            - $ref: "#/components/schemas/VideoScoutingProfile"
+          nullable: true
+        ranking:
+          $ref: "#/components/schemas/VideoRankingMetrics"
+        myVote:
+          type: integer
+          enum: [-1, 1]
+          nullable: true
+
+    VideoRankingPaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/VideoRankingItem"
+        pagination:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    VideoFiltersCatalogResponse:
+      type: object
+      properties:
+        sportTypes: { type: array, items: { type: string } }
+        playTypes: { type: array, items: { type: string } }
+        tournamentTypes: { type: array, items: { type: string } }
+        countries: { type: array, items: { type: string } }
+        cities: { type: array, items: { type: string } }
+        playerPositions: { type: array, items: { type: string } }
+        playerCategories: { type: array, items: { type: string } }
+        tournaments: { type: array, items: { type: string } }
+        tags: { type: array, items: { type: string } }
+
+    VideoRecruiterViewResponse:
+      type: object
+      properties:
+        video:
+          $ref: "#/components/schemas/VideoLibraryListItem"
+        scoutingProfile:
+          allOf:
+            - $ref: "#/components/schemas/VideoScoutingProfile"
+          nullable: true
+        ranking:
+          $ref: "#/components/schemas/VideoVotesSummary"
+        relatedVideos:
+          type: array
+          items:
+            type: object
+            properties:
+              video:
+                $ref: "#/components/schemas/VideoLibraryListItem"
+              scoutingProfile:
+                $ref: "#/components/schemas/VideoScoutingProfile"
 
     VideoUpdateRequest:
       type: object

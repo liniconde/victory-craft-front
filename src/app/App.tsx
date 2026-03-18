@@ -37,6 +37,9 @@ const Home = lazy(() => import("../pages/home/Home"));
 const TournamentsModule = lazy(
   () => import("../tournaments-mfe/TournamentsModule")
 );
+const RecruitersModule = lazy(
+  () => import("../recruiters-mfe/RecruitersModule")
+);
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
 );
@@ -286,6 +289,22 @@ function AppRoutes() {
               element={
                 <PrivateRoute>
                   <TournamentsModule />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/scouting/*"
+              element={
+                <PrivateRoute>
+                  <RecruitersModule />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/recruiters/*"
+              element={
+                <PrivateRoute>
+                  <Navigate to="/scouting/subpages/dashboard" replace />
                 </PrivateRoute>
               }
             />

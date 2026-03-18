@@ -136,6 +136,13 @@ const NavigationBar: React.FC = () => {
               >
                 Vídeos
               </button>
+              <button
+                type="button"
+                className={getNavLinkClassName("/scouting")}
+                onClick={() => handleNavigate("/scouting/subpages/dashboard")}
+              >
+                Scouting
+              </button>
 
               {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
               <button
