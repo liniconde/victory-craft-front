@@ -1530,7 +1530,8 @@
   }
 
   .recruiters-board__preview-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
   }
 
   .recruiters-board-mobile__spotlight {
@@ -1583,6 +1584,22 @@
     font-size: 0.9rem;
   }
 
+  .recruiters-board__preview-stats article {
+    padding: 0.7rem 0.6rem;
+    border-radius: 14px;
+  }
+
+  .recruiters-board__preview-stats span {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .recruiters-board__preview-stats strong {
+    margin-top: 0.25rem;
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+
   .recruiters-board__player-profile {
     padding: 0.8rem 0.9rem;
   }
@@ -1611,5 +1628,15 @@
   .scouting-form__section-header,
   .scouting-form__actions {
     display: grid;
+  }
+}
+
+@media (max-width: 420px) {
+  .recruiters-board__preview-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recruiters-board__preview-stats article:last-child {
+    grid-column: 1 / -1;
   }
 }
