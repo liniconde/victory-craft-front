@@ -5,6 +5,10 @@ import type {
   RecruiterPlayerProfileListItem,
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import {
+  getRecruiterSportTypeLabel,
+  normalizeRecruiterSportType,
+} from "../../../features/recruiters/sportTypes";
 
 interface PlayerProfileSearchModalProps {
   isOpen: boolean;
@@ -173,13 +177,17 @@ const PlayerProfileSearchModal: React.FC<PlayerProfileSearchModalProps> = ({
               onChange={(event) =>
                 setFilters((current) => ({
                   ...current,
-                  sportType: event.target.value,
+                  sportType: normalizeRecruiterSportType(event.target.value) ?? "",
                   page: 1,
                 }))
               }
             >
               <option value="">Todos</option>
-              {renderOptions(catalog.sportTypes)}
+              {catalog.sportTypes.map((value) => (
+                <option key={value} value={value}>
+                  {getRecruiterSportTypeLabel(value)}
+                </option>
+              ))}
             </select>
           </label>
           <label>
@@ -270,7 +278,8 @@ const PlayerProfileSearchModal: React.FC<PlayerProfileSearchModalProps> = ({
                 <strong>{item.fullName || "Sin nombre"}</strong>
                 <span>{item.email || item.userName || "Sin usuario"}</span>
                 <span>
-                  {item.team || "Sin equipo"} · {item.sportType || "Sin deporte"} ·{" "}
+                  {item.team || "Sin equipo"} ·{" "}
+                  {getRecruiterSportTypeLabel(item.sportType) || "Sin deporte"} ·{" "}
                   {item.category || "Sin categoría"}
                 </span>
               </button>

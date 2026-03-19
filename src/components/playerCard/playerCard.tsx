@@ -1,6 +1,7 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import "./playerCard.css";
+import { getRecruiterSportTypeLabel } from "../../recruiters-mfe/features/recruiters/sportTypes";
 
 type PlayerCardProps = {
   fullName?: string;
@@ -142,7 +143,7 @@ const PlayerCard: React.FC<PlayerCardProps> = (props) => {
           </div>
 
           <div className="fifa-card__details">
-            <span>{props.sportType || "sport"}</span>
+            <span>{getRecruiterSportTypeLabel(props.sportType) || "sport"}</span>
             <span>{props.dominantProfile || "perfil base"}</span>
             <span>{props.profileVideosCount || 0} videos</span>
           </div>

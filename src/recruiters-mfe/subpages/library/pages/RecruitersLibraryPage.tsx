@@ -12,6 +12,11 @@ import type {
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
+import SportsLoader from "../../../../components/loader/SportsLoader";
+import {
+  getRecruiterSportTypeLabel,
+  normalizeRecruiterSportType,
+} from "../../../features/recruiters/sportTypes";
 
 const PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MS = 400;
@@ -79,6 +84,7 @@ const RecruitersLibraryPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [summaryText, setSummaryText] = useState("");
   const [selectedPlayerProfile, setSelectedPlayerProfile] = useState<RecruiterPlayerProfile | null>(null);
+  const [isResolvingOwnProfile, setIsResolvingOwnProfile] = useState(false);
   const [linkedVideos, setLinkedVideos] = useState<RecruiterVideoLibraryItem[]>([]);
   const [isLinking, setIsLinking] = useState(false);
   const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
@@ -118,6 +124,7 @@ const RecruitersLibraryPage: React.FC = () => {
   useEffect(() => {
     if (isElevated) return;
 
+    setIsResolvingOwnProfile(true);
     trackTask(getMyPlayerProfile(), "Los sticks están buscando el player profile activo.")
       .then(setSelectedPlayerProfile)
       .catch((error) => {
@@ -128,7 +135,8 @@ const RecruitersLibraryPage: React.FC = () => {
         }
 
         feedback.showError(message || "No se pudo cargar tu player profile.");
-      });
+      })
+      .finally(() => setIsResolvingOwnProfile(false));
   }, [feedback, getMyPlayerProfile, isElevated, trackTask]);
 
   useEffect(() => {
@@ -341,7 +349,7 @@ const RecruitersLibraryPage: React.FC = () => {
       );
       const createdVideo = await createLibraryVideo({
         s3Key: upload.s3Key,
-        sportType: uploadForm.sportType?.trim(),
+        sportType: normalizeRecruiterSportType(uploadForm.sportType),
         s3Url: upload.s3Url,
         videoUrl: upload.videoUrl,
       });
@@ -354,7 +362,7 @@ const RecruitersLibraryPage: React.FC = () => {
         playerProfileId: selectedPlayerProfile._id,
         publicationStatus: uploadForm.publicationStatus ?? "published",
         title: uploadForm.title?.trim(),
-        sportType: uploadForm.sportType?.trim(),
+        sportType: normalizeRecruiterSportType(uploadForm.sportType),
         playType: uploadForm.playType?.trim(),
         tournamentType: uploadForm.tournamentType?.trim(),
         tournamentName: uploadForm.tournamentName?.trim(),
@@ -370,6 +378,7 @@ const RecruitersLibraryPage: React.FC = () => {
         jerseyNumber: uploadForm.jerseyNumber,
       });
 
+      setIsUploadModalOpen(false);
       setSearchQuery("");
       setDebouncedSearchTerm("");
       setSportTypeFilter("");
@@ -391,11 +400,10 @@ const RecruitersLibraryPage: React.FC = () => {
       );
       setUploadForm({
         ...emptyUploadForm,
-        sportType: uploadForm.sportType ?? "",
+        sportType: normalizeRecruiterSportType(uploadForm.sportType) ?? "",
       });
       setUploadTagsInput("");
       setUploadFile(null);
-      setIsUploadModalOpen(false);
       feedback.showLoading("Video subido, registrado, vinculado y publicado correctamente.");
       window.setTimeout(() => feedback.hideLoading(), 1600);
     } catch (error) {
@@ -406,6 +414,30 @@ const RecruitersLibraryPage: React.FC = () => {
       setIsUploadingVideo(false);
     }
   };
+
+  const handleOpenUploadModal = () => {
+    if (!isElevated && !isResolvingOwnProfile && !selectedPlayerProfile?._id) {
+      feedback.showError("Primero crea tu player profile para poder subir videos.");
+      navigate("/scouting/subpages/player-profiles");
+      return;
+    }
+
+    setIsUploadModalOpen(true);
+  };
+
+  const assignedProfileLabel = isResolvingOwnProfile
+    ? "Cargando tu player profile..."
+    : selectedPlayerProfile?.fullName || "Sin player profile asignado";
+
+  const assignedProfileDescription = selectedPlayerProfile
+    ? `${selectedPlayerProfile.team || "Sin equipo"} · ${
+        getRecruiterSportTypeLabel(selectedPlayerProfile.sportType) || "Sin deporte"
+      } · ${selectedPlayerProfile.category || "Sin categoría"}`
+    : isElevated
+      ? "Selecciona un jugador para que la subida quede vinculada al player profile correcto."
+      : isResolvingOwnProfile
+        ? "Estamos buscando tu player profile para vincular el video automáticamente."
+        : "Necesitas crear tu player profile antes de subir videos a tu biblioteca.";
 
   return (
     <section className="recruiters-dashboard">
@@ -445,7 +477,7 @@ const RecruitersLibraryPage: React.FC = () => {
             <p>
               {selectedPlayerProfile
                 ? `${selectedPlayerProfile.team || "Sin equipo"} · ${
-                    selectedPlayerProfile.sportType || "Sin deporte"
+                    getRecruiterSportTypeLabel(selectedPlayerProfile.sportType) || "Sin deporte"
                   } · ${selectedPlayerProfile.category || "Sin categoría"}`
                 : isElevated
                   ? "Busca un jugador existente o crea uno nuevo antes de vincular videos."
@@ -453,7 +485,7 @@ const RecruitersLibraryPage: React.FC = () => {
             </p>
           </div>
           <div className="videos-library-page__actions">
-            <button type="button" onClick={() => setIsUploadModalOpen(true)}>
+            <button type="button" onClick={handleOpenUploadModal}>
               Agregar video
             </button>
             {isElevated ? (
@@ -483,7 +515,7 @@ const RecruitersLibraryPage: React.FC = () => {
                 >
                   <strong>{item.s3Key || item._id}</strong>
                   <span>
-                    {item.sportType || "Sin deporte"} ·{" "}
+                    {getRecruiterSportTypeLabel(item.sportType) || "Sin deporte"} ·{" "}
                     {item.createdAt ? new Date(item.createdAt).toLocaleString() : "Sin fecha"}
                   </span>
                 </button>
@@ -553,7 +585,7 @@ const RecruitersLibraryPage: React.FC = () => {
                       <div key={item._id} className="recruiters-dashboard__row">
                         <div>
                           <h4>{item.s3Key || item._id}</h4>
-                          <p>{item.sportType || "Sin deporte"}</p>
+                          <p>{getRecruiterSportTypeLabel(item.sportType) || "Sin deporte"}</p>
                         </div>
                         <button type="button" onClick={() => handleUnlinkVideo(item._id)}>
                           Quitar
@@ -602,6 +634,16 @@ const RecruitersLibraryPage: React.FC = () => {
 
             <form className="scouting-form" onSubmit={handleUploadAndPublish}>
               <section className="scouting-form__section">
+                {isUploadingVideo ? (
+                  <div className="scouting-form__loading-overlay">
+                    <SportsLoader
+                      compact
+                      overlay
+                      className="sports-loader--modal"
+                      message="Los gifs están calentando mientras subimos y publicamos tu video."
+                    />
+                  </div>
+                ) : null}
                 <div className="scouting-form__grid">
                   <label className="scouting-form__field scouting-form__field--full">
                     <span>Archivo de video</span>
@@ -615,7 +657,25 @@ const RecruitersLibraryPage: React.FC = () => {
 
                   <article className="scouting-form__field scouting-form__field--placeholder">
                     <span>Player profile asignado</span>
-                    <p>{selectedPlayerProfile?.fullName || "Selecciona un player profile primero"}</p>
+                    <strong>{assignedProfileLabel}</strong>
+                    <p>{assignedProfileDescription}</p>
+                    {isElevated ? (
+                      <button
+                        type="button"
+                        className="scouting-form__inline-action"
+                        onClick={() => setIsPlayerModalOpen(true)}
+                      >
+                        {selectedPlayerProfile ? "Cambiar jugador" : "Seleccionar jugador"}
+                      </button>
+                    ) : !selectedPlayerProfile && !isResolvingOwnProfile ? (
+                      <button
+                        type="button"
+                        className="scouting-form__inline-action"
+                        onClick={() => navigate("/scouting/subpages/player-profiles")}
+                      >
+                        Crear mi player profile
+                      </button>
+                    ) : null}
                   </article>
 
                   <label className="scouting-form__field">
@@ -653,13 +713,16 @@ const RecruitersLibraryPage: React.FC = () => {
                     <select
                       value={uploadForm.sportType ?? ""}
                       onChange={(event) =>
-                        setUploadForm((current) => ({ ...current, sportType: event.target.value }))
+                        setUploadForm((current) => ({
+                          ...current,
+                          sportType: normalizeRecruiterSportType(event.target.value) ?? "",
+                        }))
                       }
                     >
                       <option value="">Selecciona deporte</option>
                       {filtersCatalog.sportTypes.map((option) => (
                         <option key={option} value={option}>
-                          {option}
+                          {getRecruiterSportTypeLabel(option)}
                         </option>
                       ))}
                     </select>
@@ -805,7 +868,9 @@ const RecruitersLibraryPage: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={!selectedPlayerProfile || !uploadFile || isUploadingVideo}
+                    disabled={
+                      !selectedPlayerProfile || !uploadFile || isUploadingVideo || isResolvingOwnProfile
+                    }
                   >
                     {isUploadingVideo ? "Subiendo y publicando..." : "Subir video a library"}
                   </button>

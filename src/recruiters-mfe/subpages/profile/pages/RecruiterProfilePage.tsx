@@ -7,6 +7,12 @@ import type {
   RecruiterVideoLibraryItem,
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import {
+  getRecruiterSportTypeLabel,
+  normalizeRecruiterSportType,
+  RECRUITER_SPORT_TYPES,
+  sanitizeRecruiterSportTypes,
+} from "../../../features/recruiters/sportTypes";
 
 const emptyForm: RecruiterScoutingProfilePayload = {
   playerProfileId: "",
@@ -24,7 +30,7 @@ const emptyForm: RecruiterScoutingProfilePayload = {
 };
 
 const defaultCatalog: RecruiterFiltersCatalog = {
-  sportTypes: ["Football", "Futsal", "Basketball", "Baseball", "Volleyball", "Tennis"],
+  sportTypes: [...RECRUITER_SPORT_TYPES],
   playTypes: [
     "Goal",
     "Assist",
@@ -117,7 +123,9 @@ const RecruiterProfilePage: React.FC = () => {
 
             setVideo(library.items.find((item) => item._id === videoId) ?? null);
             setCatalog({
-              sportTypes: mergeOptions(filtersCatalog.sportTypes, defaultCatalog.sportTypes),
+              sportTypes: sanitizeRecruiterSportTypes(
+                mergeOptions(filtersCatalog.sportTypes, defaultCatalog.sportTypes)
+              ),
               playTypes: mergeOptions(filtersCatalog.playTypes, defaultCatalog.playTypes),
               tournamentTypes: mergeOptions(
                 filtersCatalog.tournamentTypes,
@@ -160,7 +168,7 @@ const RecruiterProfilePage: React.FC = () => {
                 playerProfileId: profile.playerProfileId ?? playerProfile?._id ?? "",
                 publicationStatus: profile.publicationStatus ?? "published",
                 title: profile.title ?? "",
-                sportType: profile.sportType ?? "",
+                sportType: normalizeRecruiterSportType(profile.sportType) ?? "",
                 playType: profile.playType ?? "",
                 tournamentType: profile.tournamentType ?? "",
                 tournamentName: profile.tournamentName ?? "",
@@ -177,7 +185,10 @@ const RecruiterProfilePage: React.FC = () => {
             setForm((current) => ({
               ...current,
               playerProfileId: playerProfile?._id ?? requestedPlayerProfileId ?? "",
-              sportType: playerProfile?.sportType ?? current.sportType,
+              sportType:
+                normalizeRecruiterSportType(playerProfile?.sportType) ??
+                normalizeRecruiterSportType(current.sportType) ??
+                "",
             }));
           } catch (error) {
             if (isCancelled) return;
@@ -251,7 +262,7 @@ const RecruiterProfilePage: React.FC = () => {
         playerProfileId: form.playerProfileId?.trim(),
         publicationStatus: form.publicationStatus ?? "published",
         title: form.title?.trim(),
-        sportType: form.sportType?.trim(),
+        sportType: normalizeRecruiterSportType(form.sportType),
         playType: form.playType?.trim(),
         tournamentType: form.tournamentType?.trim(),
         tournamentName: form.tournamentName?.trim(),
@@ -382,13 +393,15 @@ const RecruiterProfilePage: React.FC = () => {
               <span>Deporte del clip *</span>
               <select
                 value={form.sportType ?? ""}
-                onChange={(event) => updateField("sportType", event.target.value)}
+                onChange={(event) =>
+                  updateField("sportType", normalizeRecruiterSportType(event.target.value) ?? "")
+                }
                 aria-invalid={Boolean(formErrors.sportType)}
               >
                 <option value="">Selecciona un deporte</option>
                 {catalog.sportTypes.map((option) => (
                   <option key={option} value={option}>
-                    {option}
+                    {getRecruiterSportTypeLabel(option)}
                   </option>
                 ))}
               </select>

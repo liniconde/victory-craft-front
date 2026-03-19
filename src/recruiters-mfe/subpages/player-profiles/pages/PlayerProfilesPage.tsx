@@ -11,6 +11,12 @@ import type {
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import PlayerProfileSearchModal from "../components/PlayerProfileSearchModal";
+import {
+  getRecruiterSportTypeLabel,
+  normalizeRecruiterSportType,
+  RECRUITER_SPORT_TYPES,
+  sanitizeRecruiterSportTypes,
+} from "../../../features/recruiters/sportTypes";
 
 const emptyCatalog: RecruiterPlayerProfilesCatalog = {
   sportTypes: [],
@@ -21,7 +27,7 @@ const emptyCatalog: RecruiterPlayerProfilesCatalog = {
 };
 
 const fallbackCatalog: RecruiterPlayerProfilesCatalog = {
-  sportTypes: ["football", "padel", "tennis", "basketball", "other"],
+  sportTypes: [...RECRUITER_SPORT_TYPES],
   positions: [
     "Goalkeeper",
     "Center back",
@@ -67,7 +73,7 @@ const mapProfileToForm = (
   userId: profile?.userId ?? "",
   email: profile?.email ?? "",
   fullName: profile?.fullName ?? "",
-  sportType: profile?.sportType ?? "",
+  sportType: normalizeRecruiterSportType(profile?.sportType) ?? "",
   primaryPosition: profile?.primaryPosition ?? "",
   secondaryPosition: profile?.secondaryPosition ?? "",
   team: profile?.team ?? "",
@@ -117,7 +123,9 @@ const PlayerProfilesPage: React.FC = () => {
     )
       .then((response) => {
         setCatalog({
-          sportTypes: mergeOptions(response.sportTypes, fallbackCatalog.sportTypes),
+          sportTypes: sanitizeRecruiterSportTypes(
+            mergeOptions(response.sportTypes, fallbackCatalog.sportTypes)
+          ),
           positions: mergeOptions(response.positions, fallbackCatalog.positions),
           categories: mergeOptions(response.categories, fallbackCatalog.categories),
           countries: mergeOptions(response.countries, fallbackCatalog.countries),
@@ -254,7 +262,7 @@ const PlayerProfilesPage: React.FC = () => {
         userId: form.userId?.trim() || undefined,
         email: form.email?.trim() || undefined,
         fullName: form.fullName?.trim() || undefined,
-        sportType: form.sportType?.trim() || undefined,
+        sportType: normalizeRecruiterSportType(form.sportType),
         primaryPosition: form.primaryPosition?.trim() || undefined,
         secondaryPosition: form.secondaryPosition?.trim() || undefined,
         team: form.team?.trim() || undefined,
@@ -385,7 +393,8 @@ const PlayerProfilesPage: React.FC = () => {
                   <p className="player-profile-card__eyebrow">Ficha actual</p>
                   <h3>{form.fullName || "Jugador sin nombre"}</h3>
                   <p className="player-profile-card__subtitle">
-                    {form.team || "Sin equipo"} · {form.sportType || "Sin deporte"} ·{" "}
+                    {form.team || "Sin equipo"} ·{" "}
+                    {getRecruiterSportTypeLabel(form.sportType) || "Sin deporte"} ·{" "}
                     {form.category || "Sin categoría"}
                   </p>
                 </div>
@@ -477,11 +486,18 @@ const PlayerProfilesPage: React.FC = () => {
               <select
                 value={form.sportType ?? ""}
                 onChange={(event) =>
-                  setForm((current) => ({ ...current, sportType: event.target.value }))
+                  setForm((current) => ({
+                    ...current,
+                    sportType: normalizeRecruiterSportType(event.target.value) ?? "",
+                  }))
                 }
               >
                 <option value="">Selecciona deporte</option>
-                {renderOptions(catalog.sportTypes)}
+                {catalog.sportTypes.map((value) => (
+                  <option key={value} value={value}>
+                    {getRecruiterSportTypeLabel(value)}
+                  </option>
+                ))}
               </select>
             </label>
 

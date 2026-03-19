@@ -7,20 +7,42 @@ import "./RecruitersDashboardPage.css";
 const RecruitersDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const {
-    api: { getTopRankings },
+    api: { getTopRankings, prefetchRecruiterView },
     feedback,
-    loading: { trackTask },
   } = useRecruitersModule();
+  const [topVideo, setTopVideo] = useState<RecruiterRankingItem | null>(null);
   const [topVideos, setTopVideos] = useState<RecruiterRankingItem[]>([]);
-  const topVideo = topVideos[0] ?? null;
+  const [isTopVideoLoading, setIsTopVideoLoading] = useState(true);
+  const [isTopListLoading, setIsTopListLoading] = useState(true);
 
   useEffect(() => {
-    trackTask(getTopRankings({ limit: 5 }), "Los sticks están armando el dashboard de scouting.")
+    setIsTopVideoLoading(true);
+    getTopRankings({ limit: 1 })
+      .then((items) => {
+        setTopVideo(items[0] ?? null);
+      })
+      .catch((error) => {
+        feedback.showError(
+          error instanceof Error ? error.message : "No se pudo cargar el top 1 del dashboard."
+        );
+      })
+      .finally(() => setIsTopVideoLoading(false));
+  }, [feedback, getTopRankings]);
+
+  useEffect(() => {
+    setIsTopListLoading(true);
+    getTopRankings({ limit: 5 })
       .then(setTopVideos)
       .catch((error) => {
         feedback.showError(error instanceof Error ? error.message : "No se pudo cargar el dashboard.");
-      });
-  }, [feedback, getTopRankings, trackTask]);
+      })
+      .finally(() => setIsTopListLoading(false));
+  }, [feedback, getTopRankings]);
+
+  useEffect(() => {
+    if (!topVideo?.video._id) return;
+    void prefetchRecruiterView(topVideo.video._id);
+  }, [prefetchRecruiterView, topVideo?.video._id]);
 
   return (
     <section className="recruiters-dashboard">
@@ -31,7 +53,7 @@ const RecruitersDashboardPage: React.FC = () => {
           <p>Desde aqui entramos al ranking publico, a library y al recruiter view sin usar el flujo legacy.</p>
         </div>
         <div className="recruiters-dashboard__stats">
-          <strong>{topVideos.length}</strong>
+          <strong>{isTopListLoading ? "..." : topVideos.length}</strong>
           <span>videos publicados destacados</span>
         </div>
       </header>
@@ -60,7 +82,15 @@ const RecruitersDashboardPage: React.FC = () => {
         </article>
       </div>
 
-      {topVideo ? (
+      {isTopVideoLoading ? (
+        <section className="recruiters-dashboard__top-highlight recruiters-dashboard__top-highlight--loading">
+          <div className="recruiters-dashboard__top-copy">
+            <span className="recruiters-dashboard__top-loading-pill">Cargando Top 1</span>
+            <h3>Preparando el video líder del momento</h3>
+            <p>Mostramos primero el acceso al video destacado y luego completamos el resto.</p>
+          </div>
+        </section>
+      ) : topVideo ? (
         <section className="recruiters-dashboard__top-highlight">
           <div className="recruiters-dashboard__top-rank">
             <span>Top 1</span>
@@ -102,26 +132,30 @@ const RecruitersDashboardPage: React.FC = () => {
           <h3>Top actual</h3>
           <span>ordenado por score backend</span>
         </div>
-        {topVideos.map((item, index) => (
-          <div key={item.video._id} className="recruiters-dashboard__row">
-            <strong>#{index + 1}</strong>
-            <div>
-              <h4>{item.scoutingProfile?.title || item.video.s3Key}</h4>
-              <p>
-                {item.playerProfile?.fullName || "Jugador"} ·{" "}
-                {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
-                {item.playerProfile?.city || "Ciudad"}
-              </p>
+        {isTopListLoading ? (
+          <p className="recruiters-dashboard__state">Cargando top actual...</p>
+        ) : (
+          topVideos.map((item, index) => (
+            <div key={item.video._id} className="recruiters-dashboard__row">
+              <strong>#{index + 1}</strong>
+              <div>
+                <h4>{item.scoutingProfile?.title || item.video.s3Key}</h4>
+                <p>
+                  {item.playerProfile?.fullName || "Jugador"} ·{" "}
+                  {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
+                  {item.playerProfile?.city || "Ciudad"}
+                </p>
+              </div>
+              <span>{item.ranking.netVotes} votos netos</span>
+              <button
+                type="button"
+                onClick={() => navigate(`/scouting/subpages/video/${item.video._id}`)}
+              >
+                Ver
+              </button>
             </div>
-            <span>{item.ranking.netVotes} votos netos</span>
-            <button
-              type="button"
-              onClick={() => navigate(`/scouting/subpages/video/${item.video._id}`)}
-            >
-              Ver
-            </button>
-          </div>
-        ))}
+          ))
+        )}
       </section>
     </section>
   );

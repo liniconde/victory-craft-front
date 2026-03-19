@@ -7,6 +7,11 @@ import type {
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
+import {
+  getRecruiterSportTypeLabel,
+  normalizeRecruiterSportType,
+  sanitizeRecruiterSportTypes,
+} from "../../../features/recruiters/sportTypes";
 
 const emptyCatalog: RecruiterFiltersCatalog = {
   sportTypes: [],
@@ -45,7 +50,12 @@ const RecruiterRankingsPage: React.FC = () => {
 
   useEffect(() => {
     trackTask(getFiltersCatalog(), "Los sticks están afinando los filtros del ranking.")
-      .then(setCatalog)
+      .then((response) =>
+        setCatalog({
+          ...response,
+          sportTypes: sanitizeRecruiterSportTypes(response.sportTypes),
+        })
+      )
       .catch((error) => {
         feedback.showError(
           error instanceof Error ? error.message : "No se pudo cargar el catálogo."
@@ -167,20 +177,33 @@ const RecruiterRankingsPage: React.FC = () => {
           <button
             key={item.video._id}
             type="button"
-            className={`recruiters-board__top-card ${
+            className={`recruiters-board__top-card recruiters-board__top-card--rank-${
+              index + 1
+            } ${
               selectedItem?.video._id === item.video._id ? "is-active" : ""
             }`}
             onClick={() => setSelectedVideoId(item.video._id)}
           >
-            <span className="recruiters-board__top-rank">Top {index + 1}</span>
-            <strong>{item.scoutingProfile?.title || item.video.s3Key}</strong>
-            <p>
-              {item.playerProfile?.fullName || "Jugador"} ·{" "}
-              {item.playerProfile?.primaryPosition || "Posicion"}
-            </p>
-            <small>
-              {item.ranking.score} pts · {item.ranking.netVotes} netos
-            </small>
+            <div className="recruiters-board__top-card-rank">
+              <span>Top {index + 1}</span>
+            </div>
+            <div className="recruiters-board__top-card-main">
+              <h3>{item.scoutingProfile?.title || item.video.s3Key}</h3>
+              <p>
+                {item.playerProfile?.fullName || "Jugador"} ·{" "}
+                {item.playerProfile?.primaryPosition || "Posicion"}
+              </p>
+            </div>
+            <div className="recruiters-board__top-card-stats">
+              <article>
+                <span>Score</span>
+                <strong>{item.ranking.score}</strong>
+              </article>
+              <article>
+                <span>Net votes</span>
+                <strong>{item.ranking.netVotes}</strong>
+              </article>
+            </div>
           </button>
         ))}
       </section>
@@ -216,13 +239,17 @@ const RecruiterRankingsPage: React.FC = () => {
                 onChange={(event) =>
                   setQuery((current) => ({
                     ...current,
-                    sportType: event.target.value,
+                    sportType: normalizeRecruiterSportType(event.target.value) ?? "",
                     page: 1,
                   }))
                 }
               >
                 <option value="">Todos</option>
-                {renderOptions(catalog.sportTypes)}
+                {catalog.sportTypes.map((value) => (
+                  <option key={value} value={value}>
+                    {getRecruiterSportTypeLabel(value)}
+                  </option>
+                ))}
               </select>
             </label>
 
@@ -428,7 +455,9 @@ const RecruiterRankingsPage: React.FC = () => {
                   <strong>{selectedItem.playerProfile.fullName || "Sin nombre"}</strong>
                   <p>
                     {selectedItem.playerProfile.team || "Sin equipo"} ·{" "}
-                    {selectedItem.playerProfile.sportType || "Sin deporte"} ·{" "}
+                    {getRecruiterSportTypeLabel(selectedItem.playerProfile.sportType) ||
+                      "Sin deporte"}{" "}
+                    ·{" "}
                     {selectedItem.playerProfile.category || "Sin categoría"}
                   </p>
                 </section>
@@ -488,7 +517,11 @@ const RecruiterRankingsPage: React.FC = () => {
                       {item.playerProfile?.country || "Pais"} · {item.playerProfile?.city || "Ciudad"}
                     </p>
                     <div className="recruiters-board__chips">
-                      <span>{item.scoutingProfile?.sportType || item.video.sportType || "sport"}</span>
+                      <span>
+                        {getRecruiterSportTypeLabel(
+                          item.scoutingProfile?.sportType || item.video.sportType
+                        ) || "sport"}
+                      </span>
                       <span>{item.scoutingProfile?.playType || "play type"}</span>
                       <span>{item.scoutingProfile?.tournamentType || "torneo"}</span>
                     </div>

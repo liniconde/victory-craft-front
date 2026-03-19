@@ -1,4 +1,5 @@
 import React from "react";
+import { getRecruiterSportTypeLabel } from "../../../features/recruiters/sportTypes";
 
 interface ScoutingLibrarySearchBarProps {
   value: string;
@@ -54,7 +55,7 @@ const ScoutingLibrarySearchBar: React.FC<ScoutingLibrarySearchBarProps> = ({
             <option value="">Todos</option>
             {options.map((option) => (
               <option key={option} value={option}>
-                {option}
+                {getRecruiterSportTypeLabel(option)}
               </option>
             ))}
           </select>
