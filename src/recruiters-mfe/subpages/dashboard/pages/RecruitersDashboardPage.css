@@ -50,6 +50,75 @@
   gap: 1rem;
 }
 
+.recruiters-dashboard__top-highlight {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr) auto 120px;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.2rem 1.3rem;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 209, 102, 0.18), transparent 30%),
+    linear-gradient(135deg, #fff8e6, #ffffff 58%, #f3fbf8 100%);
+  border: 1px solid #f4d37d;
+  box-shadow: 0 18px 44px rgba(16, 37, 48, 0.08);
+}
+
+.recruiters-dashboard__top-rank span,
+.recruiters-dashboard__top-stats span {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a6b00;
+}
+
+.recruiters-dashboard__top-rank strong,
+.recruiters-dashboard__top-stats strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #17303a;
+}
+
+.recruiters-dashboard__top-main h3,
+.recruiters-dashboard__top-main p {
+  margin: 0;
+}
+
+.recruiters-dashboard__top-main h3 {
+  font-size: 1.25rem;
+  color: #17303a;
+}
+
+.recruiters-dashboard__top-main p {
+  margin-top: 0.35rem;
+  color: #607682;
+}
+
+.recruiters-dashboard__top-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.recruiters-dashboard__top-stats article {
+  min-width: 110px;
+  padding: 0.85rem 0.95rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(244, 211, 125, 0.5);
+}
+
+.recruiters-dashboard__top-action {
+  border: 0;
+  border-radius: 14px;
+  background: #17303a;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+}
+
 .recruiters-dashboard__cards article,
 .recruiters-dashboard__table {
   padding: 1.2rem;
@@ -149,9 +218,17 @@
 
 .recruiters-board__layout {
   display: grid;
-  grid-template-columns: 290px minmax(0, 1.5fr) minmax(320px, 0.95fr);
+  grid-template-columns: 290px minmax(0, 1.35fr) minmax(320px, 0.95fr);
   gap: 1rem;
   align-items: start;
+}
+
+.recruiters-board__preview {
+  order: 2;
+}
+
+.recruiters-board__list {
+  order: 3;
 }
 
 .recruiters-board__filters-grid {
@@ -271,10 +348,43 @@
 }
 
 .recruiters-board__preview-player {
+  display: grid;
+  place-items: center;
   overflow: hidden;
   border-radius: 18px;
-  background: linear-gradient(135deg, #d7e4e8, #b2c6cc);
-  aspect-ratio: 16 / 9;
+  background: transparent;
+  min-height: 20rem;
+}
+
+.recruiters-board__preview-player .recruiters-video-player {
+  width: 100%;
+  min-height: 100%;
+}
+
+.recruiters-board__preview-player .recruiters-video-player.is-portrait {
+  min-height: min(70vh, 34rem);
+}
+
+.recruiters-board__preview-player .recruiters-video-player.is-landscape {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+.recruiters-board__preview-player .recruiters-video-player.is-landscape video {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+.recruiters-board__preview-player .recruiters-video-player.is-portrait video {
+  width: auto;
+  height: 100%;
+}
+
+.recruiters-board__preview-empty {
+  width: 100%;
+  height: 100%;
 }
 
 .recruiters-board__preview-player video,
@@ -343,11 +453,36 @@
   gap: 1rem;
   align-items: flex-start;
   margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(15, 123, 108, 0.08), transparent 24%),
+    linear-gradient(180deg, #f9fcfc, #f2f7f8);
+  border: 1px solid #dbe8ec;
 }
 
 .recruiters-library__player-bar strong,
 .recruiters-library__player-bar p {
   margin: 0;
+}
+
+.recruiters-library__player-bar .recruiters-dashboard__eyebrow {
+  margin-bottom: 0.3rem;
+  color: #0f7b6c;
+  letter-spacing: 0.14em;
+}
+
+.recruiters-library__player-bar strong {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  color: #163847;
+}
+
+.recruiters-library__player-bar p {
+  margin-top: 0.35rem;
+  max-width: 48rem;
+  color: #607682;
 }
 
 .recruiters-library__linked {
@@ -732,7 +867,11 @@
   width: 100%;
   max-height: 70vh;
   border-radius: 14px;
-  background: #111827;
+  background: transparent;
+}
+
+.videos-library-page__viewer .recruiters-video-player.is-portrait {
+  min-height: min(70vh, 42rem);
 }
 
 .videos-library-page__actions {
@@ -953,6 +1092,7 @@
   .recruiters-board__summary,
   .recruiters-board__top,
   .recruiters-board__layout,
+  .recruiters-dashboard__top-highlight,
   .player-profile-card,
   .player-profile-card__stats,
   .videos-library-page__layout,
@@ -973,6 +1113,10 @@
 
   .recruiters-board__preview-stats {
     grid-template-columns: 1fr;
+  }
+
+  .recruiters-dashboard__top-stats {
+    flex-wrap: wrap;
   }
 
   .videos-library-page__search-row {

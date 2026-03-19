@@ -9,16 +9,18 @@ const RecruitersDashboardPage: React.FC = () => {
   const {
     api: { getTopRankings },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
   const [topVideos, setTopVideos] = useState<RecruiterRankingItem[]>([]);
+  const topVideo = topVideos[0] ?? null;
 
   useEffect(() => {
-    getTopRankings({ limit: 5 })
+    trackTask(getTopRankings({ limit: 5 }), "Los sticks están armando el dashboard de scouting.")
       .then(setTopVideos)
       .catch((error) => {
         feedback.showError(error instanceof Error ? error.message : "No se pudo cargar el dashboard.");
       });
-  }, [feedback, getTopRankings]);
+  }, [feedback, getTopRankings, trackTask]);
 
   return (
     <section className="recruiters-dashboard">
@@ -57,6 +59,43 @@ const RecruitersDashboardPage: React.FC = () => {
           </button>
         </article>
       </div>
+
+      {topVideo ? (
+        <section className="recruiters-dashboard__top-highlight">
+          <div className="recruiters-dashboard__top-rank">
+            <span>Top 1</span>
+            <strong>Video líder del momento</strong>
+          </div>
+
+          <div className="recruiters-dashboard__top-main">
+            <h3>{topVideo.scoutingProfile?.title || topVideo.video.s3Key}</h3>
+            <p>
+              {topVideo.playerProfile?.fullName || "Jugador"} ·{" "}
+              {topVideo.playerProfile?.primaryPosition || "Posición"} ·{" "}
+              {topVideo.playerProfile?.city || "Ciudad"}
+            </p>
+          </div>
+
+          <div className="recruiters-dashboard__top-stats">
+            <article>
+              <span>Score</span>
+              <strong>{topVideo.ranking.score}</strong>
+            </article>
+            <article>
+              <span>Net votes</span>
+              <strong>{topVideo.ranking.netVotes}</strong>
+            </article>
+          </div>
+
+          <button
+            type="button"
+            className="recruiters-dashboard__top-action"
+            onClick={() => navigate(`/scouting/subpages/video/${topVideo.video._id}`)}
+          >
+            Ver top 1
+          </button>
+        </section>
+      ) : null}
 
       <section className="recruiters-dashboard__table">
         <div className="recruiters-dashboard__table-header">

@@ -96,6 +96,7 @@ const PlayerProfilesPage: React.FC = () => {
       updatePlayerProfile,
     },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
 
   const [catalog, setCatalog] = useState<RecruiterPlayerProfilesCatalog>(emptyCatalog);
@@ -110,7 +111,10 @@ const PlayerProfilesPage: React.FC = () => {
   const [showAlternativeCard, setShowAlternativeCard] = useState(false);
 
   useEffect(() => {
-    getPlayerProfilesCatalog()
+    trackTask(
+      getPlayerProfilesCatalog(),
+      "Los sticks están ordenando el catálogo de player profiles."
+    )
       .then((response) => {
         setCatalog({
           sportTypes: mergeOptions(response.sportTypes, fallbackCatalog.sportTypes),
@@ -126,7 +130,7 @@ const PlayerProfilesPage: React.FC = () => {
           error instanceof Error ? error.message : "No se pudo cargar el catálogo."
         );
       });
-  }, [feedback, getPlayerProfilesCatalog]);
+  }, [feedback, getPlayerProfilesCatalog, trackTask]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,7 +167,7 @@ const PlayerProfilesPage: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    getMyPlayerProfile()
+    trackTask(getMyPlayerProfile(), "Los sticks están preparando la ficha del jugador.")
       .then((profile) => {
         setCurrentProfile(profile);
         setForm(mapProfileToForm(profile));
@@ -182,7 +186,7 @@ const PlayerProfilesPage: React.FC = () => {
         feedback.showError(message || "No se pudo cargar el player profile.");
       })
       .finally(() => setIsLoading(false));
-  }, [email, feedback, getMyPlayerProfile, isElevated]);
+  }, [email, feedback, getMyPlayerProfile, isElevated, trackTask]);
 
   useEffect(() => {
     if (!currentProfile?._id) {

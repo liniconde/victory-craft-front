@@ -11,6 +11,7 @@ import type {
   RecruiterVideoLibraryItem,
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
 
 const PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MS = 400;
@@ -63,6 +64,7 @@ const RecruitersLibraryPage: React.FC = () => {
       uploadLibraryVideoFile,
     },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
   const [items, setItems] = useState<RecruiterVideoLibraryItem[]>([]);
   const [selectedVideoId, setSelectedVideoId] = useState("");
@@ -102,7 +104,7 @@ const RecruitersLibraryPage: React.FC = () => {
   }, [sportTypeFilter]);
 
   useEffect(() => {
-    getFiltersCatalog()
+    trackTask(getFiltersCatalog(), "Los sticks están preparando los filtros de scouting library.")
       .then((catalog) => {
         setFiltersCatalog(catalog);
         setSportTypeOptions(catalog.sportTypes.filter(Boolean));
@@ -111,12 +113,12 @@ const RecruitersLibraryPage: React.FC = () => {
         setFiltersCatalog(emptyFiltersCatalog);
         setSportTypeOptions([]);
       });
-  }, [getFiltersCatalog]);
+  }, [getFiltersCatalog, trackTask]);
 
   useEffect(() => {
     if (isElevated) return;
 
-    getMyPlayerProfile()
+    trackTask(getMyPlayerProfile(), "Los sticks están buscando el player profile activo.")
       .then(setSelectedPlayerProfile)
       .catch((error) => {
         const message = error instanceof Error ? error.message : "";
@@ -127,12 +129,15 @@ const RecruitersLibraryPage: React.FC = () => {
 
         feedback.showError(message || "No se pudo cargar tu player profile.");
       });
-  }, [feedback, getMyPlayerProfile, isElevated]);
+  }, [feedback, getMyPlayerProfile, isElevated, trackTask]);
 
   useEffect(() => {
     setIsLoading(true);
     const loader = isElevated ? getLibrary : getMyLibrary;
-    loader(page, PAGE_SIZE, debouncedSearchTerm, sportTypeFilter || undefined)
+    trackTask(
+      loader(page, PAGE_SIZE, debouncedSearchTerm, sportTypeFilter || undefined),
+      "Los sticks están recorriendo la library mientras llegan los videos."
+    )
       .then((response) => {
         setItems(response.items);
         setTotal(response.pagination.total);
@@ -152,7 +157,16 @@ const RecruitersLibraryPage: React.FC = () => {
         feedback.showError(error instanceof Error ? error.message : "No se pudo cargar library.");
       })
       .finally(() => setIsLoading(false));
-  }, [debouncedSearchTerm, feedback, getLibrary, getMyLibrary, isElevated, page, sportTypeFilter]);
+  }, [
+    debouncedSearchTerm,
+    feedback,
+    getLibrary,
+    getMyLibrary,
+    isElevated,
+    page,
+    sportTypeFilter,
+    trackTask,
+  ]);
 
   const selectedVideo = useMemo(
     () => items.find((item) => item._id === selectedVideoId) ?? null,
@@ -487,13 +501,12 @@ const RecruitersLibraryPage: React.FC = () => {
             {selectedVideo ? (
               <div className="videos-library-page__viewer-content">
                 {getPlayableUrl(selectedVideo) ? (
-                  <video
+                  <RecruitersVideoPlayer
                     key={selectedVideoId || getPlayableUrl(selectedVideo)}
                     className="videos-library-page__player"
-                    controls
-                  >
-                    <source src={getPlayableUrl(selectedVideo)} />
-                  </video>
+                    src={getPlayableUrl(selectedVideo)}
+                    message="Los sticks están calentando mientras cargamos el video seleccionado."
+                  />
                 ) : (
                   <p className="videos-library-page__state">Sin URL de reproducción.</p>
                 )}

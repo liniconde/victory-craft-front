@@ -84,6 +84,7 @@ const RecruiterProfilePage: React.FC = () => {
       updateScoutingProfile,
     },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
 
   const [video, setVideo] = useState<RecruiterVideoLibraryItem | null>(null);
@@ -103,83 +104,90 @@ const RecruiterProfilePage: React.FC = () => {
     let isCancelled = false;
 
     const load = async () => {
-      try {
-        const [library, profileResponse, filtersCatalog] = await Promise.all([
-          getLibrary(1, 100),
-          getScoutingProfile(videoId).catch(() => null),
-          getFiltersCatalog().catch(() => defaultCatalog),
-        ]);
+      await trackTask(
+        (async () => {
+          try {
+            const [library, profileResponse, filtersCatalog] = await Promise.all([
+              getLibrary(1, 100),
+              getScoutingProfile(videoId).catch(() => null),
+              getFiltersCatalog().catch(() => defaultCatalog),
+            ]);
 
-        if (isCancelled) return;
+            if (isCancelled) return;
 
-        setVideo(library.items.find((item) => item._id === videoId) ?? null);
-        setCatalog({
-          sportTypes: mergeOptions(filtersCatalog.sportTypes, defaultCatalog.sportTypes),
-          playTypes: mergeOptions(filtersCatalog.playTypes, defaultCatalog.playTypes),
-          tournamentTypes: mergeOptions(
-            filtersCatalog.tournamentTypes,
-            defaultCatalog.tournamentTypes
-          ),
-          countries: mergeOptions(filtersCatalog.countries, defaultCatalog.countries),
-          cities: mergeOptions(filtersCatalog.cities, defaultCatalog.cities),
-          playerPositions: mergeOptions(
-            filtersCatalog.playerPositions,
-            defaultCatalog.playerPositions
-          ),
-          playerCategories: mergeOptions(
-            filtersCatalog.playerCategories,
-            defaultCatalog.playerCategories
-          ),
-          tournaments: mergeOptions(filtersCatalog.tournaments, defaultCatalog.tournaments),
-          tags: mergeOptions(filtersCatalog.tags, defaultCatalog.tags),
-        });
+            setVideo(library.items.find((item) => item._id === videoId) ?? null);
+            setCatalog({
+              sportTypes: mergeOptions(filtersCatalog.sportTypes, defaultCatalog.sportTypes),
+              playTypes: mergeOptions(filtersCatalog.playTypes, defaultCatalog.playTypes),
+              tournamentTypes: mergeOptions(
+                filtersCatalog.tournamentTypes,
+                defaultCatalog.tournamentTypes
+              ),
+              countries: mergeOptions(filtersCatalog.countries, defaultCatalog.countries),
+              cities: mergeOptions(filtersCatalog.cities, defaultCatalog.cities),
+              playerPositions: mergeOptions(
+                filtersCatalog.playerPositions,
+                defaultCatalog.playerPositions
+              ),
+              playerCategories: mergeOptions(
+                filtersCatalog.playerCategories,
+                defaultCatalog.playerCategories
+              ),
+              tournaments: mergeOptions(filtersCatalog.tournaments, defaultCatalog.tournaments),
+              tags: mergeOptions(filtersCatalog.tags, defaultCatalog.tags),
+            });
 
-        const playerProfileId =
-          profileResponse?.scoutingProfile?.playerProfileId ||
-          requestedPlayerProfileId ||
-          "";
+            const playerProfileId =
+              profileResponse?.scoutingProfile?.playerProfileId ||
+              requestedPlayerProfileId ||
+              "";
 
-        let playerProfile: RecruiterPlayerProfile | null = null;
-        if (playerProfileId) {
-          playerProfile = await getPlayerProfile(playerProfileId).catch(() => null);
-        } else {
-          playerProfile = await getMyPlayerProfile().catch(() => null);
-        }
+            let playerProfile: RecruiterPlayerProfile | null = null;
+            if (playerProfileId) {
+              playerProfile = await getPlayerProfile(playerProfileId).catch(() => null);
+            } else {
+              playerProfile = await getMyPlayerProfile().catch(() => null);
+            }
 
-        if (isCancelled) return;
+            if (isCancelled) return;
 
-        setSelectedPlayerProfile(playerProfile);
+            setSelectedPlayerProfile(playerProfile);
 
-        if (profileResponse?.scoutingProfile) {
-          const profile = profileResponse.scoutingProfile;
-          setProfileExists(true);
-          setForm({
-            playerProfileId: profile.playerProfileId ?? playerProfile?._id ?? "",
-            publicationStatus: profile.publicationStatus ?? "published",
-            title: profile.title ?? "",
-            sportType: profile.sportType ?? "",
-            playType: profile.playType ?? "",
-            tournamentType: profile.tournamentType ?? "",
-            tournamentName: profile.tournamentName ?? "",
-            recordedAt: profile.recordedAt ?? "",
-            notes: profile.notes ?? "",
-            tags: profile.tags ?? [],
-            playerAge: profile.playerAge,
-            jerseyNumber: profile.jerseyNumber,
-          });
-          setTagsInput((profile.tags ?? []).join(", "));
-          return;
-        }
+            if (profileResponse?.scoutingProfile) {
+              const profile = profileResponse.scoutingProfile;
+              setProfileExists(true);
+              setForm({
+                playerProfileId: profile.playerProfileId ?? playerProfile?._id ?? "",
+                publicationStatus: profile.publicationStatus ?? "published",
+                title: profile.title ?? "",
+                sportType: profile.sportType ?? "",
+                playType: profile.playType ?? "",
+                tournamentType: profile.tournamentType ?? "",
+                tournamentName: profile.tournamentName ?? "",
+                recordedAt: profile.recordedAt ?? "",
+                notes: profile.notes ?? "",
+                tags: profile.tags ?? [],
+                playerAge: profile.playerAge,
+                jerseyNumber: profile.jerseyNumber,
+              });
+              setTagsInput((profile.tags ?? []).join(", "));
+              return;
+            }
 
-        setForm((current) => ({
-          ...current,
-          playerProfileId: playerProfile?._id ?? requestedPlayerProfileId ?? "",
-          sportType: playerProfile?.sportType ?? current.sportType,
-        }));
-      } catch (error) {
-        if (isCancelled) return;
-        feedback.showError(error instanceof Error ? error.message : "No se pudo cargar el perfil.");
-      }
+            setForm((current) => ({
+              ...current,
+              playerProfileId: playerProfile?._id ?? requestedPlayerProfileId ?? "",
+              sportType: playerProfile?.sportType ?? current.sportType,
+            }));
+          } catch (error) {
+            if (isCancelled) return;
+            feedback.showError(
+              error instanceof Error ? error.message : "No se pudo cargar el perfil."
+            );
+          }
+        })(),
+        "Los sticks están completando la ficha editorial del clip."
+      );
     };
 
     load();
@@ -195,6 +203,7 @@ const RecruiterProfilePage: React.FC = () => {
     getPlayerProfile,
     getScoutingProfile,
     requestedPlayerProfileId,
+    trackTask,
     videoId,
   ]);
 

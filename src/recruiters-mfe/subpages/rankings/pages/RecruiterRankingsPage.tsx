@@ -6,6 +6,7 @@ import type {
   RecruiterRankingsQuery,
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
 
 const emptyCatalog: RecruiterFiltersCatalog = {
   sportTypes: [],
@@ -24,6 +25,7 @@ const RecruiterRankingsPage: React.FC = () => {
   const {
     api: { getFiltersCatalog, getRankings, voteVideo },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
 
   const [catalog, setCatalog] = useState<RecruiterFiltersCatalog>(emptyCatalog);
@@ -42,17 +44,20 @@ const RecruiterRankingsPage: React.FC = () => {
   });
 
   useEffect(() => {
-    getFiltersCatalog()
+    trackTask(getFiltersCatalog(), "Los sticks están afinando los filtros del ranking.")
       .then(setCatalog)
       .catch((error) => {
         feedback.showError(
           error instanceof Error ? error.message : "No se pudo cargar el catálogo."
         );
       });
-  }, [feedback, getFiltersCatalog]);
+  }, [feedback, getFiltersCatalog, trackTask]);
 
   useEffect(() => {
-    getRankings(query)
+    trackTask(
+      getRankings(query),
+      "Los sticks están reordenando el ranking mientras llegan los clips."
+    )
       .then((response) => {
         setItems(response.items);
         setPagination(response.pagination);
@@ -64,7 +69,7 @@ const RecruiterRankingsPage: React.FC = () => {
       .catch((error) => {
         feedback.showError(error instanceof Error ? error.message : "No se pudo cargar el ranking.");
       });
-  }, [feedback, getRankings, query]);
+  }, [feedback, getRankings, query, trackTask]);
 
   const selectedItem = useMemo(
     () => items.find((item) => item.video._id === selectedVideoId) ?? items[0] ?? null,
@@ -344,6 +349,111 @@ const RecruiterRankingsPage: React.FC = () => {
           </div>
         </aside>
 
+        <aside className="recruiters-board__preview recruiters-dashboard__table">
+          <div className="recruiters-dashboard__table-header recruiters-dashboard__table-header--stack">
+            <h3>Preview</h3>
+          </div>
+
+          {selectedItem ? (
+            <div className="recruiters-board__preview-body">
+              <div className="recruiters-board__preview-player">
+                {playableUrl ? (
+                  <RecruitersVideoPlayer
+                    key={selectedVideoId || playableUrl}
+                    src={playableUrl}
+                    message="Los sticks están jugando mientras preparamos el preview del ranking."
+                    autoPlay
+                    muted
+                    loop
+                  />
+                ) : (
+                  <div className="recruiters-board__preview-empty">Sin preview</div>
+                )}
+              </div>
+
+              <div className="recruiters-board__preview-copy">
+                <strong>{selectedItem.scoutingProfile?.title || selectedItem.video.s3Key}</strong>
+                <p>
+                  {selectedItem.playerProfile?.fullName || "Jugador"} ·{" "}
+                  {selectedItem.playerProfile?.team || "Equipo"} ·{" "}
+                  {selectedItem.scoutingProfile?.tournamentName || "Torneo"}
+                </p>
+                <p>{selectedItem.scoutingProfile?.notes || "Sin notas editoriales."}</p>
+              </div>
+
+              <div className="recruiters-board__preview-stats">
+                <article>
+                  <span>Score</span>
+                  <strong>{selectedItem.ranking.score}</strong>
+                </article>
+                <article>
+                  <span>Net votes</span>
+                  <strong>{selectedItem.ranking.netVotes}</strong>
+                </article>
+                <article>
+                  <span>Reciente</span>
+                  <strong>
+                    {selectedItem.video.createdAt
+                      ? new Date(selectedItem.video.createdAt).toLocaleDateString()
+                      : selectedItem.video.uploadedAt
+                        ? new Date(selectedItem.video.uploadedAt).toLocaleDateString()
+                        : "s/f"}
+                  </strong>
+                </article>
+              </div>
+
+              <div className="scouting-video-card__votes">
+                <button
+                  type="button"
+                  className={selectedItem.myVote === 1 ? "is-active" : ""}
+                  onClick={() => updateVote(selectedItem.video._id, 1)}
+                >
+                  ▲ {selectedItem.ranking.upvotes}
+                </button>
+                <button
+                  type="button"
+                  className={selectedItem.myVote === -1 ? "is-negative is-active" : "is-negative"}
+                  onClick={() => updateVote(selectedItem.video._id, -1)}
+                >
+                  ▼ {selectedItem.ranking.downvotes}
+                </button>
+                <button type="button" onClick={() => updateVote(selectedItem.video._id, 0)}>
+                  Neutralizar
+                </button>
+              </div>
+
+              {selectedItem.playerProfile ? (
+                <section className="recruiters-board__player-profile">
+                  <span>Player profile asociado</span>
+                  <strong>{selectedItem.playerProfile.fullName || "Sin nombre"}</strong>
+                  <p>
+                    {selectedItem.playerProfile.team || "Sin equipo"} ·{" "}
+                    {selectedItem.playerProfile.sportType || "Sin deporte"} ·{" "}
+                    {selectedItem.playerProfile.category || "Sin categoría"}
+                  </p>
+                </section>
+              ) : null}
+
+              <div className="scouting-form__actions">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/scouting/subpages/video/${selectedItem.video._id}`)}
+                >
+                  Abrir recruiter view
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/scouting/subpages/profile/${selectedItem.video._id}`)}
+                >
+                  Editar metadata
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p>No hay clips para mostrar.</p>
+          )}
+        </aside>
+
         <section className="recruiters-board__list recruiters-dashboard__table">
           <div className="recruiters-dashboard__table-header">
             <h3>Ranking editorial</h3>
@@ -442,107 +552,6 @@ const RecruiterRankingsPage: React.FC = () => {
             </button>
           </div>
         </section>
-
-        <aside className="recruiters-board__preview recruiters-dashboard__table">
-          <div className="recruiters-dashboard__table-header recruiters-dashboard__table-header--stack">
-            <h3>Preview</h3>
-            <span>Clip seleccionado para revisión rápida</span>
-          </div>
-
-          {selectedItem ? (
-            <div className="recruiters-board__preview-body">
-              <div className="recruiters-board__preview-player">
-                {playableUrl ? (
-                  <video key={selectedVideoId || playableUrl} controls>
-                    <source src={playableUrl} />
-                  </video>
-                ) : (
-                  <div className="recruiters-board__preview-empty">Sin preview</div>
-                )}
-              </div>
-
-              <div className="recruiters-board__preview-copy">
-                <strong>{selectedItem.scoutingProfile?.title || selectedItem.video.s3Key}</strong>
-                <p>
-                  {selectedItem.playerProfile?.fullName || "Jugador"} ·{" "}
-                  {selectedItem.playerProfile?.team || "Equipo"} ·{" "}
-                  {selectedItem.scoutingProfile?.tournamentName || "Torneo"}
-                </p>
-                <p>{selectedItem.scoutingProfile?.notes || "Sin notas editoriales."}</p>
-              </div>
-
-              <div className="recruiters-board__preview-stats">
-                <article>
-                  <span>Score</span>
-                  <strong>{selectedItem.ranking.score}</strong>
-                </article>
-                <article>
-                  <span>Net votes</span>
-                  <strong>{selectedItem.ranking.netVotes}</strong>
-                </article>
-                <article>
-                  <span>Reciente</span>
-                  <strong>
-                    {selectedItem.video.createdAt
-                      ? new Date(selectedItem.video.createdAt).toLocaleDateString()
-                      : selectedItem.video.uploadedAt
-                        ? new Date(selectedItem.video.uploadedAt).toLocaleDateString()
-                        : "s/f"}
-                  </strong>
-                </article>
-              </div>
-
-              <div className="scouting-video-card__votes">
-                <button
-                  type="button"
-                  className={selectedItem.myVote === 1 ? "is-active" : ""}
-                  onClick={() => updateVote(selectedItem.video._id, 1)}
-                >
-                  ▲ {selectedItem.ranking.upvotes}
-                </button>
-                <button
-                  type="button"
-                  className={selectedItem.myVote === -1 ? "is-negative is-active" : "is-negative"}
-                  onClick={() => updateVote(selectedItem.video._id, -1)}
-                >
-                  ▼ {selectedItem.ranking.downvotes}
-                </button>
-                <button type="button" onClick={() => updateVote(selectedItem.video._id, 0)}>
-                  Neutralizar
-                </button>
-              </div>
-
-              {selectedItem.playerProfile ? (
-                <section className="recruiters-board__player-profile">
-                  <span>Player profile asociado</span>
-                  <strong>{selectedItem.playerProfile.fullName || "Sin nombre"}</strong>
-                  <p>
-                    {selectedItem.playerProfile.team || "Sin equipo"} ·{" "}
-                    {selectedItem.playerProfile.sportType || "Sin deporte"} ·{" "}
-                    {selectedItem.playerProfile.category || "Sin categoría"}
-                  </p>
-                </section>
-              ) : null}
-
-              <div className="scouting-form__actions">
-                <button
-                  type="button"
-                  onClick={() => navigate(`/scouting/subpages/video/${selectedItem.video._id}`)}
-                >
-                  Abrir recruiter view
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/scouting/subpages/profile/${selectedItem.video._id}`)}
-                >
-                  Editar metadata
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p>No hay clips para mostrar.</p>
-          )}
-        </aside>
       </div>
     </section>
   );

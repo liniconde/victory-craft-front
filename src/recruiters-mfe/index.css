@@ -1,4 +1,5 @@
 .recruiters-mfe-scope {
+  position: relative;
   color: #17303a;
 }
 
@@ -13,4 +14,50 @@
   padding: 0.8rem 0.9rem;
   border-radius: 14px;
   border: 1px solid #d5dfe3;
+}
+
+.recruiters-global-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.recruiters-video-player {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 24px;
+  min-height: 24rem;
+  background: transparent;
+}
+
+.recruiters-video-player.is-portrait {
+  min-height: 32rem;
+}
+
+.recruiters-video-player.is-landscape {
+  min-height: 24rem;
+}
+
+.recruiters-video-player video {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  background: transparent;
+  object-fit: contain;
+}
+
+.recruiters-video-player.is-portrait video {
+  width: auto;
+  max-width: min(100%, 28rem);
+  height: min(70vh, 100%);
+}
+
+.recruiters-video-player.is-landscape video {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { RecruiterViewResponse, RecruiterVotesSummary } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
 
 const RecruiterVideoPage: React.FC = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const RecruiterVideoPage: React.FC = () => {
   const {
     api: { getRecruiterView, voteVideo },
     feedback,
+    loading: { trackTask },
   } = useRecruitersModule();
   const [data, setData] = useState<RecruiterViewResponse | null>(null);
   const [summary, setSummary] = useState<RecruiterVotesSummary | null>(null);
@@ -16,7 +18,10 @@ const RecruiterVideoPage: React.FC = () => {
   useEffect(() => {
     if (!videoId) return;
 
-    getRecruiterView(videoId)
+    trackTask(
+      getRecruiterView(videoId),
+      "Los sticks están revisando el video recruiter mientras carga el detalle."
+    )
       .then((response) => {
         setData(response);
         setSummary(response.ranking ?? null);
@@ -24,7 +29,7 @@ const RecruiterVideoPage: React.FC = () => {
       .catch((error) => {
         feedback.showError(error instanceof Error ? error.message : "No se pudo cargar el detalle.");
       });
-  }, [feedback, getRecruiterView, videoId]);
+  }, [feedback, getRecruiterView, trackTask, videoId]);
 
   const updateVote = async (value: -1 | 0 | 1) => {
     if (!videoId) return;
@@ -57,9 +62,11 @@ const RecruiterVideoPage: React.FC = () => {
           <div className="scouting-upload-layout">
             <section className="scouting-results">
               {playableUrl ? (
-                <video className="videos-library-page__player" controls>
-                  <source src={playableUrl} />
-                </video>
+                <RecruitersVideoPlayer
+                  className="videos-library-page__player"
+                  src={playableUrl}
+                  message="Los sticks están practicando mientras termina de cargar este video."
+                />
               ) : (
                 <p>Sin URL de reproducción.</p>
               )}
