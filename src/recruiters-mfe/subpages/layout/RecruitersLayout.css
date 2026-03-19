@@ -5,6 +5,11 @@
   background: linear-gradient(180deg, #f4f8fa 0%, #edf2f4 100%);
 }
 
+.recruiters-mobile-menu-button,
+.recruiters-mobile-menu {
+  display: none;
+}
+
 .recruiters-sidebar {
   padding: 1.5rem;
   background: #13262f;
@@ -48,5 +53,72 @@
 @media (max-width: 880px) {
   .recruiters-layout {
     grid-template-columns: 1fr;
+  }
+
+  .recruiters-sidebar--desktop {
+    display: none;
+  }
+
+  .recruiters-mobile-menu-button {
+    position: sticky;
+    top: 0.8rem;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: fit-content;
+    margin: 0.85rem 0 0 0.85rem;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: #13262f;
+    color: #f7fbfc;
+    font: inherit;
+    font-weight: 700;
+    box-shadow: 0 16px 40px rgba(19, 38, 47, 0.22);
+  }
+
+  .recruiters-mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: block;
+  }
+
+  .recruiters-mobile-menu__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(19, 38, 47, 0.48);
+    backdrop-filter: blur(6px);
+  }
+
+  .recruiters-sidebar--mobile {
+    position: relative;
+    z-index: 1;
+    width: min(22rem, calc(100vw - 1.5rem));
+    min-height: 100%;
+    box-shadow: 0 24px 60px rgba(10, 25, 33, 0.28);
+  }
+
+  .recruiters-sidebar__header--mobile {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .recruiters-mobile-menu__close {
+    border: 0;
+    border-radius: 999px;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7fbfc;
+    cursor: pointer;
+  }
+
+  .recruiters-content {
+    padding: 1rem;
   }
 }
