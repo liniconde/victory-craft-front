@@ -38,6 +38,15 @@ const toRecord = (value: unknown): Record<string, unknown> =>
 const readString = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim().length > 0 ? value : undefined;
 
+const compactQueryParams = <T extends Record<string, unknown>>(params: T): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(params).filter(([, value]) => {
+      if (value === undefined || value === null) return false;
+      if (typeof value === "string") return value.trim().length > 0;
+      return true;
+    })
+  ) as Partial<T>;
+
 const recruiterViewCache = new Map<string, Promise<RecruiterViewResponse>>();
 
 const numberOrZero = (value: unknown): number =>
@@ -665,14 +674,14 @@ export const recruitersApi = {
   },
   getRankings: async (query: RecruiterRankingsQuery = {}): Promise<RecruiterRankingsResponse> => {
     try {
-      const normalizedQuery = {
+      const normalizedQuery = compactQueryParams({
         ...query,
         ...(normalizeRecruiterSportType(query.sportType)
           ? { sportType: normalizeRecruiterSportType(query.sportType) }
           : query.sportType
             ? { sportType: undefined }
             : {}),
-      };
+      });
       const response = await api.get("/videos/library/rankings", { params: normalizedQuery });
       const raw = toRecord(response.data);
       const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
@@ -688,14 +697,14 @@ export const recruitersApi = {
     query: Partial<RecruiterRankingsQuery> = {}
   ): Promise<RecruiterRankingItem[]> => {
     try {
-      const normalizedQuery = {
+      const normalizedQuery = compactQueryParams({
         ...query,
         ...(normalizeRecruiterSportType(query.sportType)
           ? { sportType: normalizeRecruiterSportType(query.sportType) }
           : query.sportType
             ? { sportType: undefined }
             : {}),
-      };
+      });
       const response = await api.get("/videos/library/rankings/top", { params: normalizedQuery });
       const raw = toRecord(response.data);
       const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
