@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { RecruiterViewResponse, RecruiterVotesSummary } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
+import RecruiterVoteButtons from "../../../components/RecruiterVoteButtons";
 
 const RecruiterVideoPage: React.FC = () => {
   const navigate = useNavigate();
@@ -75,15 +76,12 @@ const RecruiterVideoPage: React.FC = () => {
             <aside className="scouting-side-panel">
               <h3>Acciones</h3>
               <div className="scouting-video-card__votes">
-                <button type="button" onClick={() => updateVote(1)}>
-                  ▲ {summary?.upvotes ?? 0}
-                </button>
-                <button type="button" className="is-negative" onClick={() => updateVote(-1)}>
-                  ▼ {summary?.downvotes ?? 0}
-                </button>
-                <button type="button" onClick={() => updateVote(0)}>
-                  Neutralizar
-                </button>
+                <RecruiterVoteButtons
+                  upvotes={summary?.upvotes ?? 0}
+                  downvotes={summary?.downvotes ?? 0}
+                  myVote={summary?.myVote ?? null}
+                  onVote={updateVote}
+                />
               </div>
               <p>Score: {summary?.score ?? 0}</p>
               <p>Net votes: {summary?.netVotes ?? 0}</p>

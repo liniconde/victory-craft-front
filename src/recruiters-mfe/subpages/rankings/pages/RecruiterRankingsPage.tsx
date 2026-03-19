@@ -7,6 +7,7 @@ import type {
 } from "../../../features/recruiters/types";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
+import RecruiterVoteButtons from "../../../components/RecruiterVoteButtons";
 import {
   getRecruiterSportTypeLabel,
   normalizeRecruiterSportType,
@@ -174,15 +175,6 @@ const RecruiterRankingsPage: React.FC = () => {
       event.preventDefault();
       setSelectedVideoId(videoId);
     }
-  };
-
-  const handleVoteClick = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    videoId: string,
-    value: -1 | 0 | 1
-  ) => {
-    event.stopPropagation();
-    await updateVote(videoId, value);
   };
 
   const topThree = items.slice(0, 3);
@@ -507,23 +499,12 @@ const RecruiterRankingsPage: React.FC = () => {
               </div>
 
               <div className="scouting-video-card__votes">
-                <button
-                  type="button"
-                  className={selectedItem.myVote === 1 ? "is-active" : ""}
-                  onClick={() => updateVote(selectedItem.video._id, 1)}
-                >
-                  ▲ {selectedItem.ranking.upvotes}
-                </button>
-                <button
-                  type="button"
-                  className={selectedItem.myVote === -1 ? "is-negative is-active" : "is-negative"}
-                  onClick={() => updateVote(selectedItem.video._id, -1)}
-                >
-                  ▼ {selectedItem.ranking.downvotes}
-                </button>
-                <button type="button" onClick={() => updateVote(selectedItem.video._id, 0)}>
-                  Neutralizar
-                </button>
+                <RecruiterVoteButtons
+                  upvotes={selectedItem.ranking.upvotes}
+                  downvotes={selectedItem.ranking.downvotes}
+                  myVote={selectedItem.myVote}
+                  onVote={(value) => updateVote(selectedItem.video._id, value)}
+                />
               </div>
 
               {selectedItem.playerProfile ? (
@@ -607,28 +588,14 @@ const RecruiterRankingsPage: React.FC = () => {
                     <small>{item.ranking.upvotes} ▲</small>
                     <small>{item.ranking.downvotes} ▼</small>
                     <small>{item.ranking.netVotes} netos</small>
-                    <div className="recruiters-board__row-votes">
-                      <button
-                        type="button"
-                        className={item.myVote === 1 ? "is-active" : ""}
-                        onClick={(event) => handleVoteClick(event, item.video._id, 1)}
-                      >
-                        ▲
-                      </button>
-                      <button
-                        type="button"
-                        className={item.myVote === -1 ? "is-negative is-active" : "is-negative"}
-                        onClick={(event) => handleVoteClick(event, item.video._id, -1)}
-                      >
-                        ▼
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(event) => handleVoteClick(event, item.video._id, 0)}
-                      >
-                        0
-                      </button>
-                    </div>
+                    <RecruiterVoteButtons
+                      className="recruiters-board__row-votes"
+                      compact
+                      upvotes={item.ranking.upvotes}
+                      downvotes={item.ranking.downvotes}
+                      myVote={item.myVote}
+                      onVote={(value) => updateVote(item.video._id, value)}
+                    />
                   </div>
                 </article>
               );
