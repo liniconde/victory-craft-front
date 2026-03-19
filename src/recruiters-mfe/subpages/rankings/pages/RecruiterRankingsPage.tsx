@@ -13,6 +13,10 @@ import {
   sanitizeRecruiterSportTypes,
 } from "../../../features/recruiters/sportTypes";
 
+const VIDEO_PRELOAD_COUNT = 4;
+const MAX_PRELOADED_VIDEOS = 10;
+const preloadedRankingVideos = new Map<string, HTMLVideoElement>();
+
 const emptyCatalog: RecruiterFiltersCatalog = {
   sportTypes: [],
   playTypes: [],
@@ -23,6 +27,61 @@ const emptyCatalog: RecruiterFiltersCatalog = {
   playerCategories: [],
   tournaments: [],
   tags: [],
+};
+
+const getPlayableUrl = (item: RecruiterRankingItem | null | undefined) =>
+  item?.video.playbackUrl || item?.video.videoUrl || "";
+
+const disposePreloadedVideo = (url: string) => {
+  const cached = preloadedRankingVideos.get(url);
+  if (!cached) return;
+
+  cached.pause();
+  cached.removeAttribute("src");
+  cached.load();
+  preloadedRankingVideos.delete(url);
+};
+
+const warmRankingVideo = (url: string) => {
+  if (!url || preloadedRankingVideos.has(url)) return;
+
+  const video = document.createElement("video");
+  video.preload = "auto";
+  video.muted = true;
+  video.playsInline = true;
+  video.src = url;
+  video.load();
+  preloadedRankingVideos.set(url, video);
+
+  if (preloadedRankingVideos.size > MAX_PRELOADED_VIDEOS) {
+    const oldestUrl = preloadedRankingVideos.keys().next().value;
+    if (oldestUrl) disposePreloadedVideo(oldestUrl);
+  }
+};
+
+const requestIdle = (callback: () => void): number => {
+  const scheduler = window as Window & {
+    requestIdleCallback?: (cb: IdleRequestCallback) => number;
+  };
+
+  if (typeof scheduler.requestIdleCallback === "function") {
+    return scheduler.requestIdleCallback(() => callback());
+  }
+
+  return window.setTimeout(callback, 120);
+};
+
+const cancelIdle = (id: number) => {
+  const scheduler = window as Window & {
+    cancelIdleCallback?: (idleId: number) => void;
+  };
+
+  if (typeof scheduler.cancelIdleCallback === "function") {
+    scheduler.cancelIdleCallback(id);
+    return;
+  }
+
+  window.clearTimeout(id);
 };
 
 const RecruiterRankingsPage: React.FC = () => {
@@ -86,8 +145,7 @@ const RecruiterRankingsPage: React.FC = () => {
     [items, selectedVideoId]
   );
 
-  const playableUrl =
-    selectedItem?.video.playbackUrl || selectedItem?.video.videoUrl || "";
+  const playableUrl = getPlayableUrl(selectedItem);
 
   const renderOptions = (values: string[]) =>
     values.map((value) => (
@@ -128,6 +186,24 @@ const RecruiterRankingsPage: React.FC = () => {
   };
 
   const topThree = items.slice(0, 3);
+
+  useEffect(() => {
+    if (!items.length) return;
+
+    const selectedIndex = items.findIndex((item) => item.video._id === selectedVideoId);
+    const startIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    const prioritizedUrls = items
+      .slice(startIndex, startIndex + VIDEO_PRELOAD_COUNT)
+      .map((item) => getPlayableUrl(item))
+      .filter(Boolean);
+
+    const warmUp = () => {
+      prioritizedUrls.forEach(warmRankingVideo);
+    };
+
+    const idleId = requestIdle(warmUp);
+    return () => cancelIdle(idleId);
+  }, [items, selectedVideoId]);
 
   return (
     <section className="recruiters-dashboard recruiters-board">
@@ -392,6 +468,7 @@ const RecruiterRankingsPage: React.FC = () => {
                     autoPlay
                     muted
                     loop
+                    preload="auto"
                   />
                 ) : (
                   <div className="recruiters-board__preview-empty">Sin preview</div>

@@ -8,6 +8,7 @@ interface RecruitersVideoPlayerProps {
   autoPlay?: boolean;
   muted?: boolean;
   loop?: boolean;
+  preload?: "none" | "metadata" | "auto";
 }
 
 const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
@@ -17,6 +18,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
   autoPlay = false,
   muted = false,
   loop = false,
+  preload = "metadata",
 }) => {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("landscape");
@@ -44,7 +46,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
         muted={muted}
         loop={loop}
         playsInline
-        preload="metadata"
+        preload={preload}
         onLoadedMetadata={(event) => {
           const { videoWidth, videoHeight } = event.currentTarget;
           setOrientation(videoHeight > videoWidth ? "portrait" : "landscape");
