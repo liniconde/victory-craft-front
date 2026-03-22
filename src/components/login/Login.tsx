@@ -6,6 +6,7 @@ import Fondo from "../../assets/pexels-todd-trapani-488382-2339377.jpg";
 import Fondo1 from "../../assets/pexels-pixabay-274506.jpg";
 import { getGoogleOAuthLoginUrl, loginUser } from "../../services/user/userService";
 import { useAppFeedback } from "../../hooks/useAppFeedback";
+import { getScoutingOnboardingPostLoginPath } from "../../recruiters-mfe/onboarding/onboardingStorage";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -47,7 +48,7 @@ const Login: React.FC = () => {
           showError("No se pudo iniciar sesión porque el token recibido es inválido.");
           return;
         }
-        navigate("/");
+        navigate(getScoutingOnboardingPostLoginPath("/"), { replace: true });
       } else {
         setError("Login fallido. Por favor, intente de nuevo.");
         showError("Login fallido. Por favor, intente de nuevo.");

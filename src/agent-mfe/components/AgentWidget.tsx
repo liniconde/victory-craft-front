@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAgent } from "../hooks/useAgent";
+import { ASSISTANT_NAME, ASSISTANT_WIDGET_COPY } from "../constants/assistantBrand";
+import { JarvisAvatar } from "./JarvisAvatar";
 
 const HISTORY_LIMIT = 6;
 const ACTIONS_LIMIT = 5;
@@ -10,21 +12,9 @@ const getRoleLabel = (role: "assistant" | "system" | "user") => {
   return "Agent";
 };
 
-const RobotIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-    className="agent-widget__robot-icon"
-  >
-    <path
-      d="M12 2a1 1 0 0 1 1 1v2.126A7.002 7.002 0 0 1 19 12v4a3 3 0 0 1-3 3h-1.268l.58 1.45a1 1 0 1 1-1.856.742L12.732 19h-1.464l-.724 2.192a1 1 0 1 1-1.856-.742l.58-1.45H8a3 3 0 0 1-3-3v-4a7.002 7.002 0 0 1 6-6.874V3a1 1 0 0 1 1-1Zm0 5a5 5 0 0 0-5 5v4a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-4a5 5 0 0 0-5-5Zm-2 4a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 10 11Zm4 0a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 14 11Zm-4.5 4h5a1 1 0 1 1 0 2h-5a1 1 0 1 1 0-2Z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
 export const AgentWidget = () => {
-  const { actions, executePrompt, history, isRunning } = useAgent();
+  const { actions, executePrompt, history, isRunning, setUsePlannerV2, usePlannerV2 } =
+    useAgent();
   const [isOpen, setIsOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -54,21 +44,26 @@ export const AgentWidget = () => {
         onClick={() => setIsOpen((current) => !current)}
         aria-label={isOpen ? "Close agent" : "Open agent"}
       >
-        <RobotIcon />
+        <JarvisAvatar className="agent-widget__robot-icon" />
       </button>
 
       {isOpen && (
         <section className="agent-widget__panel" aria-label="Floating agent chat">
           <header className="agent-widget__header">
             <div>
-              <strong>Jarvis</strong>
-              <p>
-                Hola soy Jarvis y estoy aca para ayudarte con las tareas que necesites
-                hacer en Victory Craft, dime con que tarea quieres que te ayude y
-                comenzamos a trabajar.
-              </p>
+              <strong>{ASSISTANT_NAME}</strong>
+              <p>{ASSISTANT_WIDGET_COPY}</p>
             </div>
             <div className="agent-widget__header-actions">
+              <label className="agent-widget__planner-toggle" title="Toggle planner backend version">
+                <span>{usePlannerV2 ? "v2" : "v1"}</span>
+                <input
+                  type="checkbox"
+                  checked={usePlannerV2}
+                  onChange={(event) => setUsePlannerV2(event.target.checked)}
+                  aria-label={`Planner ${usePlannerV2 ? "v2" : "v1"} active`}
+                />
+              </label>
               <button
                 type="button"
                 className="agent-widget__minimize"

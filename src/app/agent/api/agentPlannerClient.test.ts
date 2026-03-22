@@ -1,14 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { AxiosError } from "axios";
-import { agentPlannerClient } from "./agentPlannerClient";
+import { agentPlannerClient, AGENT_PLAN_API_URL, AGENT_PLAN_V2_API_URL } from "./agentPlannerClient";
 import { buildAgentPlannerPayload } from "./buildAgentPlannerPayload";
+import { buildNavigationCatalog } from "../navigation/navigationKnowledge";
 import { api } from "../../../utils/api";
 
 const originalPost = api.post;
+const originalWindow = globalThis.window as unknown;
+const originalNavigator = globalThis.navigator as unknown;
 
 const createAxiosLikeError = (
-  status: number
+  status: number,
+  message?: string
 ): AxiosError & {
   response: {
     status: number;
@@ -24,7 +28,9 @@ const createAxiosLikeError = (
     toJSON: () => ({}),
     response: {
       status,
-      data: {},
+      data: {
+        message,
+      },
     },
   }) as AxiosError & {
     response: {
@@ -34,6 +40,23 @@ const createAxiosLikeError = (
       };
     };
   };
+
+const createStorage = () => {
+  const storage = new Map<string, string>();
+
+  return {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      storage.set(key, value);
+    },
+    removeItem: (key: string) => {
+      storage.delete(key);
+    },
+    clear: () => {
+      storage.clear();
+    },
+  };
+};
 
 const samplePayload = {
   prompt: "open tournaments registration",
@@ -62,13 +85,41 @@ const samplePayload = {
   ],
 };
 
-test.afterEach(() => {
-  api.post = originalPost;
+test.beforeEach(() => {
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: {
+      localStorage: createStorage(),
+    } as unknown,
+  });
+
+  Object.defineProperty(globalThis, "navigator", {
+    configurable: true,
+    value: {
+      language: "es-ES",
+    } as unknown,
+  });
 });
 
-test("agentPlannerClient returns a valid plan with one call", async () => {
+test.afterEach(() => {
+  api.post = originalPost;
+
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: originalWindow,
+  });
+
+  Object.defineProperty(globalThis, "navigator", {
+    configurable: true,
+    value: originalNavigator,
+  });
+});
+
+test("agentPlannerClient returns a valid v1 plan with one call", async () => {
+  let receivedUrl = "";
   let receivedPayload: unknown;
-  api.post = (async (_url, payload) => {
+  api.post = (async (url, payload) => {
+    receivedUrl = String(url);
     receivedPayload = payload;
     return {
       data: {
@@ -85,8 +136,9 @@ test("agentPlannerClient returns a valid plan with one call", async () => {
     };
   }) as typeof api.post;
 
-  const response = await agentPlannerClient.plan(samplePayload);
+  const response = await agentPlannerClient.plan(samplePayload, { usePlannerV2: false });
 
+  assert.equal(receivedUrl, AGENT_PLAN_API_URL);
   assert.deepEqual(receivedPayload, buildAgentPlannerPayload(samplePayload));
   assert.deepEqual(response, {
     summary: "Navigate to the requested page.",
@@ -98,6 +150,7 @@ test("agentPlannerClient returns a valid plan with one call", async () => {
         },
       },
     ],
+    meta: undefined,
   });
 });
 
@@ -128,6 +181,111 @@ test("buildAgentPlannerPayload includes videos recording subpage aliases", () =>
   assert.match(payload.prompt, /Current route: \/videos\/subpages\/dashboard/);
 });
 
+test("agentPlannerClient sends v2 catalog and meta on first request", async () => {
+  const expectedCatalog = buildNavigationCatalog("es-ES");
+  let receivedUrl = "";
+  let receivedPayload: Record<string, unknown> | undefined;
+
+  api.post = (async (url, payload) => {
+    receivedUrl = String(url);
+    receivedPayload = payload as Record<string, unknown>;
+
+    return {
+      data: {
+        summary: "Navigate using v2.",
+        calls: [
+          {
+            name: "navigation.go_to",
+            arguments: {
+              path: "/scouting/subpages/library",
+            },
+          },
+        ],
+        meta: {
+          plannerMode: "deterministic",
+          confidence: 0.98,
+          selectedRoute: "/scouting/subpages/library",
+          traceId: "trace-v2-1",
+          cacheHit: false,
+        },
+      },
+    };
+  }) as typeof api.post;
+
+  const response = await agentPlannerClient.plan(samplePayload, { usePlannerV2: true });
+
+  assert.equal(receivedUrl, AGENT_PLAN_V2_API_URL);
+  assert.equal(receivedPayload?.locale, "es-ES");
+  assert.equal(receivedPayload?.navigationCatalogVersion, expectedCatalog.version);
+  assert.deepEqual(receivedPayload?.navigationCatalog, expectedCatalog);
+  assert.equal(response.meta?.plannerMode, "deterministic");
+  assert.equal(response.meta?.traceId, "trace-v2-1");
+});
+
+test("agentPlannerClient skips v2 catalog when backend already knows the version", async () => {
+  const calls: Array<Record<string, unknown>> = [];
+
+  api.post = (async (_url, payload) => {
+    calls.push(payload as Record<string, unknown>);
+    return {
+      data: {
+        summary: "Navigate using v2.",
+        calls: [],
+        meta: {
+          plannerMode: "cache_hit",
+          confidence: 0.95,
+          traceId: `trace-${calls.length}`,
+          cacheHit: true,
+        },
+      },
+    };
+  }) as typeof api.post;
+
+  await agentPlannerClient.plan(samplePayload, { usePlannerV2: true });
+  await agentPlannerClient.plan(samplePayload, { usePlannerV2: true });
+
+  assert.equal(calls.length, 2);
+  assert.ok("navigationCatalog" in calls[0]);
+  assert.ok(!("navigationCatalog" in calls[1]));
+});
+
+test("agentPlannerClient retries v2 with catalog when backend does not know the version", async () => {
+  const calls: Array<Record<string, unknown>> = [];
+  const catalogVersion = buildNavigationCatalog("es-ES").version;
+
+  globalThis.window?.localStorage.setItem(
+    "victory-craft.agent.lastSuccessfulNavigationCatalogVersion",
+    catalogVersion
+  );
+
+  api.post = (async (_url, payload) => {
+    calls.push(payload as Record<string, unknown>);
+
+    if (calls.length === 1) {
+      throw createAxiosLikeError(400, "Unknown navigationCatalogVersion. Please sync catalog.");
+    }
+
+    return {
+      data: {
+        summary: "Retry succeeded.",
+        calls: [],
+        meta: {
+          plannerMode: "fallback",
+          confidence: 0.8,
+          traceId: "trace-retry",
+        },
+      },
+    };
+  }) as typeof api.post;
+
+  const response = await agentPlannerClient.plan(samplePayload, { usePlannerV2: true });
+
+  assert.equal(calls.length, 2);
+  assert.ok(!("navigationCatalog" in calls[0]));
+  assert.ok("navigationCatalog" in calls[1]);
+  assert.equal(response.meta?.traceId, "trace-retry");
+});
+
 test("agentPlannerClient supports the fallback response with empty calls", async () => {
   api.post = (async () => ({
     data: {
@@ -136,11 +294,12 @@ test("agentPlannerClient supports the fallback response with empty calls", async
     },
   })) as typeof api.post;
 
-  const response = await agentPlannerClient.plan(samplePayload);
+  const response = await agentPlannerClient.plan(samplePayload, { usePlannerV2: false });
 
   assert.deepEqual(response, {
     summary: "No valid action could be planned.",
     calls: [],
+    meta: undefined,
   });
 });
 
@@ -150,7 +309,7 @@ test("agentPlannerClient maps 400 into a friendly error", async () => {
   }) as typeof api.post;
 
   await assert.rejects(
-    () => agentPlannerClient.plan(samplePayload),
+    () => agentPlannerClient.plan(samplePayload, { usePlannerV2: false }),
     /Agent planner rejected the request/
   );
 });

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useAppFeedback } from "../../hooks/useAppFeedback";
+import { getScoutingOnboardingPostLoginPath } from "../../recruiters-mfe/onboarding/onboardingStorage";
 
 const OAuthCallback: React.FC = () => {
   const { login } = useAuth();
@@ -35,7 +36,7 @@ const OAuthCallback: React.FC = () => {
       navigate("/login", { replace: true });
       return;
     }
-    navigate(returnTo, { replace: true });
+    navigate(getScoutingOnboardingPostLoginPath(returnTo), { replace: true });
   }, [location.hash, location.search, login, navigate, showError]);
 
   return <p className="text-center py-6">Procesando autenticación OAuth...</p>;

@@ -18,6 +18,7 @@ const PlayerProfilesPage = lazy(
 );
 const RecruiterProfilePage = lazy(() => import("./subpages/profile/pages/RecruiterProfilePage"));
 const RecruiterVideoPage = lazy(() => import("./subpages/video/pages/RecruiterVideoPage"));
+const RecruitersIntroPage = () => <section aria-label="Introduccion a scouting" />;
 
 const RecruitersModule: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const RecruitersModule: React.FC = () => {
       >
         <Routes>
           <Route element={<RecruitersLayout />}>
+            <Route path="intro" element={<RecruitersIntroPage />} />
             <Route path="subpages/dashboard" element={<RecruitersDashboardPage />} />
             <Route path="subpages/library" element={<RecruitersLibraryPage />} />
             <Route path="subpages/player-profiles" element={<PlayerProfilesPage />} />

@@ -27,9 +27,27 @@ export interface AgentFunctionCall {
   arguments?: Record<string, unknown>;
 }
 
+export interface AgentPlannerMetaCandidateRoute {
+  route: string;
+  score: number;
+}
+
+export interface AgentPlannerMeta {
+  plannerMode: "deterministic" | "llm" | "llm_repaired" | "fallback" | "cache_hit";
+  confidence: number;
+  selectedRoute?: string;
+  navigationCatalogVersion?: string;
+  traceId: string;
+  cacheKey?: string;
+  cacheHit?: boolean;
+  candidateRoutes?: AgentPlannerMetaCandidateRoute[];
+  validationWarnings?: string[];
+}
+
 export interface AgentExecutionPlan {
   summary?: string;
   calls: AgentFunctionCall[];
+  meta?: AgentPlannerMeta;
 }
 
 export interface AgentActionExecutionResult {
@@ -86,7 +104,9 @@ export interface AgentContextValue {
   history: AgentMessage[];
   isRunning: boolean;
   llmAdapterName: string;
+  usePlannerV2: boolean;
   executePrompt: (prompt: string) => Promise<AgentPromptResult>;
   executePlan: (plan: AgentExecutionPlan) => Promise<AgentActionExecutionResult[]>;
   registerActions: (actions: AgentAction[]) => () => void;
+  setUsePlannerV2: (value: boolean) => void;
 }

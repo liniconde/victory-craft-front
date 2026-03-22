@@ -12,6 +12,7 @@ export type {
   AgentLlmAdapter,
   AgentLlmInput,
   AgentMessage,
+  AgentPlannerMeta,
   AgentActionResultField,
   AgentParameterType,
   AgentPromptResult,

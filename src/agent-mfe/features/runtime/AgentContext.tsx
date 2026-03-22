@@ -5,6 +5,10 @@ import {
   useMemo,
   useState,
 } from "react";
+import {
+  getStoredPlannerV2Value,
+  setStoredPlannerV2Value,
+} from "../../../app/agent/config/agentPlannerConfig";
 import type {
   AgentAction,
   AgentActionExecutionResult,
@@ -41,6 +45,7 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({
   clickElement,
 }) => {
   const [actions, setActions] = useState<AgentAction[]>([]);
+  const [usePlannerV2, setUsePlannerV2State] = useState(getStoredPlannerV2Value);
   const [history, setHistory] = useState<AgentMessage[]>([
     createMessage(
       "assistant",
@@ -48,6 +53,11 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({
     ),
   ]);
   const [isRunning, setIsRunning] = useState(false);
+
+  const setUsePlannerV2 = useCallback((value: boolean) => {
+    setStoredPlannerV2Value(value);
+    setUsePlannerV2State(value);
+  }, []);
 
   const registerActions = useCallback((nextActions: AgentAction[]) => {
     setActions((current) => {
@@ -130,6 +140,16 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({
           })),
         });
 
+        if (plan.meta) {
+          console.info("Agent planner meta", {
+            plannerMode: plan.meta.plannerMode,
+            confidence: plan.meta.confidence,
+            selectedRoute: plan.meta.selectedRoute,
+            traceId: plan.meta.traceId,
+            cacheHit: plan.meta.cacheHit,
+          });
+        }
+
         const results = await executePlan(plan);
         const summary =
           plan.summary ||
@@ -178,11 +198,23 @@ export const AgentProvider: React.FC<AgentProviderProps> = ({
       history,
       isRunning,
       llmAdapterName: llmAdapter.name,
+      usePlannerV2,
       executePrompt,
       executePlan,
       registerActions,
+      setUsePlannerV2,
     }),
-    [actions, executePlan, executePrompt, history, isRunning, llmAdapter.name, registerActions]
+    [
+      actions,
+      executePlan,
+      executePrompt,
+      history,
+      isRunning,
+      llmAdapter.name,
+      registerActions,
+      setUsePlannerV2,
+      usePlannerV2,
+    ]
   );
 
   return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;
