@@ -6,7 +6,7 @@ import "./JarvisActionScenes.css";
 
 interface JarvisGreetingCalloutProps {
   body: string;
-  dockRef?: React.RefObject<HTMLDivElement | null>;
+  dockRef?: React.Ref<HTMLDivElement>;
   isVisible: boolean;
   note?: string;
   title?: string;
@@ -66,6 +66,26 @@ export const JarvisFlightOverlay: React.FC<JarvisFlightOverlayProps> = ({
   );
 };
 
+interface JarvisTypingIndicatorProps {
+  label?: string;
+}
+
+export const JarvisTypingIndicator: React.FC<JarvisTypingIndicatorProps> = ({
+  label = `${ASSISTANT_NAME} esta escribiendo...`,
+}) => (
+  <div className="jarvis-typing-indicator" aria-live="polite">
+    <JarvisAvatar className="jarvis-typing-indicator__avatar" />
+    <div className="jarvis-typing-indicator__bubble">
+      <span>{label}</span>
+      <div className="jarvis-typing-indicator__dots" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+    </div>
+  </div>
+);
+
 interface JarvisCapabilityReminderProps {
   body: string;
   title?: string;
@@ -80,6 +100,24 @@ export const JarvisCapabilityReminder: React.FC<JarvisCapabilityReminderProps> =
     <div>
       <strong>{title}</strong>
       <p>{body}</p>
+    </div>
+  </div>
+);
+
+interface JarvisMessageCardProps {
+  body: React.ReactNode;
+  title?: string;
+}
+
+export const JarvisMessageCard: React.FC<JarvisMessageCardProps> = ({
+  body,
+  title = ASSISTANT_NAME,
+}) => (
+  <div className="jarvis-message-card">
+    <JarvisAvatar className="jarvis-message-card__avatar" />
+    <div>
+      <span>{title}</span>
+      <div className="jarvis-message-card__body">{body}</div>
     </div>
   </div>
 );

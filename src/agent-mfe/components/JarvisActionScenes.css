@@ -129,3 +129,114 @@
 .jarvis-capability-reminder p {
   margin: 0;
 }
+
+.jarvis-message-sequence {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.jarvis-typing-indicator {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.2rem;
+}
+
+.jarvis-typing-indicator__avatar {
+  width: 2.7rem;
+  height: 2.7rem;
+}
+
+.jarvis-typing-indicator__bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: fit-content;
+  padding: 0.7rem 0.9rem;
+  border-radius: 18px;
+  background: rgba(237, 246, 255, 0.92);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  color: #18486f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(19, 38, 47, 0.08);
+}
+
+.jarvis-typing-indicator__dots {
+  display: inline-flex;
+  gap: 0.28rem;
+}
+
+.jarvis-typing-indicator__dots i {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #2563eb;
+  opacity: 0.32;
+  animation: jarvisTypingPulse 1s ease-in-out infinite;
+}
+
+.jarvis-typing-indicator__dots i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.jarvis-typing-indicator__dots i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.jarvis-message-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  margin-top: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #f6fbff, #edf6ff);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  box-shadow: 0 14px 36px rgba(19, 38, 47, 0.08);
+}
+
+.jarvis-message-card__avatar {
+  width: 2.9rem;
+  height: 2.9rem;
+}
+
+.jarvis-message-card span {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+.jarvis-message-card__body {
+  margin-top: 0.2rem;
+  color: #17303a;
+  line-height: 1.55;
+}
+
+.jarvis-message-card__body p {
+  margin: 0;
+}
+
+.jarvis-message-card__body strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+@keyframes jarvisTypingPulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}

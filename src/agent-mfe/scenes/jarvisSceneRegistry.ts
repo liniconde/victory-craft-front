@@ -37,7 +37,7 @@ export const buildScoutingWelcomeScene = ({
   id: "jarvis.scouting.welcome",
   type: "greeting",
   title: ASSISTANT_NAME,
-  body: `Hola ${displayName}, soy ${ASSISTANT_NAME}. ${ASSISTANT_WELCOME_COPY} Voy a acompanarte en este recorrido y ayudarte a llegar rapido a cada parte importante de Victory Craft. Elige tu deporte y te enseno el mejor punto de partida para que tu perfil, tus videos y tu visibilidad empiecen con fuerza.`,
+  body: `Hola ${displayName}, soy ${ASSISTANT_NAME}. ${ASSISTANT_WELCOME_COPY} Voy a acompanarte en este recorrido y ayudarte a llegar rapido a cada parte importante de Victory Craft.`,
   bubbleText: "Hola, voy para alla",
   enableArrival: true,
 });

@@ -16,8 +16,17 @@ import {
 import {
   buildJarvisCapabilityReminderScene,
   buildScoutingWelcomeScene,
-} from "../../agent-mfe/scenes/jarvisSceneRegistry";
-import { JarvisSceneHost } from "../../agent-mfe/components/JarvisSceneHost";
+  JarvisFlyToTargetAction,
+  JarvisFlightOverlay,
+  JarvisGreetingCallout,
+  JarvisMessageCard,
+  JarvisRevealMessageAction,
+  JarvisSceneHost,
+  JarvisTypingIndicator,
+  JarvisTypingAction,
+  useJarvisActionRunner,
+} from "../../agent-mfe";
+import { JarvisMessageSequence } from "../../agent-mfe/components/JarvisMessageSequence";
 import "./RecruitersOnboarding.css";
 
 interface SpotlightRect {
@@ -28,6 +37,9 @@ interface SpotlightRect {
 }
 
 const DEFAULT_SPORT: OnboardingSportId = "football";
+const WELCOME_PRIMARY_MESSAGE_ID = "welcome-primary-message";
+const WELCOME_SECONDARY_MESSAGE_ID = "welcome-secondary-message";
+const WELCOME_PRIMARY_TARGET_ID = "welcome-primary-dock";
 
 const toDisplayName = (email: string | null, userId: string | null) => {
   const rawName = (email?.split("@")[0] || userId || "jugador").trim();
@@ -139,6 +151,26 @@ const RecruitersOnboarding: React.FC = () => {
     [displayName]
   );
   const capabilityReminderScene = useMemo(() => buildJarvisCapabilityReminderScene(), []);
+  const welcomeJarvisActions = useMemo(
+    () => [
+      new JarvisFlyToTargetAction("jarvis.fly.welcome-primary", {
+        bubbleText: "Hola, voy para alla",
+        targetId: WELCOME_PRIMARY_TARGET_ID,
+      }),
+      new JarvisTypingAction("jarvis.type.welcome-primary", 1100),
+      new JarvisRevealMessageAction("jarvis.reveal.welcome-primary", WELCOME_PRIMARY_MESSAGE_ID),
+      new JarvisTypingAction("jarvis.type.welcome-secondary", 950),
+      new JarvisRevealMessageAction(
+        "jarvis.reveal.welcome-secondary",
+        WELCOME_SECONDARY_MESSAGE_ID
+      ),
+    ],
+    []
+  );
+  const { registerTarget, runtimeState: welcomeJarvisRuntime } = useJarvisActionRunner({
+    actions: welcomeJarvisActions,
+    active: isOpen && introStep === "welcome",
+  });
 
   useEffect(() => {
     if (!isOpen || introStep !== "journey" || !activeSpotlightStep) return;
@@ -297,10 +329,32 @@ const RecruitersOnboarding: React.FC = () => {
                       Tus mejores jugadas pueden ponerte frente a jugadores, fans y oportunidades
                       reales. Hoy voy a dejarte listo para moverte por scouting con claridad.
                     </p>
-                    <JarvisSceneHost
-                      scene={welcomeJarvisScene}
-                      active={isOpen && introStep === "welcome"}
+                    <JarvisGreetingCallout
+                      title={welcomeJarvisScene.title}
+                      body={welcomeJarvisScene.body}
+                      isVisible={welcomeJarvisRuntime.visibleMessageIds.includes(
+                        WELCOME_PRIMARY_MESSAGE_ID
+                      )}
+                      dockRef={registerTarget(WELCOME_PRIMARY_TARGET_ID)}
                     />
+                    {welcomeJarvisRuntime.typing &&
+                    welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-primary" ? (
+                      <JarvisTypingIndicator label={welcomeJarvisRuntime.typing.label} />
+                    ) : null}
+                    {welcomeJarvisRuntime.visibleMessageIds.includes(WELCOME_SECONDARY_MESSAGE_ID) ? (
+                      <JarvisMessageCard
+                        body={
+                          <p>
+                            Elige tu deporte y te enseno el mejor punto de partida para que tu
+                            perfil, tus videos y tu visibilidad empiecen con fuerza.
+                          </p>
+                        }
+                      />
+                    ) : null}
+                    {welcomeJarvisRuntime.typing &&
+                    welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-secondary" ? (
+                      <JarvisTypingIndicator label={welcomeJarvisRuntime.typing.label} />
+                    ) : null}
                   </div>
 
                   <div className="recruiters-onboarding__hero-visual">
@@ -362,20 +416,38 @@ const RecruitersOnboarding: React.FC = () => {
               <div className="recruiters-onboarding__journey">
                 <p className="recruiters-onboarding__eyebrow">Jarvis te guia</p>
                 <h2>{activeSpotlightStep.title}</h2>
-                <p>{activeSpotlightStep.description}</p>
-
-                <div className="recruiters-onboarding__journey-card">
-                  <strong>Este es el flujo que te recomiendo</strong>
-                  <p>
-                    1. Primero, crea tu perfil.
-                    <br />
-                    2. Despues, sube tus videos.
-                    <br />
-                    3. Luego revisa tu material en library.
-                    <br />
-                    4. Finalmente, compite y descubre los mejores videos en el ranking mundial.
-                  </p>
-                </div>
+                <JarvisMessageSequence
+                  active={isOpen && introStep === "journey"}
+                  items={[
+                    {
+                      id: `journey-step-${activeSpotlightStep.id}`,
+                      render: () => <JarvisMessageCard body={<p>{activeSpotlightStep.description}</p>} />,
+                    },
+                    {
+                      id: `journey-flow-${activeSpotlightStep.id}`,
+                      render: () => (
+                        <div className="recruiters-onboarding__journey-card">
+                          <JarvisMessageCard
+                            body={
+                              <>
+                                <strong>Este es el flujo que te recomiendo</strong>
+                                <p>
+                                  1. Primero, crea tu perfil.
+                                  <br />
+                                  2. Despues, sube tus videos.
+                                  <br />
+                                  3. Luego revisa tu material en library.
+                                  <br />
+                                  4. Finalmente, compite y descubre los mejores videos en el ranking mundial.
+                                </p>
+                              </>
+                            }
+                          />
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
               </div>
             ) : null}
 
@@ -388,25 +460,67 @@ const RecruitersOnboarding: React.FC = () => {
                   recomiendo subir tus mejores jugadas, compartirlas con tus amigos, competir,
                   votar y construir una presencia real en scouting.
                 </p>
-                <div className="recruiters-onboarding__finale-grid">
-                  <article>
-                    <strong>Quiero que empieces por tu perfil</strong>
-                    <span>Tu historia deportiva debe estar completa antes de competir.</span>
-                  </article>
-                  <article>
-                    <strong>Sube videos con intencion</strong>
-                    <span>Elige goles, atajadas, puntos y jugadas que de verdad te definan.</span>
-                  </article>
-                  <article>
-                    <strong>Haz crecer tu visibilidad</strong>
-                    <span>Consulta tu library y mira el ranking mundial para compararte con contexto.</span>
-                  </article>
-                </div>
                 <blockquote>
                   Yo te lo voy a recordar siempre: nunca sabes quien puede estar viendo tu siguiente
                   video... algun reclutador del mundo.
                 </blockquote>
-                <JarvisSceneHost scene={capabilityReminderScene} />
+                <div className="recruiters-onboarding__finale-grid">
+                  <JarvisMessageSequence
+                    active={isOpen && introStep === "finale"}
+                    items={[
+                      {
+                        id: "finale-profile",
+                        render: () => (
+                          <JarvisMessageCard
+                            body={
+                              <>
+                                <strong>Quiero que empieces por tu perfil</strong>
+                                <p>Tu historia deportiva debe estar completa antes de competir.</p>
+                              </>
+                            }
+                          />
+                        ),
+                      },
+                      {
+                        id: "finale-videos",
+                        render: () => (
+                          <JarvisMessageCard
+                            body={
+                              <>
+                                <strong>Sube videos con intencion</strong>
+                                <p>
+                                  Elige goles, atajadas, puntos y jugadas que de verdad te definan.
+                                </p>
+                              </>
+                            }
+                          />
+                        ),
+                      },
+                      {
+                        id: "finale-visibility",
+                        render: () => (
+                          <JarvisMessageCard
+                            body={
+                              <>
+                                <strong>Haz crecer tu visibilidad</strong>
+                                <p>
+                                  Consulta tu library y mira el ranking mundial para compararte con
+                                  contexto.
+                                </p>
+                              </>
+                            }
+                          />
+                        ),
+                      },
+                      {
+                        id: "finale-capability-reminder",
+                        render: (active) => (
+                          <JarvisSceneHost scene={capabilityReminderScene} active={active} />
+                        ),
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             ) : null}
 
@@ -436,6 +550,14 @@ const RecruitersOnboarding: React.FC = () => {
             </div>
           </section>
         </div>
+      ) : null}
+
+      {isOpen && introStep === "welcome" ? (
+        <JarvisFlightOverlay
+          bubbleText={welcomeJarvisScene.bubbleText}
+          durationMs={1450}
+          flightState={welcomeJarvisRuntime.flightState}
+        />
       ) : null}
     </>
   );

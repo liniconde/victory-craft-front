@@ -7,13 +7,23 @@ export {
   JarvisCapabilityReminder,
   JarvisFlightOverlay,
   JarvisGreetingCallout,
+  JarvisMessageCard,
+  JarvisTypingIndicator,
 } from "./components/JarvisActionScenes";
+export { JarvisMessageSequence } from "./components/JarvisMessageSequence";
 export { JarvisSceneHost } from "./components/JarvisSceneHost";
+export {
+  BaseJarvisAction,
+  JarvisFlyToTargetAction,
+  JarvisRevealMessageAction,
+  JarvisTypingAction,
+} from "./actions/jarvisActions";
 export {
   buildJarvisCapabilityReminderScene,
   buildScoutingWelcomeScene,
   JARVIS_SCENE_REGISTRY,
 } from "./scenes/jarvisSceneRegistry";
+export { useJarvisActionRunner } from "./hooks/useJarvisActionRunner";
 export type {
   AgentAction,
   AgentActionDefinition,
@@ -29,6 +39,13 @@ export type {
   AgentParameterType,
   AgentPromptResult,
 } from "./features/runtime/types";
+export type {
+  JarvisAction,
+  JarvisActionLifecycleStatus,
+  JarvisActionRuntimeState,
+  JarvisFlightRequest,
+  JarvisTypingState,
+} from "./actions/jarvisActionTypes";
 export type {
   JarvisSceneDefinition,
   JarvisGreetingSceneDefinition,
