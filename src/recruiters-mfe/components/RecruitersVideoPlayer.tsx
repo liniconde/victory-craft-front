@@ -39,8 +39,8 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
         />
       ) : null}
       <video
-        key={src}
         className={className}
+        src={src}
         controls
         autoPlay={autoPlay}
         muted={muted}
@@ -53,9 +53,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
         }}
         onLoadedData={() => setIsVideoReady(true)}
         onCanPlay={() => setIsVideoReady(true)}
-      >
-        <source src={src} />
-      </video>
+      />
     </div>
   );
 };

@@ -20,6 +20,7 @@ interface RecruiterRankingsMobileViewProps {
   selectedItem: RecruiterRankingItem | null;
   selectedVideoId: string;
   playableUrl: string;
+  pendingVotes?: Record<string, -1 | 0 | 1 | null | undefined>;
   pagination: RankingsPaginationState;
   query: RecruiterRankingsQuery;
   isFiltersOpen: boolean;
@@ -44,6 +45,7 @@ const RecruiterRankingsMobileView: React.FC<
   selectedItem,
   selectedVideoId,
   playableUrl,
+  pendingVotes = {},
   pagination,
   query,
   isFiltersOpen,
@@ -125,6 +127,7 @@ const RecruiterRankingsMobileView: React.FC<
         selectedItem={selectedItem}
         selectedVideoId={selectedVideoId}
         playableUrl={playableUrl}
+        pendingVote={selectedItem ? pendingVotes[selectedItem.video._id] ?? null : null}
         onVote={onVote}
         onOpenRecruiterView={onOpenRecruiterView}
         onOpenProfile={onOpenProfile}
@@ -146,6 +149,7 @@ const RecruiterRankingsMobileView: React.FC<
         pagination={pagination}
         onSelectVideo={handleSelectFromList}
         onVote={onVote}
+        pendingVotes={pendingVotes}
         onPageChange={onPageChange}
         compact
       />

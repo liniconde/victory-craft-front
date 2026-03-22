@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type {
   RecruiterFiltersCatalog,
@@ -6,6 +6,10 @@ import type {
   RecruiterRankingsQuery,
 } from "../../../features/recruiters/types";
 import { sanitizeRecruiterSportTypes } from "../../../features/recruiters/sportTypes";
+import {
+  cacheRecruiterPlaybackUrl,
+  getCachedRecruiterPlaybackUrl,
+} from "../../../features/recruiters/api/client";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruiterRankingsMobileView from "../components/RecruiterRankingsMobileView";
 import {
@@ -85,10 +89,40 @@ const cancelIdle = (id: number) => {
   window.clearTimeout(id);
 };
 
+const sortRankingItems = (
+  items: RecruiterRankingItem[],
+  sortBy: RecruiterRankingsQuery["sortBy"]
+) => {
+  const getRecentTimestamp = (item: RecruiterRankingItem) =>
+    Date.parse(item.video.createdAt || item.video.uploadedAt || "") || 0;
+
+  const sorted = [...items];
+  sorted.sort((left, right) => {
+    if (sortBy === "recent") {
+      return getRecentTimestamp(right) - getRecentTimestamp(left);
+    }
+
+    if (sortBy === "upvotes") {
+      return (
+        right.ranking.upvotes - left.ranking.upvotes ||
+        right.ranking.score - left.ranking.score ||
+        getRecentTimestamp(right) - getRecentTimestamp(left)
+      );
+    }
+
+    return (
+      right.ranking.score - left.ranking.score ||
+      getRecentTimestamp(right) - getRecentTimestamp(left)
+    );
+  });
+
+  return sorted;
+};
+
 const RecruiterRankingsPage: React.FC = () => {
   const navigate = useNavigate();
   const {
-    api: { getFiltersCatalog, getRankings, voteVideo },
+    api: { getFiltersCatalog, getRankings, getVideoPlayback, voteVideo },
     feedback,
     loading: { trackTask },
   } = useRecruitersModule();
@@ -102,6 +136,11 @@ const RecruiterRankingsPage: React.FC = () => {
     limit: 12,
   });
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [playbackByVideoId, setPlaybackByVideoId] = useState<Record<string, string>>({});
+  const playbackByVideoIdRef = useRef<Record<string, string>>({});
+  const [pendingVotes, setPendingVotes] = useState<
+    Record<string, -1 | 0 | 1 | null | undefined>
+  >({});
   const [pagination, setPagination] = useState<RankingsPaginationState>({
     page: 1,
     totalPages: 1,
@@ -162,35 +201,115 @@ const RecruiterRankingsPage: React.FC = () => {
     [items, selectedVideoId],
   );
 
-  const playableUrl = getPlayableUrl(selectedItem);
+  const selectedVideoIdValue = selectedItem?.video._id || "";
+  const fallbackPlayableUrl = getPlayableUrl(selectedItem);
+  const playableUrl =
+    (selectedVideoIdValue ? playbackByVideoId[selectedVideoIdValue] : "") || fallbackPlayableUrl;
   const topThree = items.slice(0, 3);
 
-  const updateVote = async (videoId: string, value: -1 | 0 | 1) => {
+  useEffect(() => {
+    playbackByVideoIdRef.current = playbackByVideoId;
+  }, [playbackByVideoId]);
+
+  const ensurePlayback = useCallback(
+    async (video: RecruiterRankingItem["video"] | undefined, forceRefresh = false) => {
+      const videoId = video?._id || "";
+      if (!videoId) return "";
+
+      const currentUrl =
+        (!forceRefresh && playbackByVideoIdRef.current[videoId]) ||
+        (!forceRefresh && getCachedRecruiterPlaybackUrl(videoId)) ||
+        "";
+      if (currentUrl) {
+        if (!playbackByVideoIdRef.current[videoId]) {
+          setPlaybackByVideoId((current) =>
+            current[videoId] ? current : { ...current, [videoId]: currentUrl }
+          );
+        }
+        return currentUrl;
+      }
+
+      const preferredUrl = !forceRefresh ? getPlayableUrl({ video } as RecruiterRankingItem) : "";
+      if (preferredUrl) {
+        cacheRecruiterPlaybackUrl(videoId, preferredUrl);
+        setPlaybackByVideoId((current) =>
+          current[videoId] === preferredUrl ? current : { ...current, [videoId]: preferredUrl }
+        );
+        return preferredUrl;
+      }
+
+      const response = await getVideoPlayback(videoId);
+      setPlaybackByVideoId((current) =>
+        current[videoId] === response.playbackUrl
+          ? current
+          : { ...current, [videoId]: response.playbackUrl }
+      );
+      return response.playbackUrl;
+    },
+    [getVideoPlayback]
+  );
+
+  const updateVote = useCallback(async (videoId: string, value: -1 | 0 | 1) => {
     try {
-      await voteVideo(videoId, value);
-      const response = await getRankings(query);
-      setItems(response.items);
-      setPagination(response.pagination);
+      setPendingVotes((current) => ({ ...current, [videoId]: value }));
+      const response = await voteVideo(videoId, value);
+      setItems((current) =>
+        sortRankingItems(
+          current.map((item) =>
+            item.video._id === videoId
+              ? response.rankingItem
+                ? response.rankingItem
+                : {
+                    ...item,
+                    ranking: {
+                      score: response.summary.score,
+                      upvotes: response.summary.upvotes,
+                      downvotes: response.summary.downvotes,
+                      netVotes: response.summary.netVotes,
+                    },
+                    myVote: response.summary.myVote ?? null,
+                  }
+              : item
+          ),
+          query.sortBy ?? "score"
+        )
+      );
       setSelectedVideoId(videoId);
+
+      if (response.rankingItem?.video) {
+        void ensurePlayback(response.rankingItem.video);
+      }
     } catch (error) {
       feedback.showError(
         error instanceof Error ? error.message : "No se pudo votar.",
       );
+    } finally {
+      setPendingVotes((current) => {
+        const next = { ...current };
+        delete next[videoId];
+        return next;
+      });
     }
-  };
+  }, [ensurePlayback, feedback, query.sortBy, voteVideo]);
 
-  const updateQuery = (
+  const updateQuery = useCallback((
     updater: (current: RecruiterRankingsQuery) => RecruiterRankingsQuery,
   ) => {
     setQuery((current) => updater(current));
-  };
+  }, []);
 
-  const changePage = (page: number) => {
+  const changePage = useCallback((page: number) => {
     setQuery((current) => ({
       ...current,
       page,
     }));
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!selectedItem?.video) return;
+
+    void ensurePlayback(selectedItem.video);
+  }, [ensurePlayback, selectedItem]);
 
   useEffect(() => {
     if (!items.length) return;
@@ -199,18 +318,36 @@ const RecruiterRankingsPage: React.FC = () => {
       (item) => item.video._id === selectedVideoId,
     );
     const startIndex = selectedIndex >= 0 ? selectedIndex : 0;
-    const prioritizedUrls = items
-      .slice(startIndex, startIndex + VIDEO_PRELOAD_COUNT)
-      .map((item) => getPlayableUrl(item))
-      .filter(Boolean);
-
     const warmUp = () => {
-      prioritizedUrls.forEach(warmRankingVideo);
+      items
+        .slice(startIndex, startIndex + VIDEO_PRELOAD_COUNT)
+        .forEach((item) => {
+          const cachedUrl =
+            playbackByVideoIdRef.current[item.video._id] ||
+            getCachedRecruiterPlaybackUrl(item.video._id) ||
+            getPlayableUrl(item);
+
+          if (cachedUrl) {
+            warmRankingVideo(cachedUrl);
+            return;
+          }
+
+          void getVideoPlayback(item.video._id)
+            .then((response) => {
+              setPlaybackByVideoId((current) =>
+                current[item.video._id] === response.playbackUrl
+                  ? current
+                  : { ...current, [item.video._id]: response.playbackUrl }
+              );
+              warmRankingVideo(response.playbackUrl);
+            })
+            .catch(() => undefined);
+        });
     };
 
     const idleId = requestIdle(warmUp);
     return () => cancelIdle(idleId);
-  }, [items, selectedVideoId]);
+  }, [getVideoPlayback, items, selectedVideoId]);
 
   return (
     <section className="recruiters-dashboard recruiters-board">
@@ -284,6 +421,7 @@ const RecruiterRankingsPage: React.FC = () => {
               selectedItem={selectedItem}
               selectedVideoId={selectedVideoId}
               playableUrl={playableUrl}
+              pendingVote={selectedItem ? pendingVotes[selectedItem.video._id] ?? null : null}
               onVote={updateVote}
               onOpenRecruiterView={(videoId) =>
                 navigate(`/scouting/subpages/video/${videoId}`)
@@ -308,6 +446,7 @@ const RecruiterRankingsPage: React.FC = () => {
               pagination={pagination}
               onSelectVideo={setSelectedVideoId}
               onVote={updateVote}
+              pendingVotes={pendingVotes}
               onPageChange={changePage}
             />
           </section>
@@ -321,6 +460,7 @@ const RecruiterRankingsPage: React.FC = () => {
         selectedItem={selectedItem}
         selectedVideoId={selectedItem?.video._id || ""}
         playableUrl={playableUrl}
+        pendingVotes={pendingVotes}
         pagination={pagination}
         query={query}
         isFiltersOpen={isMobileFiltersOpen}

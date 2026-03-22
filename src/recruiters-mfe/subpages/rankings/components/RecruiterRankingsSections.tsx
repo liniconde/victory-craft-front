@@ -44,7 +44,18 @@ interface RankingsListProps {
   pagination: RankingsPaginationState;
   onSelectVideo: (videoId: string) => void;
   onVote: (videoId: string, value: -1 | 0 | 1) => void;
+  pendingVotes?: Record<string, -1 | 0 | 1 | null | undefined>;
   onPageChange: (page: number) => void;
+  compact?: boolean;
+}
+
+interface RankingsRowProps {
+  item: RecruiterRankingItem;
+  isActive: boolean;
+  absoluteRank: number;
+  onSelectVideo: (videoId: string) => void;
+  onVote: (videoId: string, value: -1 | 0 | 1) => void;
+  pendingVote?: -1 | 0 | 1 | null;
   compact?: boolean;
 }
 
@@ -53,6 +64,7 @@ interface RankingsPreviewProps {
   selectedVideoId: string;
   playableUrl: string;
   onVote: (videoId: string, value: -1 | 0 | 1) => void;
+  pendingVote?: -1 | 0 | 1 | null;
   onOpenRecruiterView: (videoId: string) => void;
   onOpenProfile: (videoId: string) => void;
   mobile?: boolean;
@@ -296,6 +308,7 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
   selectedVideoId,
   playableUrl,
   onVote,
+  pendingVote = null,
   onOpenRecruiterView,
   onOpenProfile,
   mobile = false,
@@ -366,6 +379,8 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
           upvotes={selectedItem.ranking.upvotes}
           downvotes={selectedItem.ranking.downvotes}
           myVote={selectedItem.myVote}
+          pendingVote={pendingVote}
+          isPending={pendingVote !== null && pendingVote !== undefined}
           onVote={(value) => onVote(selectedItem.video._id, value)}
         />
       </div>
@@ -404,61 +419,24 @@ export const RecruiterRankingsList: React.FC<RankingsListProps> = ({
   pagination,
   onSelectVideo,
   onVote,
+  pendingVotes = {},
   onPageChange,
   compact = false,
 }) => (
   <>
     <div className={`recruiters-board__list-body ${compact ? "is-mobile" : ""}`}>
       {items.map((item, index) => {
-        const isActive = item.video._id === selectedVideoId;
-        const absoluteRank = (pagination.page - 1) * pagination.limit + index + 1;
-
         return (
-          <article
+          <RankingsRow
             key={item.video._id}
-            className={`recruiters-board__row ${isActive ? "is-active" : ""} ${
-              compact ? "recruiters-board__row--mobile" : ""
-            }`}
-            onClick={() => onSelectVideo(item.video._id)}
-            role="button"
-            tabIndex={0}
-          >
-            <div className="recruiters-board__row-rank">#{absoluteRank}</div>
-            <div className="recruiters-board__row-main">
-              <div className="recruiters-board__row-header">
-                <strong>{item.scoutingProfile?.title || item.video.s3Key}</strong>
-                <span>{item.ranking.score} pts</span>
-              </div>
-              <p>
-                {item.playerProfile?.fullName || "Jugador"} ·{" "}
-                {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
-                {item.playerProfile?.country || "Pais"} ·{" "}
-                {item.playerProfile?.city || "Ciudad"}
-              </p>
-              <div className="recruiters-board__chips">
-                <span>
-                  {getRecruiterSportTypeLabel(
-                    item.scoutingProfile?.sportType || item.video.sportType,
-                  ) || "sport"}
-                </span>
-                <span>{item.scoutingProfile?.playType || "play type"}</span>
-                <span>{item.scoutingProfile?.tournamentType || "torneo"}</span>
-              </div>
-            </div>
-            <div className="recruiters-board__row-meta">
-              <small>{item.ranking.upvotes} ▲</small>
-              <small>{item.ranking.downvotes} ▼</small>
-              <small>{item.ranking.netVotes} netos</small>
-              <RecruiterVoteButtons
-                className="recruiters-board__row-votes"
-                compact
-                upvotes={item.ranking.upvotes}
-                downvotes={item.ranking.downvotes}
-                myVote={item.myVote}
-                onVote={(value) => onVote(item.video._id, value)}
-              />
-            </div>
-          </article>
+            item={item}
+            isActive={item.video._id === selectedVideoId}
+            absoluteRank={(pagination.page - 1) * pagination.limit + index + 1}
+            onSelectVideo={onSelectVideo}
+            onVote={onVote}
+            pendingVote={pendingVotes[item.video._id] ?? null}
+            compact={compact}
+          />
         );
       })}
     </div>
@@ -484,3 +462,70 @@ export const RecruiterRankingsList: React.FC<RankingsListProps> = ({
 
 export const getPlayableUrl = (item: RecruiterRankingItem | null | undefined) =>
   item?.video.playbackUrl || item?.video.videoUrl || "";
+
+const RankingsRow: React.FC<RankingsRowProps> = React.memo(
+  ({
+    item,
+    isActive,
+    absoluteRank,
+    onSelectVideo,
+    onVote,
+    pendingVote = null,
+    compact = false,
+  }) => (
+    <article
+      className={`recruiters-board__row ${isActive ? "is-active" : ""} ${
+        compact ? "recruiters-board__row--mobile" : ""
+      }`}
+      onClick={() => onSelectVideo(item.video._id)}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="recruiters-board__row-rank">#{absoluteRank}</div>
+      <div className="recruiters-board__row-main">
+        <div className="recruiters-board__row-header">
+          <strong>{item.scoutingProfile?.title || item.video.s3Key}</strong>
+          <span>{item.ranking.score} pts</span>
+        </div>
+        <p>
+          {item.playerProfile?.fullName || "Jugador"} ·{" "}
+          {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
+          {item.playerProfile?.country || "Pais"} ·{" "}
+          {item.playerProfile?.city || "Ciudad"}
+        </p>
+        <div className="recruiters-board__chips">
+          <span>
+            {getRecruiterSportTypeLabel(
+              item.scoutingProfile?.sportType || item.video.sportType,
+            ) || "sport"}
+          </span>
+          <span>{item.scoutingProfile?.playType || "play type"}</span>
+          <span>{item.scoutingProfile?.tournamentType || "torneo"}</span>
+        </div>
+      </div>
+      <div className="recruiters-board__row-meta">
+        <small>{item.ranking.upvotes} ▲</small>
+        <small>{item.ranking.downvotes} ▼</small>
+        <small>{item.ranking.netVotes} netos</small>
+        <RecruiterVoteButtons
+          className="recruiters-board__row-votes"
+          compact
+          upvotes={item.ranking.upvotes}
+          downvotes={item.ranking.downvotes}
+          myVote={item.myVote}
+          pendingVote={pendingVote}
+          isPending={pendingVote !== null && pendingVote !== undefined}
+          onVote={(value) => onVote(item.video._id, value)}
+        />
+      </div>
+    </article>
+  ),
+  (prev, next) =>
+    prev.item === next.item &&
+    prev.isActive === next.isActive &&
+    prev.absoluteRank === next.absoluteRank &&
+    prev.pendingVote === next.pendingVote &&
+    prev.compact === next.compact &&
+    prev.onSelectVideo === next.onSelectVideo &&
+    prev.onVote === next.onVote
+);

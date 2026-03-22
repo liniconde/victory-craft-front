@@ -445,6 +445,7 @@
   font-weight: 700;
   font: inherit;
   cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
 }
 
 .recruiter-vote-buttons__action {
@@ -483,11 +484,41 @@
   background: linear-gradient(135deg, #2563eb, #38bdf8);
 }
 
+.recruiter-vote-buttons.is-pending .recruiter-vote-buttons__action,
+.recruiter-vote-buttons.is-pending .recruiter-vote-buttons__reset {
+  cursor: wait;
+}
+
+.recruiter-vote-buttons__action.is-pending,
+.recruiter-vote-buttons__reset.is-pending {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(17, 138, 178, 0.18);
+  opacity: 0.92;
+}
+
+.recruiter-vote-buttons__action.is-pending::after,
+.recruiter-vote-buttons__reset.is-pending::after {
+  content: "";
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  display: inline-block;
+  animation: recruiter-vote-spin 0.7s linear infinite;
+}
+
 .recruiter-vote-buttons__reset {
   padding: 0.65rem 0.9rem;
   background: #f8fafc;
   color: #48606a;
   box-shadow: inset 0 0 0 1px rgba(72, 96, 106, 0.16);
+}
+
+.recruiter-vote-buttons__reset.is-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .recruiter-vote-buttons--compact {
@@ -507,6 +538,17 @@
 .recruiter-vote-buttons--compact .recruiter-vote-buttons__reset {
   padding: 0.38rem 0.65rem;
   font-size: 0.78rem;
+}
+
+.recruiter-vote-buttons__action:disabled,
+.recruiter-vote-buttons__reset:disabled {
+  opacity: 0.88;
+}
+
+@keyframes recruiter-vote-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .recruiters-board__preview-body {

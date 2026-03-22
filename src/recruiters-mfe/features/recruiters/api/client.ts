@@ -26,6 +26,7 @@ import type {
   RecruiterVoteDeleteResponse,
   RecruiterVoteUpsertResponse,
   RecruiterVotesSummary,
+  RecruiterPlaybackResponse,
 } from "../types";
 import {
   normalizeRecruiterSportType,
@@ -48,9 +49,94 @@ const compactQueryParams = <T extends Record<string, unknown>>(params: T): Parti
   ) as Partial<T>;
 
 const recruiterViewCache = new Map<string, Promise<RecruiterViewResponse>>();
+const recruiterVideoUrlCache = new Map<
+  string,
+  { playbackUrl?: string; videoUrl?: string; expiresAt: number }
+>();
 
 const numberOrZero = (value: unknown): number =>
   typeof value === "number" && Number.isFinite(value) ? value : 0;
+
+const SIGNED_URL_EXPIRY_SAFETY_WINDOW_MS = 30_000;
+
+const readSignedUrlExpiry = (url: string | undefined): number => {
+  if (!url) return 0;
+
+  try {
+    const parsed = new URL(url);
+    const date = parsed.searchParams.get("X-Amz-Date");
+    const expires = parsed.searchParams.get("X-Amz-Expires");
+    if (!date || !expires) return 0;
+
+    const matched = date.match(
+      /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/
+    );
+    if (!matched) return 0;
+
+    const [, year, month, day, hour, minute, second] = matched;
+    const issuedAt = Date.UTC(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hour),
+      Number(minute),
+      Number(second)
+    );
+
+    return issuedAt + Number(expires) * 1000;
+  } catch {
+    return 0;
+  }
+};
+
+const isSignedUrlUsable = (expiresAt: number): boolean =>
+  expiresAt > Date.now() + SIGNED_URL_EXPIRY_SAFETY_WINDOW_MS;
+
+export const getCachedRecruiterPlaybackUrl = (videoId: string): string | undefined => {
+  const cached = recruiterVideoUrlCache.get(videoId);
+  if (!cached || !isSignedUrlUsable(cached.expiresAt)) return undefined;
+  return cached.playbackUrl || cached.videoUrl;
+};
+
+export const cacheRecruiterPlaybackUrl = (videoId: string, playbackUrl: string): string => {
+  const expiresAt = readSignedUrlExpiry(playbackUrl);
+  recruiterVideoUrlCache.set(videoId, {
+    playbackUrl,
+    videoUrl: playbackUrl,
+    expiresAt,
+  });
+  return playbackUrl;
+};
+
+const resolveCachedVideoUrls = (
+  videoId: string,
+  playbackUrl?: string,
+  videoUrl?: string
+) => {
+  const cached = recruiterVideoUrlCache.get(videoId);
+  const nextExpiry = Math.max(readSignedUrlExpiry(playbackUrl), readSignedUrlExpiry(videoUrl));
+
+  if (cached && isSignedUrlUsable(cached.expiresAt)) {
+    return {
+      playbackUrl: cached.playbackUrl || playbackUrl,
+      videoUrl: cached.videoUrl || videoUrl,
+      expiresAt: cached.expiresAt,
+    };
+  }
+
+  if (nextExpiry > 0) {
+    const nextValue = {
+      playbackUrl,
+      videoUrl,
+      expiresAt: nextExpiry,
+    };
+    recruiterVideoUrlCache.set(videoId, nextValue);
+    return nextValue;
+  }
+
+  recruiterVideoUrlCache.delete(videoId);
+  return { playbackUrl, videoUrl, expiresAt: 0 };
+};
 
 const toValidationMessage = (issues: unknown): string | null => {
   if (!Array.isArray(issues) || issues.length === 0) return null;
@@ -116,12 +202,19 @@ const normalizeVideo = (item: unknown, index = 0): RecruiterVideoLibraryItem => 
   const raw = toRecord(item);
   const videoId =
     readString(raw._id) || readString(raw.id) || readString(raw.videoId) || `video-${index}`;
+  const normalizedPlaybackUrl =
+    typeof raw.playbackUrl === "string" ? raw.playbackUrl : undefined;
+  const normalizedVideoUrl = typeof raw.videoUrl === "string" ? raw.videoUrl : undefined;
+  const cachedUrls = resolveCachedVideoUrls(
+    videoId,
+    normalizedPlaybackUrl,
+    normalizedVideoUrl
+  );
   return {
     _id: videoId,
     s3Key: typeof raw.s3Key === "string" ? raw.s3Key : "",
-    videoUrl: typeof raw.videoUrl === "string" ? raw.videoUrl : undefined,
-    playbackUrl:
-      typeof raw.playbackUrl === "string" ? raw.playbackUrl : undefined,
+    videoUrl: cachedUrls.videoUrl,
+    playbackUrl: cachedUrls.playbackUrl,
     uploadedAt: typeof raw.uploadedAt === "string" ? raw.uploadedAt : undefined,
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
@@ -654,6 +747,7 @@ export const recruitersApi = {
         return {
           message: typeof raw.message === "string" ? raw.message : undefined,
           summary: normalizeSummary(raw.summary),
+          rankingItem: raw.rankingItem ? normalizeRankingItem(raw.rankingItem) : undefined,
         };
       }
 
@@ -667,9 +761,36 @@ export const recruitersApi = {
           value: voteRaw.value === -1 || voteRaw.value === 1 ? voteRaw.value : null,
         },
         summary: normalizeSummary(raw.summary),
+        rankingItem: raw.rankingItem ? normalizeRankingItem(raw.rankingItem) : undefined,
       };
     } catch (error) {
       throw mapError(error, "No se pudo actualizar el voto.");
+    }
+  },
+  getVideoPlayback: async (videoId: string): Promise<RecruiterPlaybackResponse> => {
+    const cachedPlaybackUrl = getCachedRecruiterPlaybackUrl(videoId);
+    if (cachedPlaybackUrl) {
+      return {
+        videoId,
+        playbackUrl: cachedPlaybackUrl,
+      };
+    }
+
+    try {
+      const response = await api.get(`/videos/library/${videoId}/playback`);
+      const raw = toRecord(response.data);
+      const playbackUrl = readString(raw.playbackUrl);
+
+      if (!playbackUrl) {
+        throw new Error("No se recibio una URL de reproduccion valida.");
+      }
+
+      return {
+        videoId: typeof raw.videoId === "string" ? raw.videoId : videoId,
+        playbackUrl: cacheRecruiterPlaybackUrl(videoId, playbackUrl),
+      };
+    } catch (error) {
+      throw mapError(error, "No se pudo resolver la reproduccion del video.");
     }
   },
   getRankings: async (query: RecruiterRankingsQuery = {}): Promise<RecruiterRankingsResponse> => {

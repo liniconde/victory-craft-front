@@ -103,11 +103,13 @@ export interface RecruiterVoteUpsertResponse {
     value?: -1 | 1 | null;
   };
   summary: RecruiterVotesSummary;
+  rankingItem?: RecruiterRankingItem;
 }
 
 export interface RecruiterVoteDeleteResponse {
   message?: string;
   summary: RecruiterVotesSummary;
+  rankingItem?: RecruiterRankingItem;
 }
 
 export interface RecruiterRankingMetrics {
@@ -152,6 +154,11 @@ export interface RecruiterViewResponse {
     scoutingProfile?: RecruiterScoutingProfile | null;
     playerProfile?: RecruiterPlayerProfileSummary | null;
   }>;
+}
+
+export interface RecruiterPlaybackResponse {
+  videoId: string;
+  playbackUrl: string;
 }
 
 export interface RecruiterRankingsQuery {

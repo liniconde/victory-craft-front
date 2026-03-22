@@ -1032,6 +1032,9 @@ paths:
       description: >
         Retorna el ranking paginado de videos de biblioteca. El orden se resuelve en backend
         antes de paginar para mantener resultados estables y consistentes entre paginas.
+        Los items incluyen `video.videoUrl` para compatibilidad, pero el frontend puede resolver
+        la URL de reproduccion bajo demanda con `GET /videos/library/{videoId}/playback` para
+        evitar reasignar el `src` del reproductor tras votar o refrescar el ranking.
       parameters:
         - in: query
           name: sportType
@@ -1184,6 +1187,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VideoFiltersCatalogResponse"
+
+  /videos/library/{videoId}/playback:
+    get:
+      tags: [Videos]
+      summary: Resolver playback URL firmada de un video de biblioteca
+      description: >
+        Devuelve la URL de reproduccion firmada del video solicitado. Recomendado para obtener
+        playback bajo demanda sin depender de que el ranking regenere o cambie `video.videoUrl`.
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: URL de playback resuelta
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoPlaybackResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /videos/library/{videoId}/recruiter-view:
     get:
@@ -4893,6 +4919,8 @@ components:
               nullable: true
         summary:
           $ref: "#/components/schemas/VideoVotesSummary"
+        rankingItem:
+          $ref: "#/components/schemas/VideoRankingItem"
 
     VideoVoteDeleteResponse:
       type: object
@@ -4900,6 +4928,8 @@ components:
         message: { type: string }
         summary:
           $ref: "#/components/schemas/VideoVotesSummary"
+        rankingItem:
+          $ref: "#/components/schemas/VideoRankingItem"
 
     VideoRankingMetrics:
       type: object
@@ -4958,6 +4988,16 @@ components:
         playerCategories: { type: array, items: { type: string } }
         tournaments: { type: array, items: { type: string } }
         tags: { type: array, items: { type: string } }
+
+    VideoPlaybackResponse:
+      type: object
+      properties:
+        videoId:
+          type: string
+        playbackUrl:
+          type: string
+          format: uri
+          nullable: true
 
     VideoRecruiterViewResponse:
       type: object
