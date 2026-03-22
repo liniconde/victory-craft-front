@@ -75,7 +75,7 @@ export const SCOUTING_SPOTLIGHT_STEPS: OnboardingSpotlightStep[] = [
     route: "/scouting/subpages/dashboard",
     title: "Este es tu menu de scouting",
     description:
-      "Desde aqui entras al dashboard y te mueves por todo el flujo. Siempre podras volver a esta zona desde la navegacion principal.",
+      "Yo te recomiendo tomar este menu como tu base. Desde aqui entras al dashboard y te mueves por todo el flujo sin perderte.",
     selectors: [
       "[data-onboarding='scouting-sidebar-header']",
       "[data-onboarding='scouting-mobile-trigger']",
@@ -86,7 +86,7 @@ export const SCOUTING_SPOTLIGHT_STEPS: OnboardingSpotlightStep[] = [
     route: "/scouting/subpages/dashboard",
     title: "Dashboard",
     description:
-      "Es tu punto de partida. Aqui entiendes el ecosistema, ves accesos rapidos y detectas que esta pasando en scouting.",
+      "Aqui quiero que empieces. En este punto entiendes el ecosistema, ves accesos rapidos y detectas que esta pasando en scouting.",
     selectors: ["[data-onboarding='scouting-menu-dashboard']"],
   },
   {
@@ -94,7 +94,7 @@ export const SCOUTING_SPOTLIGHT_STEPS: OnboardingSpotlightStep[] = [
     route: "/scouting/subpages/player-profiles",
     title: "Player Profiles",
     description:
-      "Este es el primer paso real del flujo. Crea o completa tu perfil para que cada video tenga contexto de jugador, posicion, categoria y ciudad.",
+      "Este es el primer paso real que quiero para ti. Crea o completa tu perfil para que cada video tenga contexto de jugador, posicion, categoria y ciudad.",
     selectors: ["[data-onboarding='scouting-menu-player-profiles']"],
   },
   {
@@ -102,7 +102,7 @@ export const SCOUTING_SPOTLIGHT_STEPS: OnboardingSpotlightStep[] = [
     route: "/scouting/subpages/library",
     title: "Library",
     description:
-      "Cuando tu perfil este listo, aqui podras subir videos, organizarlos y preparar el material que despues vas a competir o compartir.",
+      "Cuando tu perfil este listo, aqui te ayudare a ordenar el siguiente paso: subir videos, organizarlos y preparar el material que despues vas a competir o compartir.",
     selectors: ["[data-onboarding='scouting-menu-library']"],
   },
   {
@@ -110,7 +110,7 @@ export const SCOUTING_SPOTLIGHT_STEPS: OnboardingSpotlightStep[] = [
     route: "/scouting/subpages/rankings",
     title: "Rankings",
     description:
-      "En rankings ves los mejores videos del mundo, comparas tu nivel, votas y entiendes como se mueve la competencia global.",
+      "En rankings quiero que midas tu contexto. Aqui ves los mejores videos del mundo, comparas tu nivel, votas y entiendes como se mueve la competencia global.",
     selectors: ["[data-onboarding='scouting-menu-rankings']"],
   },
 ];

@@ -112,34 +112,8 @@
   align-items: stretch;
 }
 
-.recruiters-onboarding__assistant-callout {
-  display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
-  gap: 0.85rem;
-  align-items: center;
-  margin-top: 0.9rem;
-  padding: 0.8rem 0.9rem;
-  border-radius: 22px;
-  background: #eef6ff;
-  border: 1px solid rgba(37, 99, 235, 0.14);
-}
-
-.recruiters-onboarding__assistant-avatar {
-  width: 4rem;
-  height: 4rem;
-}
-
-.recruiters-onboarding__assistant-callout span {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #2563eb;
-}
-
-.recruiters-onboarding__assistant-callout p {
-  margin-top: 0.2rem;
+.recruiters-onboarding__intro-copy {
+  position: relative;
 }
 
 .recruiters-onboarding__hero-visual {

@@ -13,8 +13,11 @@ import {
   getScoutingOnboardingProgress,
   persistScoutingOnboardingProgress,
 } from "./onboardingStorage";
-import { ASSISTANT_NAME, ASSISTANT_WELCOME_COPY } from "../../agent-mfe/constants/assistantBrand";
-import { JarvisAvatar } from "../../agent-mfe/components/JarvisAvatar";
+import {
+  buildJarvisCapabilityReminderScene,
+  buildScoutingWelcomeScene,
+} from "../../agent-mfe/scenes/jarvisSceneRegistry";
+import { JarvisSceneHost } from "../../agent-mfe/components/JarvisSceneHost";
 import "./RecruitersOnboarding.css";
 
 interface SpotlightRect {
@@ -131,6 +134,11 @@ const RecruitersOnboarding: React.FC = () => {
   const displayName = useMemo(() => toDisplayName(email, userId), [email, userId]);
   const activeSpotlightStep = SCOUTING_SPOTLIGHT_STEPS[spotlightIndex] ?? null;
   const resolvedSportContent = selectedSportContent ?? SPORT_OPTIONS[0];
+  const welcomeJarvisScene = useMemo(
+    () => buildScoutingWelcomeScene({ displayName }),
+    [displayName]
+  );
+  const capabilityReminderScene = useMemo(() => buildJarvisCapabilityReminderScene(), []);
 
   useEffect(() => {
     if (!isOpen || introStep !== "journey" || !activeSpotlightStep) return;
@@ -286,19 +294,13 @@ const RecruitersOnboarding: React.FC = () => {
                     <p className="recruiters-onboarding__eyebrow">Scouting onboarding</p>
                     <h2>Bienvenido {displayName}</h2>
                     <p>
-                      Tus mejores jugadas pueden poner tu nombre frente a jugadores, fans y
-                      oportunidades reales. Elige tu deporte y empieza a mostrar lo que te hace
-                      diferente.
+                      Tus mejores jugadas pueden ponerte frente a jugadores, fans y oportunidades
+                      reales. Hoy voy a dejarte listo para moverte por scouting con claridad.
                     </p>
-                    <div className="recruiters-onboarding__assistant-callout">
-                      <JarvisAvatar className="recruiters-onboarding__assistant-avatar" />
-                      <div>
-                        <span>{ASSISTANT_NAME}</span>
-                        <p>
-                          Soy {ASSISTANT_NAME}. {ASSISTANT_WELCOME_COPY}
-                        </p>
-                      </div>
-                    </div>
+                    <JarvisSceneHost
+                      scene={welcomeJarvisScene}
+                      active={isOpen && introStep === "welcome"}
+                    />
                   </div>
 
                   <div className="recruiters-onboarding__hero-visual">
@@ -358,20 +360,20 @@ const RecruitersOnboarding: React.FC = () => {
 
             {introStep === "journey" && activeSpotlightStep ? (
               <div className="recruiters-onboarding__journey">
-                <p className="recruiters-onboarding__eyebrow">Recorrido guiado</p>
+                <p className="recruiters-onboarding__eyebrow">Jarvis te guia</p>
                 <h2>{activeSpotlightStep.title}</h2>
                 <p>{activeSpotlightStep.description}</p>
 
                 <div className="recruiters-onboarding__journey-card">
-                  <strong>Tu flujo recomendado</strong>
+                  <strong>Este es el flujo que te recomiendo</strong>
                   <p>
-                    1. Crea tu perfil.
+                    1. Primero, crea tu perfil.
                     <br />
-                    2. Sube tus videos.
+                    2. Despues, sube tus videos.
                     <br />
-                    3. Revisa tu material en library.
+                    3. Luego revisa tu material en library.
                     <br />
-                    4. Compite y descubre los mejores videos en el ranking mundial.
+                    4. Finalmente, compite y descubre los mejores videos en el ranking mundial.
                   </p>
                 </div>
               </div>
@@ -379,31 +381,32 @@ const RecruitersOnboarding: React.FC = () => {
 
             {introStep === "finale" ? (
               <div className="recruiters-onboarding__finale">
-                <p className="recruiters-onboarding__eyebrow">Listo para empezar</p>
+                <p className="recruiters-onboarding__eyebrow">Jarvis te deja listo</p>
                 <h2>{displayName}, este es tu momento</h2>
                 <p>
-                  En {resolvedSportContent.label.toLowerCase()} puedes subir tus mejores jugadas,
-                  compartirlas con tus amigos, competir, votar y construir una presencia real en
-                  scouting.
+                  En {resolvedSportContent.label.toLowerCase()} ya tienes un camino claro. Yo te
+                  recomiendo subir tus mejores jugadas, compartirlas con tus amigos, competir,
+                  votar y construir una presencia real en scouting.
                 </p>
                 <div className="recruiters-onboarding__finale-grid">
                   <article>
-                    <strong>Crea tu perfil primero</strong>
+                    <strong>Quiero que empieces por tu perfil</strong>
                     <span>Tu historia deportiva debe estar completa antes de competir.</span>
                   </article>
                   <article>
                     <strong>Sube videos con intencion</strong>
-                    <span>Goles, atajadas, puntos y jugadas que te definan.</span>
+                    <span>Elige goles, atajadas, puntos y jugadas que de verdad te definan.</span>
                   </article>
                   <article>
                     <strong>Haz crecer tu visibilidad</strong>
-                    <span>Consulta tu library y mira el ranking mundial para compararte.</span>
+                    <span>Consulta tu library y mira el ranking mundial para compararte con contexto.</span>
                   </article>
                 </div>
                 <blockquote>
-                  No sabes quien puede estar viendo tu siguiente video... algun reclutador del
-                  mundo?
+                  Yo te lo voy a recordar siempre: nunca sabes quien puede estar viendo tu siguiente
+                  video... algun reclutador del mundo.
                 </blockquote>
+                <JarvisSceneHost scene={capabilityReminderScene} />
               </div>
             ) : null}
 

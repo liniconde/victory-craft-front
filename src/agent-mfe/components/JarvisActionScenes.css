@@ -1,0 +1,131 @@
+.jarvis-greeting-callout {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  margin-top: 0.9rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 22px;
+  background: #eef6ff;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  min-height: 5.25rem;
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  transition: opacity 0.42s ease, transform 0.42s ease;
+}
+
+.jarvis-greeting-callout.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.jarvis-greeting-callout__dock {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.16), transparent 68%),
+    rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+.jarvis-greeting-callout__avatar {
+  width: 4rem;
+  height: 4rem;
+}
+
+.jarvis-greeting-callout span {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+.jarvis-greeting-callout p {
+  margin: 0.2rem 0 0;
+}
+
+.jarvis-greeting-callout__note {
+  max-width: 38rem;
+  color: #425963;
+}
+
+.jarvis-flight-overlay {
+  position: fixed;
+  left: var(--jarvis-start-x);
+  top: var(--jarvis-start-y);
+  z-index: 140;
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%) translateY(36px) scale(0.7);
+  opacity: 0;
+}
+
+.jarvis-flight-overlay--preparing {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0) scale(0.92);
+  transition: transform 0.42s ease, opacity 0.42s ease;
+}
+
+.jarvis-flight-overlay--flying {
+  opacity: 1;
+  transform:
+    translate(-50%, -50%)
+    translate(var(--jarvis-delta-x), var(--jarvis-delta-y))
+    scale(1.02);
+  transition:
+    transform var(--jarvis-flight-duration) cubic-bezier(0.22, 0.9, 0.22, 1),
+    opacity 0.3s ease;
+}
+
+.jarvis-flight-overlay__avatar {
+  width: 4.4rem;
+  height: 4.4rem;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.24),
+    0 0 0 12px rgba(255, 255, 255, 0.08);
+}
+
+.jarvis-flight-overlay__bubble {
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #17303a;
+  font-size: 0.84rem;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(5, 14, 19, 0.18);
+  white-space: nowrap;
+}
+
+.jarvis-capability-reminder {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  margin-top: 1rem;
+  padding: 1rem 1.05rem;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e7f1ff, #f4fbff);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.jarvis-capability-reminder__avatar {
+  width: 3.1rem;
+  height: 3.1rem;
+}
+
+.jarvis-capability-reminder strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #18486f;
+}
+
+.jarvis-capability-reminder p {
+  margin: 0;
+}
