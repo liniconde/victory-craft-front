@@ -5,6 +5,7 @@ import type {
   AgentFunctionCall,
   AgentLlmInput,
 } from "../../../agent-mfe";
+import { buildAgentPlannerPayload } from "./buildAgentPlannerPayload";
 
 export const AGENT_PLAN_API_URL = "/agent/plan";
 
@@ -46,7 +47,7 @@ const normalizeExecutionPlan = (payload: unknown): AgentExecutionPlan => {
 export const agentPlannerClient = {
   async plan(payload: AgentLlmInput): Promise<AgentExecutionPlan> {
     try {
-      const response = await api.post(AGENT_PLAN_API_URL, payload);
+      const response = await api.post(AGENT_PLAN_API_URL, buildAgentPlannerPayload(payload));
       return normalizeExecutionPlan(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {

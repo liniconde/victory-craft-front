@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import type { AxiosError } from "axios";
 import { agentPlannerClient } from "./agentPlannerClient";
+import { buildAgentPlannerPayload } from "./buildAgentPlannerPayload";
 import { api } from "../../../utils/api";
 
 const originalPost = api.post;
@@ -66,22 +67,27 @@ test.afterEach(() => {
 });
 
 test("agentPlannerClient returns a valid plan with one call", async () => {
-  api.post = (async () => ({
-    data: {
-      summary: "Navigate to the requested page.",
-      calls: [
-        {
-          name: "navigation.go_to",
-          arguments: {
-            path: "/tournaments/subpages/dashboard#tournament-form",
+  let receivedPayload: unknown;
+  api.post = (async (_url, payload) => {
+    receivedPayload = payload;
+    return {
+      data: {
+        summary: "Navigate to the requested page.",
+        calls: [
+          {
+            name: "navigation.go_to",
+            arguments: {
+              path: "/tournaments/subpages/dashboard#tournament-form",
+            },
           },
-        },
-      ],
-    },
-  })) as typeof api.post;
+        ],
+      },
+    };
+  }) as typeof api.post;
 
   const response = await agentPlannerClient.plan(samplePayload);
 
+  assert.deepEqual(receivedPayload, buildAgentPlannerPayload(samplePayload));
   assert.deepEqual(response, {
     summary: "Navigate to the requested page.",
     calls: [
@@ -93,6 +99,33 @@ test("agentPlannerClient returns a valid plan with one call", async () => {
       },
     ],
   });
+});
+
+test("buildAgentPlannerPayload appends route knowledge including subpages", () => {
+  const payload = buildAgentPlannerPayload({
+    ...samplePayload,
+    prompt: "abre la library de scouting y si hace falta usa subpaginas",
+    currentPath: "/scouting/subpages/dashboard",
+  });
+
+  assert.match(payload.prompt, /User request:\nabre la library de scouting/i);
+  assert.match(payload.prompt, /Current route: \/scouting\/subpages\/dashboard/);
+  assert.match(payload.prompt, /\/scouting\/subpages\/library/);
+  assert.match(payload.prompt, /\/tournaments\/subpages\/matches/);
+  assert.match(payload.prompt, /Plan only with the registered actions provided in this payload\./);
+});
+
+test("buildAgentPlannerPayload includes videos recording subpage aliases", () => {
+  const payload = buildAgentPlannerPayload({
+    ...samplePayload,
+    prompt: "llevame a la pagina de grabaciones",
+    currentPath: "/videos/subpages/dashboard",
+  });
+
+  assert.match(payload.prompt, /User request:\nllevame a la pagina de grabaciones/i);
+  assert.match(payload.prompt, /\/videos\/subpages\/streaming\/recording/);
+  assert.match(payload.prompt, /grabaciones/);
+  assert.match(payload.prompt, /Current route: \/videos\/subpages\/dashboard/);
 });
 
 test("agentPlannerClient supports the fallback response with empty calls", async () => {
