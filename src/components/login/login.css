@@ -48,7 +48,11 @@
 }
 
 .oauth-button {
-  @apply w-full bg-white text-gray-900 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300;
+  @apply w-full bg-white text-gray-900 font-semibold py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 flex items-center justify-center gap-3;
+}
+
+.google-icon {
+  @apply w-5 h-5 shrink-0;
 }
 
 /* Mensaje de error */

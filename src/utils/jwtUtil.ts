@@ -6,6 +6,11 @@ interface DecodedToken {
   email: string;
   exp: number; // Tiempo de expiración del token
   role: string;
+  firstName?: string;
+  lastName?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
 }
 
 // 📌 Función para obtener y decodificar el token JWT

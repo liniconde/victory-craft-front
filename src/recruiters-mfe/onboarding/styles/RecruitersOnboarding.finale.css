@@ -1,0 +1,27 @@
+.recruiters-onboarding__finale-grid {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.95rem;
+}
+
+.recruiters-onboarding__finale-grid article {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: #f1f7f9;
+}
+
+.recruiters-onboarding__finale-grid span {
+  color: #4a5c64;
+}
+
+.recruiters-onboarding__finale blockquote {
+  margin: 1.1rem 0 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid #ffd166;
+  border-radius: 0 18px 18px 0;
+  background: #13262f;
+  color: #f7fbfc;
+  font-size: 1.02rem;
+}

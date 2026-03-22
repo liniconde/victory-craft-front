@@ -18,16 +18,23 @@ import {
   buildScoutingWelcomeScene,
   JarvisFlyToTargetAction,
   JarvisFlightOverlay,
-  JarvisGreetingCallout,
-  JarvisMessageCard,
   JarvisRevealMessageAction,
-  JarvisSceneHost,
-  JarvisTypingIndicator,
   JarvisTypingAction,
   useJarvisActionRunner,
 } from "../../agent-mfe";
-import { JarvisMessageSequence } from "../../agent-mfe/components/JarvisMessageSequence";
-import "./RecruitersOnboarding.css";
+import OnboardingActionBar from "./components/OnboardingActionBar";
+import OnboardingPanelFrame from "./components/OnboardingPanelFrame";
+import WelcomeIntroPage from "./pages/WelcomeIntroPage";
+import ScoutingMenuIntroPage from "./pages/ScoutingMenuIntroPage";
+import DashboardIntroPage from "./pages/DashboardIntroPage";
+import PlayerProfilesIntroPage from "./pages/PlayerProfilesIntroPage";
+import LibraryIntroPage from "./pages/LibraryIntroPage";
+import RankingsIntroPage from "./pages/RankingsIntroPage";
+import FinaleIntroPage from "./pages/FinaleIntroPage";
+import "./styles/RecruitersOnboarding.base.css";
+import "./styles/RecruitersOnboarding.welcome.css";
+import "./styles/RecruitersOnboarding.journey.css";
+import "./styles/RecruitersOnboarding.finale.css";
 
 interface SpotlightRect {
   top: number;
@@ -40,9 +47,20 @@ const DEFAULT_SPORT: OnboardingSportId = "football";
 const WELCOME_PRIMARY_MESSAGE_ID = "welcome-primary-message";
 const WELCOME_SECONDARY_MESSAGE_ID = "welcome-secondary-message";
 const WELCOME_PRIMARY_TARGET_ID = "welcome-primary-dock";
+const TOTAL_ONBOARDING_STEPS = 7;
 
-const toDisplayName = (email: string | null, userId: string | null) => {
-  const rawName = (email?.split("@")[0] || userId || "jugador").trim();
+const toDisplayName = (
+  firstName: string | null,
+  lastName: string | null,
+  email: string | null,
+  userId: string | null
+) => {
+  const profileName = [firstName, lastName]
+    .map((value) => value?.trim() || "")
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  const rawName = (profileName || email?.split("@")[0] || userId || "jugador").trim();
   return rawName
     .split(/[._-]+/)
     .filter(Boolean)
@@ -77,7 +95,7 @@ type IntroStepId = "welcome" | "journey" | "finale";
 const RecruitersOnboarding: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { authReady, email, userId } = useAuth();
+  const { authReady, email, userId, firstName, lastName } = useAuth();
   const identity = getScoutingOnboardingIdentity(userId, email);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSport, setSelectedSport] = useState<OnboardingSportId | null>(null);
@@ -143,7 +161,10 @@ const RecruitersOnboarding: React.FC = () => {
     [selectedSport]
   );
 
-  const displayName = useMemo(() => toDisplayName(email, userId), [email, userId]);
+  const displayName = useMemo(
+    () => toDisplayName(firstName, lastName, email, userId),
+    [email, firstName, lastName, userId]
+  );
   const activeSpotlightStep = SCOUTING_SPOTLIGHT_STEPS[spotlightIndex] ?? null;
   const resolvedSportContent = selectedSportContent ?? SPORT_OPTIONS[0];
   const welcomeJarvisScene = useMemo(
@@ -171,6 +192,22 @@ const RecruitersOnboarding: React.FC = () => {
     actions: welcomeJarvisActions,
     active: isOpen && introStep === "welcome",
   });
+  const isJourneyActive = isOpen && introStep === "journey";
+  const journeyPages: Record<string, React.ReactNode> = {
+    "scouting-menu": <ScoutingMenuIntroPage active={isJourneyActive} />,
+    dashboard: <DashboardIntroPage active={isJourneyActive} />,
+    "player-profiles": <PlayerProfilesIntroPage active={isJourneyActive} />,
+    library: <LibraryIntroPage active={isJourneyActive} />,
+    rankings: <RankingsIntroPage active={isJourneyActive} />,
+  };
+  const currentStepNumber =
+    introStep === "welcome" ? 1 : introStep === "finale" ? TOTAL_ONBOARDING_STEPS : spotlightIndex + 2;
+  const continueLabel =
+    introStep === "finale"
+      ? "Entrar a scouting"
+      : introStep === "journey" && spotlightIndex === SCOUTING_SPOTLIGHT_STEPS.length - 1
+        ? "Ver cierre"
+        : "Continuar";
 
   useEffect(() => {
     if (!isOpen || introStep !== "journey" || !activeSpotlightStep) return;
@@ -309,246 +346,62 @@ const RecruitersOnboarding: React.FC = () => {
             />
           ) : null}
 
-          <section className="recruiters-onboarding__panel">
-            <div className="recruiters-onboarding__panel-topbar">
-              <span>
-                Intro {introStep === "journey" ? spotlightIndex + 2 : introStep === "finale" ? 7 : 1}/7
-              </span>
-              <button type="button" onClick={skipOnboarding}>
-                Omitir
-              </button>
-            </div>
-
+          <OnboardingPanelFrame
+            stepNumber={currentStepNumber}
+            totalSteps={TOTAL_ONBOARDING_STEPS}
+            onSkip={skipOnboarding}
+            actions={
+              <OnboardingActionBar
+                canGoBack={introStep !== "welcome"}
+                canContinue={introStep !== "welcome" || Boolean(selectedSport)}
+                continueLabel={continueLabel}
+                onBack={goBack}
+                onContinue={advanceIntro}
+              />
+            }
+          >
             {introStep === "welcome" ? (
-              <div className="recruiters-onboarding__intro">
-                <div className="recruiters-onboarding__hero-shell">
-                  <div className="recruiters-onboarding__intro-copy">
-                    <p className="recruiters-onboarding__eyebrow">Scouting onboarding</p>
-                    <h2>Bienvenido {displayName}</h2>
-                    <p>
-                      Tus mejores jugadas pueden ponerte frente a jugadores, fans y oportunidades
-                      reales. Hoy voy a dejarte listo para moverte por scouting con claridad.
-                    </p>
-                    <JarvisGreetingCallout
-                      title={welcomeJarvisScene.title}
-                      body={welcomeJarvisScene.body}
-                      isVisible={welcomeJarvisRuntime.visibleMessageIds.includes(
-                        WELCOME_PRIMARY_MESSAGE_ID
-                      )}
-                      dockRef={registerTarget(WELCOME_PRIMARY_TARGET_ID)}
-                    />
-                    {welcomeJarvisRuntime.typing &&
-                    welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-primary" ? (
-                      <JarvisTypingIndicator label={welcomeJarvisRuntime.typing.label} />
-                    ) : null}
-                    {welcomeJarvisRuntime.visibleMessageIds.includes(WELCOME_SECONDARY_MESSAGE_ID) ? (
-                      <JarvisMessageCard
-                        body={
-                          <p>
-                            Elige tu deporte y te enseno el mejor punto de partida para que tu
-                            perfil, tus videos y tu visibilidad empiecen con fuerza.
-                          </p>
-                        }
-                      />
-                    ) : null}
-                    {welcomeJarvisRuntime.typing &&
-                    welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-secondary" ? (
-                      <JarvisTypingIndicator label={welcomeJarvisRuntime.typing.label} />
-                    ) : null}
-                  </div>
-
-                  <div className="recruiters-onboarding__hero-visual">
-                    {selectedSportContent ? (
-                      <>
-                        <img
-                          src={selectedSportContent.imageUrl}
-                          alt={selectedSportContent.imageAlt}
-                          className="recruiters-onboarding__hero-image"
-                        />
-                      </>
-                    ) : (
-                      <div className="recruiters-onboarding__hero-empty">
-                        <strong>Elige tu deporte</strong>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="recruiters-onboarding__sport-grid">
-                  {SPORT_OPTIONS.map((sport) => (
-                    <button
-                      key={sport.id}
-                      type="button"
-                      className={`recruiters-onboarding__sport-card ${
-                        selectedSport === sport.id ? "is-selected" : ""
-                      }`}
-                      style={{ "--sport-accent": sport.accent } as React.CSSProperties}
-                      onClick={() => handleSportSelection(sport.id)}
-                    >
-                      <span className="recruiters-onboarding__sport-chip">{sport.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {selectedSportContent ? (
-                  <div
-                    className="recruiters-onboarding__message"
-                    style={{ "--sport-accent": selectedSportContent.accent } as React.CSSProperties}
-                  >
-                    <span className="recruiters-onboarding__message-label">
-                      {selectedSportContent.label}
-                    </span>
-                    <strong>{selectedSportContent.hero}</strong>
-                    <p>
-                      {selectedSportContent.promise} {selectedSportContent.spotlight}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="recruiters-onboarding__message recruiters-onboarding__message--placeholder">
-                    <strong>Selecciona un deporte para personalizar la bienvenida.</strong>
-                    <p>Veras una imagen, una leyenda y un recorrido pensado para ese contexto.</p>
-                  </div>
+              <WelcomeIntroPage
+                displayName={displayName}
+                selectedSport={selectedSport}
+                selectedSportContent={selectedSportContent}
+                sportOptions={SPORT_OPTIONS}
+                onSportSelection={handleSportSelection}
+                welcomeSceneTitle={welcomeJarvisScene.title}
+                welcomeSceneBody={welcomeJarvisScene.body}
+                primaryMessageVisible={welcomeJarvisRuntime.visibleMessageIds.includes(
+                  WELCOME_PRIMARY_MESSAGE_ID
                 )}
-              </div>
+                secondaryMessageVisible={welcomeJarvisRuntime.visibleMessageIds.includes(
+                  WELCOME_SECONDARY_MESSAGE_ID
+                )}
+                primaryTypingLabel={welcomeJarvisRuntime.typing?.label}
+                secondaryTypingLabel={welcomeJarvisRuntime.typing?.label}
+                primaryTypingVisible={
+                  Boolean(welcomeJarvisRuntime.typing) &&
+                  welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-primary"
+                }
+                secondaryTypingVisible={
+                  Boolean(welcomeJarvisRuntime.typing) &&
+                  welcomeJarvisRuntime.currentActionId === "jarvis.type.welcome-secondary"
+                }
+                registerTarget={registerTarget(WELCOME_PRIMARY_TARGET_ID)}
+              />
             ) : null}
 
-            {introStep === "journey" && activeSpotlightStep ? (
-              <div className="recruiters-onboarding__journey">
-                <p className="recruiters-onboarding__eyebrow">Jarvis te guia</p>
-                <h2>{activeSpotlightStep.title}</h2>
-                <JarvisMessageSequence
-                  active={isOpen && introStep === "journey"}
-                  items={[
-                    {
-                      id: `journey-step-${activeSpotlightStep.id}`,
-                      render: () => <JarvisMessageCard body={<p>{activeSpotlightStep.description}</p>} />,
-                    },
-                    {
-                      id: `journey-flow-${activeSpotlightStep.id}`,
-                      render: () => (
-                        <div className="recruiters-onboarding__journey-card">
-                          <JarvisMessageCard
-                            body={
-                              <>
-                                <strong>Este es el flujo que te recomiendo</strong>
-                                <p>
-                                  1. Primero, crea tu perfil.
-                                  <br />
-                                  2. Despues, sube tus videos.
-                                  <br />
-                                  3. Luego revisa tu material en library.
-                                  <br />
-                                  4. Finalmente, compite y descubre los mejores videos en el ranking mundial.
-                                </p>
-                              </>
-                            }
-                          />
-                        </div>
-                      ),
-                    },
-                  ]}
-                />
-              </div>
-            ) : null}
+            {introStep === "journey" && activeSpotlightStep
+              ? journeyPages[activeSpotlightStep.id] ?? null
+              : null}
 
             {introStep === "finale" ? (
-              <div className="recruiters-onboarding__finale">
-                <p className="recruiters-onboarding__eyebrow">Jarvis te deja listo</p>
-                <h2>{displayName}, este es tu momento</h2>
-                <p>
-                  En {resolvedSportContent.label.toLowerCase()} ya tienes un camino claro. Yo te
-                  recomiendo subir tus mejores jugadas, compartirlas con tus amigos, competir,
-                  votar y construir una presencia real en scouting.
-                </p>
-                <blockquote>
-                  Yo te lo voy a recordar siempre: nunca sabes quien puede estar viendo tu siguiente
-                  video... algun reclutador del mundo.
-                </blockquote>
-                <div className="recruiters-onboarding__finale-grid">
-                  <JarvisMessageSequence
-                    active={isOpen && introStep === "finale"}
-                    items={[
-                      {
-                        id: "finale-profile",
-                        render: () => (
-                          <JarvisMessageCard
-                            body={
-                              <>
-                                <strong>Quiero que empieces por tu perfil</strong>
-                                <p>Tu historia deportiva debe estar completa antes de competir.</p>
-                              </>
-                            }
-                          />
-                        ),
-                      },
-                      {
-                        id: "finale-videos",
-                        render: () => (
-                          <JarvisMessageCard
-                            body={
-                              <>
-                                <strong>Sube videos con intencion</strong>
-                                <p>
-                                  Elige goles, atajadas, puntos y jugadas que de verdad te definan.
-                                </p>
-                              </>
-                            }
-                          />
-                        ),
-                      },
-                      {
-                        id: "finale-visibility",
-                        render: () => (
-                          <JarvisMessageCard
-                            body={
-                              <>
-                                <strong>Haz crecer tu visibilidad</strong>
-                                <p>
-                                  Consulta tu library y mira el ranking mundial para compararte con
-                                  contexto.
-                                </p>
-                              </>
-                            }
-                          />
-                        ),
-                      },
-                      {
-                        id: "finale-capability-reminder",
-                        render: (active) => (
-                          <JarvisSceneHost scene={capabilityReminderScene} active={active} />
-                        ),
-                      },
-                    ]}
-                  />
-                </div>
-              </div>
+              <FinaleIntroPage
+                active={isOpen && introStep === "finale"}
+                displayName={displayName}
+                sportLabel={resolvedSportContent.label}
+                capabilityReminderScene={capabilityReminderScene}
+              />
             ) : null}
-
-            <div className="recruiters-onboarding__actions">
-              <button
-                type="button"
-                className="recruiters-onboarding__button recruiters-onboarding__button--ghost"
-                onClick={goBack}
-                disabled={introStep === "welcome"}
-              >
-                Atras
-              </button>
-              <button
-                type="button"
-                className="recruiters-onboarding__button recruiters-onboarding__button--primary"
-                onClick={advanceIntro}
-                disabled={introStep === "welcome" && !selectedSport}
-              >
-                {introStep === "finale"
-                  ? "Entrar a scouting"
-                  : introStep === "journey" && spotlightIndex === SCOUTING_SPOTLIGHT_STEPS.length - 1
-                    ? "Ver cierre"
-                    : introStep === "welcome"
-                      ? "Continuar"
-                      : "Continuar"}
-              </button>
-            </div>
-          </section>
+          </OnboardingPanelFrame>
         </div>
       ) : null}
 

@@ -233,6 +233,8 @@ export const planAgentActions = async (params: {
 
     mapPlannerError(error);
   }
+
+  throw new Error("Planner execution did not return a result.");
 };
 
 export const agentPlannerClient = {

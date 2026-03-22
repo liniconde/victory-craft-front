@@ -5,7 +5,7 @@ import { useAppFeedback } from "../../hooks/useAppFeedback";
 import { getScoutingOnboardingPostLoginPath } from "../../recruiters-mfe/onboarding/onboardingStorage";
 
 const OAuthCallback: React.FC = () => {
-  const { login } = useAuth();
+  const { login, setUserProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { showError } = useAppFeedback();
@@ -17,6 +17,19 @@ const OAuthCallback: React.FC = () => {
     const token = query.get("token") || hash.get("token");
     const oauthError = query.get("error") || hash.get("error");
     const returnTo = query.get("return_to") || "/";
+    const firstName =
+      query.get("firstName") ||
+      query.get("given_name") ||
+      hash.get("firstName") ||
+      hash.get("given_name");
+    const lastName =
+      query.get("lastName") ||
+      query.get("family_name") ||
+      hash.get("lastName") ||
+      hash.get("family_name");
+    const fullName =
+      query.get("name") ||
+      hash.get("name");
 
     if (oauthError) {
       showError(`Error OAuth: ${oauthError}`);
@@ -36,8 +49,13 @@ const OAuthCallback: React.FC = () => {
       navigate("/login", { replace: true });
       return;
     }
+
+    if (firstName || lastName || fullName) {
+      setUserProfile({ firstName, lastName, fullName });
+    }
+
     navigate(getScoutingOnboardingPostLoginPath(returnTo), { replace: true });
-  }, [location.hash, location.search, login, navigate, showError]);
+  }, [location.hash, location.search, login, navigate, setUserProfile, showError]);
 
   return <p className="text-center py-6">Procesando autenticación OAuth...</p>;
 };

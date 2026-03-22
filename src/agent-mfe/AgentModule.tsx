@@ -10,6 +10,7 @@ interface AgentModuleProps extends PropsWithChildren {
   currentPath: string;
   navigate: (path: string, options?: { replace?: boolean }) => void;
   llmAdapter?: AgentLlmAdapter;
+  showWidget?: boolean;
 }
 
 const fallbackAdapter = createHeuristicAgentLlmAdapter();
@@ -19,6 +20,7 @@ const AgentModule: React.FC<AgentModuleProps> = ({
   currentPath,
   navigate,
   llmAdapter = fallbackAdapter,
+  showWidget = true,
 }) => {
   return (
     <AgentProvider
@@ -28,7 +30,7 @@ const AgentModule: React.FC<AgentModuleProps> = ({
     >
       <BuiltinAgentActions />
       {children}
-      <AgentWidget />
+      {showWidget ? <AgentWidget /> : null}
     </AgentProvider>
   );
 };

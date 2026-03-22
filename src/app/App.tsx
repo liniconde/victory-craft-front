@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { PrivateRoute } from "../components/privateRoute/PrivateRoute";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import NavigationBar from "../components/navigation/NavigationBar";
 import "./App.css";
 import Footer from "../components/footer/footer";
@@ -84,6 +84,7 @@ const LoadingScreen = () => (
 function AppRoutes() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { authReady, isAuthenticated } = useAuth();
   const hideNavbarPaths = ["/login", "/register", "/auth/callback"];
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -93,6 +94,7 @@ function AppRoutes() {
       currentPath={location.pathname}
       navigate={navigate}
       llmAdapter={agentPlannerAdapter}
+      showWidget={authReady && isAuthenticated}
     >
       <>
         <TournamentsAgentActions />
