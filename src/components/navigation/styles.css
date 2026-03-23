@@ -4,6 +4,11 @@
   min-height: var(--app-navbar-height, 80px);
 }
 
+body.navbar-menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
 .navbar .container {
   @apply w-full text-white shadow-md py-2 md:py-5 transition-all;
   @apply flex justify-between items-center mx-auto;
@@ -21,7 +26,14 @@
 
 /* 📌 Botón de Menú (Móvil) */
 .navbar-toggler {
-  @apply bg-transparent text-white text-3xl md:hidden focus:outline-none transition-transform transform;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(35, 90, 44, 0.28);
+  color: #fff;
+  transition: transform 0.2s ease;
 }
 
 /* 📌 Enlaces del Navbar */
@@ -91,16 +103,33 @@
 
 /* 📌 Menú en Móvil */
 .navbar-menu {
-  @apply flex flex-col items-center md:flex-row space-y-4 md:space-y-0 md:space-x-6 bg-[#50BB73] md:bg-transparent absolute md:static top-full left-0 w-full md:w-auto p-6 md:p-0 z-40;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-/* 📌 Animación del menú en móviles */
-.navbar-menu--closed {
-  @apply opacity-0 transform -translate-y-5 transition-all duration-300 ease-in-out;
+.navbar-menu--desktop {
+  display: flex;
 }
 
-.navbar-menu--open {
-  @apply opacity-100 transform translate-y-0 transition-all duration-300 ease-in-out;
+.navbar-mobile-menu {
+  display: none;
+}
+
+.navbar-logout-button {
+  background: #111827;
+  color: #fff;
+}
+
+.navbar-logout-button:hover,
+.navbar-logout-button:focus-visible {
+  background: #030712;
+}
+
+.navbar-mobile-panel__nav {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1.5rem;
 }
 
 /* 📌 Estilos del Dropdown */
@@ -131,7 +160,7 @@
   object-fit: contain;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: landscape) and (hover: none) and (pointer: coarse) {
   .navbar {
     padding: 0.75rem 1rem;
     min-height: 64px;
@@ -144,42 +173,101 @@
 
   .navbar-toggler {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: 999px;
-    background: rgba(35, 90, 44, 0.28);
     font-size: 1.6rem;
     line-height: 1;
   }
 
-  .navbar-menu {
-    top: calc(100% + 0.6rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    width: min(16rem, calc(100vw - 2rem));
-    padding: 0.85rem;
-    border-radius: 22px;
-    background: rgba(80, 187, 115, 0.98);
-    box-shadow: 0 18px 42px rgba(12, 24, 15, 0.28);
-    align-items: stretch;
-    gap: 0.55rem;
+  .navbar-menu--desktop,
+  .view-mode-switcher--desktop {
+    display: none;
   }
 
-  .navbar-menu--open,
-  .navbar-menu--closed {
-    transform-origin: top center;
+  .navbar-mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: block;
   }
 
-  .navbar-menu--closed {
-    pointer-events: none;
-    transform: translateX(-50%) translateY(-20px);
+  .navbar-mobile-menu__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(12, 24, 15, 0.48);
+    backdrop-filter: blur(6px);
+    border-radius: 0;
   }
 
-  .navbar-menu--open {
-    transform: translateX(-50%) translateY(0);
+  .navbar-mobile-menu__backdrop:hover,
+  .navbar-mobile-menu__backdrop:focus-visible {
+    background: rgba(12, 24, 15, 0.48);
+  }
+
+  .navbar-mobile-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(22rem, calc(100vw - 0.75rem));
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 1rem 1rem 1.25rem;
+    border-radius: 0 0 0 24px;
+    background: linear-gradient(180deg, #50bb73 0%, #3b995a 100%);
+    color: #f7fff8;
+    box-shadow: 0 24px 60px rgba(12, 24, 15, 0.3);
+    overflow: hidden;
+  }
+
+  .navbar-mobile-panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  .navbar-mobile-panel__header h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .navbar-mobile-panel__header p {
+    margin: 0;
+    color: rgba(247, 255, 248, 0.8);
+    font-size: 0.92rem;
+  }
+
+  .navbar-mobile-menu__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .navbar-mobile-menu__close:hover,
+  .navbar-mobile-menu__close:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .navbar-mobile-panel__nav {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 0.1rem;
   }
 
   .nav-link {
@@ -188,6 +276,12 @@
     padding: 0.8rem 1rem;
     border-radius: 16px;
     font-size: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    background: #235a2c;
   }
 
   .view-mode-switcher {
@@ -225,6 +319,10 @@
 }
 
 @media (min-width: 768px) {
+  .navbar-toggler {
+    display: none;
+  }
+
   .view-mode-switcher--mobile {
     display: none;
   }
@@ -232,11 +330,23 @@
   .view-mode-switcher--desktop {
     display: inline-flex;
   }
+}
 
-  .navbar-menu--open,
-  .navbar-menu--closed {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  .navbar-toggler {
+    display: inline-flex;
+  }
+
+  .navbar-items {
+    gap: 0.75rem;
+    margin-right: 0;
+  }
+
+  .view-mode-switcher--desktop {
+    display: none;
+  }
+
+  .view-mode-switcher--mobile {
+    display: flex;
   }
 }

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
@@ -41,6 +42,28 @@ const NavigationBar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    const body = document.body;
+
+    if (!isOpen) {
+      body.classList.remove("navbar-menu-open");
+      return;
+    }
+
+    const previousOverflow = body.style.overflow;
+    const previousTouchAction = body.style.touchAction;
+
+    body.classList.add("navbar-menu-open");
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
+
+    return () => {
+      body.classList.remove("navbar-menu-open");
+      body.style.overflow = previousOverflow;
+      body.style.touchAction = previousTouchAction;
+    };
+  }, [isOpen]);
+
   const isActiveRoute = (path: string) => {
     if (path === "/fields") {
       return location.pathname === "/fields";
@@ -52,12 +75,93 @@ const NavigationBar: React.FC = () => {
   };
 
   const getNavLinkClassName = (path: string) =>
-    `nav-link block md:inline-flex ${isActiveRoute(path) ? "nav-link-active" : ""}`;
+    `nav-link ${isActiveRoute(path) ? "nav-link-active" : ""}`;
 
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsOpen(false);
   };
+
+  const renderMenuContent = (mobile = false) => (
+    <>
+      <button
+        type="button"
+        className={getNavLinkClassName("/fields")}
+        onClick={() => handleNavigate("/fields")}
+      >
+        Campos
+      </button>
+
+      {isAuthenticated && (
+        <>
+          <button
+            type="button"
+            className={getNavLinkClassName("/reservations")}
+            onClick={() => handleNavigate("/reservations")}
+          >
+            Reservas
+          </button>
+          <button
+            type="button"
+            className={getNavLinkClassName("/slots")}
+            onClick={() => handleNavigate("/slots")}
+          >
+            Partidos
+          </button>
+          <button
+            type="button"
+            className={getNavLinkClassName("/tournaments")}
+            onClick={() => handleNavigate("/tournaments")}
+          >
+            Torneos
+          </button>
+
+          <button
+            type="button"
+            className={getNavLinkClassName("/videos")}
+            onClick={() => handleNavigate("/videos")}
+          >
+            Videos
+          </button>
+          <button
+            type="button"
+            className={getNavLinkClassName("/scouting")}
+            onClick={() => handleNavigate("/scouting/subpages/dashboard")}
+          >
+            Scouting
+          </button>
+
+          <button
+            className="nav-link navbar-logout-button"
+            onClick={() => {
+              logout();
+              handleNavigate("/");
+            }}
+          >
+            Logout
+          </button>
+
+          {mobile ? (
+            <ViewModeSwitcher
+              viewRole={viewRole}
+              setViewRole={setViewRole}
+              className="view-mode-switcher--mobile"
+            />
+          ) : null}
+        </>
+      )}
+
+      {!isAuthenticated && (
+        <button
+          type="button"
+          className={getNavLinkClassName("/users")}
+          onClick={() => handleNavigate("/users")}
+        >
+          Usuarios
+        </button>
+      )}
+    </>
+  );
 
   return (
     <nav className="navbar">
@@ -81,98 +185,44 @@ const NavigationBar: React.FC = () => {
 
         {/* 🔹 Botón de menú en móviles */}
         <button
-          className="navbar-toggler md:hidden"
+          className="navbar-toggler"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Cerrar menu" : "Abrir menu"}
           aria-expanded={isOpen}
         >
-          {isOpen ? "×" : "☰"}
+          <FaBars aria-hidden="true" />
         </button>
 
-        {/* 🔹 Menú de navegación */}
-        <div
-          className={`navbar-menu ${
-            isOpen ? "navbar-menu--open" : "navbar-menu--closed"
-          } md:flex md:space-x-6 w-full md:w-auto md:items-center text-center md:text-left`}
-        >
-          {/* 🔹 Pestañas accesibles para todos */}
+        <div className="navbar-menu navbar-menu--desktop">{renderMenuContent()}</div>
+      </div>
+
+      {isOpen ? (
+        <div className="navbar-mobile-menu" aria-hidden={!isOpen}>
           <button
             type="button"
-            className={getNavLinkClassName("/fields")}
-            onClick={() => handleNavigate("/fields")}
-          >
-            Campos
-          </button>
-
-          {/* 🔹 Pestañas solo para usuarios autenticados */}
-          {isAuthenticated && (
-            <>
+            className="navbar-mobile-menu__backdrop"
+            onClick={() => setIsOpen(false)}
+            aria-label="Cerrar menú"
+          />
+          <aside className="navbar-mobile-panel">
+            <div className="navbar-mobile-panel__header">
+              <div>
+                <h2>Victory Craft</h2>
+                <p>Muévete rápido entre campos, reservas, partidos y modulos.</p>
+              </div>
               <button
                 type="button"
-                className={getNavLinkClassName("/reservations")}
-                onClick={() => handleNavigate("/reservations")}
+                className="navbar-mobile-menu__close"
+                onClick={() => setIsOpen(false)}
+                aria-label="Cerrar menú de navegación"
               >
-                Reservas
+                <FaTimes aria-hidden="true" />
               </button>
-              <button
-                type="button"
-                className={getNavLinkClassName("/slots")}
-                onClick={() => handleNavigate("/slots")}
-              >
-                Partidos
-              </button>
-              <button
-                type="button"
-                className={getNavLinkClassName("/tournaments")}
-                onClick={() => handleNavigate("/tournaments")}
-              >
-                Torneos
-              </button>
-
-              <button
-                type="button"
-                className={getNavLinkClassName("/videos")}
-                onClick={() => handleNavigate("/videos")}
-              >
-                Vídeos
-              </button>
-              <button
-                type="button"
-                className={getNavLinkClassName("/scouting")}
-                onClick={() => handleNavigate("/scouting/subpages/dashboard")}
-              >
-                Scouting
-              </button>
-
-              {/* 🔥 BOTÓN LOGOUT - AHORA ES NEGRO CON TEXTO BLANCO */}
-              <button
-                className="px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900 transition md:pr-4"
-                onClick={() => {
-                  logout();
-                  handleNavigate("/");
-                }}
-              >
-                Logout
-              </button>
-
-              <ViewModeSwitcher
-                viewRole={viewRole}
-                setViewRole={setViewRole}
-                className="view-mode-switcher--mobile"
-              />
-            </>
-          )}
-          {!isAuthenticated && (
-            <button
-              type="button"
-              className={getNavLinkClassName("/users")}
-              onClick={() => handleNavigate("/users")}
-            >
-              Usuarios
-            </button>
-          )}
+            </div>
+            <nav className="navbar-mobile-panel__nav">{renderMenuContent(true)}</nav>
+          </aside>
         </div>
-      </div>
+      ) : null}
     </nav>
   );
 };
