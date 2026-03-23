@@ -86,7 +86,7 @@ function AppRoutes() {
   const navigate = useNavigate();
   const { authReady, isAuthenticated } = useAuth();
   const hideNavbarPaths = ["/login", "/register", "/auth/callback"];
-  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
+  const shouldHideNavbarBase = hideNavbarPaths.includes(location.pathname);
 
   // 📌 Componente para manejar las rutas
   return (
@@ -96,9 +96,13 @@ function AppRoutes() {
       llmAdapter={agentPlannerAdapter}
       showWidget={authReady && isAuthenticated}
     >
-      <>
+      <div className="app-shell">
         <TournamentsAgentActions />
-        {!shouldHideNavbar && <NavigationBar />}
+        <div
+          className={`app-shell__navbar ${shouldHideNavbarBase ? "app-shell__navbar--hidden" : ""}`}
+        >
+          <NavigationBar />
+        </div>
         <div className="page-container">
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
@@ -321,8 +325,10 @@ function AppRoutes() {
             </Routes>
           </Suspense>
         </div>
-        <Footer />
-      </>
+        <div className="app-shell__footer">
+          <Footer />
+        </div>
+      </div>
     </AgentModule>
   );
 }

@@ -17,6 +17,21 @@ body {
   overflow: hidden;
 }
 
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__navbar,
+.app-shell__footer {
+  flex-shrink: 0;
+}
+
+.app-shell__navbar--hidden {
+  display: none;
+}
+
 @layer base {
   h1,
   h2,
@@ -68,6 +83,21 @@ body {
 .page-container {
   @apply h-[100%] min-h-[100vh] flex-grow overflow-y-auto w-full overflow-x-hidden;
   padding-top: var(--app-navbar-height, 80px);
+}
+
+body.videos-mfe--immersive-draw-mode.videos-mfe--landscape-touch .app-shell__navbar,
+body.videos-mfe--immersive-draw-mode.videos-mfe--landscape-touch .app-shell__footer {
+  display: none;
+}
+
+body.videos-mfe--immersive-draw-mode.videos-mfe--landscape-touch .app-shell {
+  min-height: 100dvh;
+}
+
+body.videos-mfe--immersive-draw-mode.videos-mfe--landscape-touch .page-container {
+  min-height: 100dvh;
+  height: 100dvh;
+  padding-top: 0;
 }
 
 .delete-button {
