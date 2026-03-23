@@ -3,6 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
+import { getVisibleNavItems, normalizeNavigationRole } from "./navigationConfig";
 import "./styles.css";
 
 const ViewModeSwitcher: React.FC<{
@@ -37,10 +38,12 @@ const ViewModeSwitcher: React.FC<{
 );
 
 const NavigationBar: React.FC = () => {
-  const { isAuthenticated, logout, setViewRole, viewRole } = useAuth();
+  const { isAuthenticated, logout, setViewRole, viewRole, role } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const normalizedRole = normalizeNavigationRole(isAuthenticated, role);
 
   useEffect(() => {
     const body = document.body;
@@ -82,55 +85,23 @@ const NavigationBar: React.FC = () => {
     setIsOpen(false);
   };
 
+  const visibleNavItems = getVisibleNavItems(normalizedRole);
+
   const renderMenuContent = (mobile = false) => (
     <>
-      <button
-        type="button"
-        className={getNavLinkClassName("/fields")}
-        onClick={() => handleNavigate("/fields")}
-      >
-        Campos
-      </button>
+      {visibleNavItems.map((item) => (
+        <button
+          key={item.path}
+          type="button"
+          className={getNavLinkClassName(item.activePath || item.path)}
+          onClick={() => handleNavigate(item.path)}
+        >
+          {item.label}
+        </button>
+      ))}
 
-      {isAuthenticated && (
+      {isAuthenticated ? (
         <>
-          <button
-            type="button"
-            className={getNavLinkClassName("/reservations")}
-            onClick={() => handleNavigate("/reservations")}
-          >
-            Reservas
-          </button>
-          <button
-            type="button"
-            className={getNavLinkClassName("/slots")}
-            onClick={() => handleNavigate("/slots")}
-          >
-            Partidos
-          </button>
-          <button
-            type="button"
-            className={getNavLinkClassName("/tournaments")}
-            onClick={() => handleNavigate("/tournaments")}
-          >
-            Torneos
-          </button>
-
-          <button
-            type="button"
-            className={getNavLinkClassName("/videos")}
-            onClick={() => handleNavigate("/videos")}
-          >
-            Videos
-          </button>
-          <button
-            type="button"
-            className={getNavLinkClassName("/scouting")}
-            onClick={() => handleNavigate("/scouting/subpages/dashboard")}
-          >
-            Scouting
-          </button>
-
           <button
             className="nav-link navbar-logout-button"
             onClick={() => {
@@ -149,17 +120,7 @@ const NavigationBar: React.FC = () => {
             />
           ) : null}
         </>
-      )}
-
-      {!isAuthenticated && (
-        <button
-          type="button"
-          className={getNavLinkClassName("/users")}
-          onClick={() => handleNavigate("/users")}
-        >
-          Usuarios
-        </button>
-      )}
+      ) : null}
     </>
   );
 
