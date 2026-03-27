@@ -77,166 +77,197 @@ const renderPlainOptions = (values: string[]) =>
     </option>
   ));
 
+const getDisplayName = (item: RecruiterRankingItem) =>
+  item.playerProfile?.fullName || item.scoutingProfile?.title || item.video.s3Key || "Player";
+
+const getInitials = (value: string) =>
+  value
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "VC";
+
 export const RecruiterRankingsFiltersPanel: React.FC<
   RankingsFiltersPanelProps
 > = ({ catalog, query, onQueryChange }) => (
-  <div className="recruiters-board__filters-grid">
-    <label>
-      <span>Buscar</span>
-      <input
-        type="text"
-        value={query.searchTerm ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            searchTerm: event.target.value,
-            page: 1,
-          }))
-        }
-        placeholder="Jugador, torneo o notas"
-      />
-    </label>
+  <div className="recruiters-board__filters-shell">
+    <div className="recruiters-board__filters-grid recruiters-board__filters-grid--primary">
+      <label className="recruiters-board__filter recruiters-board__filter--search">
+        <span>Buscar</span>
+        <input
+          type="text"
+          value={query.searchTerm ?? ""}
+          onChange={(event) =>
+            onQueryChange((current) => ({
+              ...current,
+              searchTerm: event.target.value,
+              page: 1,
+            }))
+          }
+          placeholder="Jugador, torneo o notas"
+        />
+      </label>
 
-    <label>
-      <span>Deporte</span>
-      <select
-        value={query.sportType ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            sportType: normalizeRecruiterSportType(event.target.value) ?? "",
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todos</option>
-        {catalog.sportTypes.map((value) => (
-          <option key={value} value={value}>
-            {getRecruiterSportTypeLabel(value)}
-          </option>
-        ))}
-      </select>
-    </label>
+      <label className="recruiters-board__filter">
+        <span>Deporte</span>
+        <select
+          value={query.sportType ?? ""}
+          onChange={(event) =>
+            onQueryChange((current) => ({
+              ...current,
+              sportType: normalizeRecruiterSportType(event.target.value) ?? "",
+              page: 1,
+            }))
+          }
+        >
+          <option value="">Todos</option>
+          {catalog.sportTypes.map((value) => (
+            <option key={value} value={value}>
+              {getRecruiterSportTypeLabel(value)}
+            </option>
+          ))}
+        </select>
+      </label>
 
-    <label>
-      <span>Jugada</span>
-      <select
-        value={query.playType ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            playType: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todas</option>
-        {renderPlainOptions(catalog.playTypes)}
-      </select>
-    </label>
+      <label className="recruiters-board__filter">
+        <span>Jugada</span>
+        <select
+          value={query.playType ?? ""}
+          onChange={(event) =>
+            onQueryChange((current) => ({
+              ...current,
+              playType: event.target.value,
+              page: 1,
+            }))
+          }
+        >
+          <option value="">Todas</option>
+          {renderPlainOptions(catalog.playTypes)}
+        </select>
+      </label>
 
-    <label>
-      <span>Torneo</span>
-      <select
-        value={query.tournamentType ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            tournamentType: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todos</option>
-        {renderPlainOptions(catalog.tournamentTypes)}
-      </select>
-    </label>
+      <label className="recruiters-board__filter">
+        <span>Torneo</span>
+        <select
+          value={query.tournamentType ?? ""}
+          onChange={(event) =>
+            onQueryChange((current) => ({
+              ...current,
+              tournamentType: event.target.value,
+              page: 1,
+            }))
+          }
+        >
+          <option value="">Todos</option>
+          {renderPlainOptions(catalog.tournamentTypes)}
+        </select>
+      </label>
 
-    <label>
-      <span>País</span>
-      <select
-        value={query.country ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            country: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todos</option>
-        {renderPlainOptions(catalog.countries)}
-      </select>
-    </label>
+      <label className="recruiters-board__filter">
+        <span>País</span>
+        <select
+          value={query.country ?? ""}
+          onChange={(event) =>
+            onQueryChange((current) => ({
+              ...current,
+              country: event.target.value,
+              page: 1,
+            }))
+          }
+        >
+          <option value="">Todos</option>
+          {renderPlainOptions(catalog.countries)}
+        </select>
+      </label>
+    </div>
 
-    <label>
-      <span>Ciudad</span>
-      <select
-        value={query.city ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            city: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todas</option>
-        {renderPlainOptions(catalog.cities)}
-      </select>
-    </label>
+    <details className="recruiters-board__filters-advanced">
+      <summary>
+        Advanced filters
+        <small>
+          {[
+            query.city,
+            query.playerPosition,
+            query.playerCategory,
+            query.sortBy && query.sortBy !== "score" ? query.sortBy : "",
+          ]
+            .filter(Boolean)
+            .length || "optional"}
+        </small>
+      </summary>
 
-    <label>
-      <span>Posición</span>
-      <select
-        value={query.playerPosition ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            playerPosition: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todas</option>
-        {renderPlainOptions(catalog.playerPositions)}
-      </select>
-    </label>
+      <div className="recruiters-board__filters-grid recruiters-board__filters-grid--secondary">
+        <label className="recruiters-board__filter">
+          <span>Ciudad</span>
+          <select
+            value={query.city ?? ""}
+            onChange={(event) =>
+              onQueryChange((current) => ({
+                ...current,
+                city: event.target.value,
+                page: 1,
+              }))
+            }
+          >
+            <option value="">Todas</option>
+            {renderPlainOptions(catalog.cities)}
+          </select>
+        </label>
 
-    <label>
-      <span>Categoría</span>
-      <select
-        value={query.playerCategory ?? ""}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            playerCategory: event.target.value,
-            page: 1,
-          }))
-        }
-      >
-        <option value="">Todas</option>
-        {renderPlainOptions(catalog.playerCategories)}
-      </select>
-    </label>
+        <label className="recruiters-board__filter">
+          <span>Posición</span>
+          <select
+            value={query.playerPosition ?? ""}
+            onChange={(event) =>
+              onQueryChange((current) => ({
+                ...current,
+                playerPosition: event.target.value,
+                page: 1,
+              }))
+            }
+          >
+            <option value="">Todas</option>
+            {renderPlainOptions(catalog.playerPositions)}
+          </select>
+        </label>
 
-    <label>
-      <span>Orden</span>
-      <select
-        value={query.sortBy ?? "score"}
-        onChange={(event) =>
-          onQueryChange((current) => ({
-            ...current,
-            sortBy: event.target.value as RecruiterRankingsQuery["sortBy"],
-            page: 1,
-          }))
-        }
-      >
-        <option value="score">Score</option>
-        <option value="recent">Recientes</option>
-        <option value="upvotes">Upvotes</option>
-      </select>
-    </label>
+        <label className="recruiters-board__filter">
+          <span>Categoría</span>
+          <select
+            value={query.playerCategory ?? ""}
+            onChange={(event) =>
+              onQueryChange((current) => ({
+                ...current,
+                playerCategory: event.target.value,
+                page: 1,
+              }))
+            }
+          >
+            <option value="">Todas</option>
+            {renderPlainOptions(catalog.playerCategories)}
+          </select>
+        </label>
+
+        <label className="recruiters-board__filter">
+          <span>Orden</span>
+          <select
+            value={query.sortBy ?? "score"}
+            onChange={(event) =>
+              onQueryChange((current) => ({
+                ...current,
+                sortBy: event.target.value as RecruiterRankingsQuery["sortBy"],
+                page: 1,
+              }))
+            }
+          >
+            <option value="score">Score</option>
+            <option value="recent">Recientes</option>
+            <option value="upvotes">Upvotes</option>
+          </select>
+        </label>
+      </div>
+    </details>
   </div>
 );
 
@@ -255,15 +286,22 @@ export const RecruiterRankingsPodium: React.FC<RankingsPodiumProps> = ({
         } ${selectedVideoId === item.video._id ? "is-active" : ""}`}
         onClick={() => onSelectVideo(item.video._id)}
       >
-        <div className="recruiters-board__top-card-rank">
-          <span>Top {index + 1}</span>
+        <div className="recruiters-board__top-card-head">
+          <p className="recruiters-board__top-card-kicker">Top {index + 1}</p>
+          <div
+            className={`recruiters-board__top-card-avatar ${
+              index === 0 ? "is-premium" : ""
+            }`}
+            aria-hidden="true"
+          >
+            {getInitials(getDisplayName(item))}
+          </div>
         </div>
         <div className="recruiters-board__top-card-main">
-          <h3>{item.scoutingProfile?.title || item.video.s3Key}</h3>
-          <p>
-            {item.playerProfile?.fullName || "Jugador"} ·{" "}
-            {item.playerProfile?.primaryPosition || "Posicion"}
-          </p>
+          <div>
+            <h3>{getDisplayName(item)}</h3>
+            <p>{item.playerProfile?.primaryPosition || "Position"}</p>
+          </div>
         </div>
         <div className="recruiters-board__top-card-stats">
           <article>
@@ -271,7 +309,7 @@ export const RecruiterRankingsPodium: React.FC<RankingsPodiumProps> = ({
             <strong>{item.ranking.score}</strong>
           </article>
           <article>
-            <span>Net votes</span>
+            <span>Heat</span>
             <strong>{item.ranking.netVotes}</strong>
           </article>
         </div>
@@ -317,6 +355,22 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
     return <p>No hay clips para mostrar.</p>;
   }
 
+  const score = Math.max(0, Math.min(100, Math.round((selectedItem.ranking.score / 10) * 100)));
+  const voteVolume = selectedItem.ranking.upvotes + selectedItem.ranking.downvotes;
+  const heatBalance = Math.max(
+    0,
+    Math.min(
+      100,
+      voteVolume > 0
+        ? Math.round(((selectedItem.ranking.upvotes - selectedItem.ranking.downvotes + voteVolume) / (voteVolume * 2)) * 100)
+        : 50,
+    ),
+  );
+  const recentSignal = Math.max(24, Math.min(100, 42 + Math.abs(selectedItem.ranking.netVotes) * 6));
+  const verdict =
+    selectedItem.scoutingProfile?.notes ||
+    `${getDisplayName(selectedItem)} destaca por su impacto actual en el board y por la tracción editorial que está generando.`;
+
   return (
     <div
       className={`recruiters-board__preview-body ${
@@ -344,7 +398,20 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
       </div>
 
       <div className="recruiters-board__preview-copy">
-        <strong>{selectedItem.scoutingProfile?.title || selectedItem.video.s3Key}</strong>
+        <span className="recruiters-board__preview-kicker">Featured clip</span>
+        <div className="recruiters-board__preview-copy-header">
+          <strong>{selectedItem.scoutingProfile?.title || selectedItem.video.s3Key}</strong>
+          <div className="scouting-video-card__votes recruiters-board__preview-votes">
+            <RecruiterVoteButtons
+              upvotes={selectedItem.ranking.upvotes}
+              downvotes={selectedItem.ranking.downvotes}
+              myVote={selectedItem.myVote}
+              pendingVote={pendingVote}
+              isPending={pendingVote !== null && pendingVote !== undefined}
+              onVote={(value) => onVote(selectedItem.video._id, value)}
+            />
+          </div>
+        </div>
         <p>
           {selectedItem.playerProfile?.fullName || "Jugador"} ·{" "}
           {selectedItem.playerProfile?.team || "Equipo"} ·{" "}
@@ -355,15 +422,15 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
 
       <div className="recruiters-board__preview-stats">
         <article>
-          <span>Score</span>
+          <span>Scout Score</span>
           <strong>{selectedItem.ranking.score}</strong>
         </article>
         <article>
-          <span>Net votes</span>
+          <span>Heat Balance</span>
           <strong>{selectedItem.ranking.netVotes}</strong>
         </article>
         <article>
-          <span>Reciente</span>
+          <span>Published</span>
           <strong>
             {selectedItem.video.createdAt
               ? new Date(selectedItem.video.createdAt).toLocaleDateString()
@@ -374,20 +441,9 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
         </article>
       </div>
 
-      <div className="scouting-video-card__votes">
-        <RecruiterVoteButtons
-          upvotes={selectedItem.ranking.upvotes}
-          downvotes={selectedItem.ranking.downvotes}
-          myVote={selectedItem.myVote}
-          pendingVote={pendingVote}
-          isPending={pendingVote !== null && pendingVote !== undefined}
-          onVote={(value) => onVote(selectedItem.video._id, value)}
-        />
-      </div>
-
       {selectedItem.playerProfile ? (
         <section className="recruiters-board__player-profile">
-          <span>Player profile asociado</span>
+          <span>Linked profile</span>
           <strong>{selectedItem.playerProfile.fullName || "Sin nombre"}</strong>
           <p>
             {selectedItem.playerProfile.team || "Sin equipo"} ·{" "}
@@ -398,15 +454,64 @@ export const RecruiterRankingsPreview: React.FC<RankingsPreviewProps> = ({
         </section>
       ) : null}
 
+      {!mobile ? (
+        <section className="recruiters-board__analysis">
+          <article className="recruiters-board__analysis-panel">
+            <h3>Scouting Breakdown</h3>
+            <div className="recruiters-board__analysis-bars">
+              <div>
+                <div className="recruiters-board__analysis-label">
+                  <span>Technical Score</span>
+                  <strong>{score}%</strong>
+                </div>
+                <div className="recruiters-board__analysis-track">
+                  <div style={{ width: `${score}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="recruiters-board__analysis-label">
+                  <span>Heat Balance</span>
+                  <strong>{heatBalance}%</strong>
+                </div>
+                <div className="recruiters-board__analysis-track">
+                  <div style={{ width: `${heatBalance}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="recruiters-board__analysis-label">
+                  <span>Recent Signal</span>
+                  <strong>{recentSignal}%</strong>
+                </div>
+                <div className="recruiters-board__analysis-track">
+                  <div style={{ width: `${recentSignal}%` }} />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article className="recruiters-board__verdict-panel">
+            <span>Expert Verdict</span>
+            <strong>
+              {selectedItem.ranking.score >= 9
+                ? "Elite priority"
+                : selectedItem.ranking.score >= 8
+                  ? "Strong prospect"
+                  : "Monitor closely"}
+            </strong>
+            <p>{verdict}</p>
+          </article>
+        </section>
+      ) : null}
+
       <div className="scouting-form__actions">
         <button
           type="button"
           onClick={() => onOpenRecruiterView(selectedItem.video._id)}
         >
-          Abrir recruiter view
+          Open video room
         </button>
         <button type="button" onClick={() => onOpenProfile(selectedItem.video._id)}>
-          Editar metadata
+          Refine metadata
         </button>
       </div>
     </div>
@@ -484,14 +589,13 @@ const RankingsRow: React.FC<RankingsRowProps> = React.memo(
       <div className="recruiters-board__row-rank">#{absoluteRank}</div>
       <div className="recruiters-board__row-main">
         <div className="recruiters-board__row-header">
-          <strong>{item.scoutingProfile?.title || item.video.s3Key}</strong>
-          <span>{item.ranking.score} pts</span>
+          <strong>{getDisplayName(item)}</strong>
+          <span>{item.ranking.score}</span>
         </div>
         <p>
-          {item.playerProfile?.fullName || "Jugador"} ·{" "}
-          {item.playerProfile?.primaryPosition || "Posicion"} ·{" "}
-          {item.playerProfile?.country || "Pais"} ·{" "}
-          {item.playerProfile?.city || "Ciudad"}
+          {item.playerProfile?.primaryPosition || "Position"} ·{" "}
+          {item.playerProfile?.team || "Team"} ·{" "}
+          {item.playerProfile?.city || "City"}
         </p>
         <div className="recruiters-board__chips">
           <span>
@@ -504,9 +608,6 @@ const RankingsRow: React.FC<RankingsRowProps> = React.memo(
         </div>
       </div>
       <div className="recruiters-board__row-meta">
-        <small>{item.ranking.upvotes} ▲</small>
-        <small>{item.ranking.downvotes} ▼</small>
-        <small>{item.ranking.netVotes} netos</small>
         <RecruiterVoteButtons
           className="recruiters-board__row-votes"
           compact

@@ -4,7 +4,7 @@ import SportsLoader from "../components/loader/SportsLoader";
 import { RecruitersModuleProvider } from "./features/recruiters/RecruitersModuleContext";
 import RecruitersLayout from "./subpages/layout/RecruitersLayout";
 import "./index.css";
-import "./subpages/dashboard/pages/RecruitersDashboardPage.css";
+import "./subpages/shared/RecruitersWorkspaceShared.css";
 
 const RecruitersDashboardPage = lazy(
   () => import("./subpages/dashboard/pages/RecruitersDashboardPage")

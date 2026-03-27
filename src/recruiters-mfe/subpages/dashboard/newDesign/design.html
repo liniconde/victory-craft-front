@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Victory Craft Elite Performance Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#ffffff",
+              "background": "#f7f9fb",
+              "surface-dim": "#d8dadc",
+              "error": "#ba1a1a",
+              "surface": "#f7f9fb",
+              "surface-tint": "#35684a",
+              "outline": "#717972",
+              "surface-container-high": "#e6e8ea",
+              "surface-container": "#eceef0",
+              "secondary-container": "#dae2fd",
+              "on-tertiary-fixed": "#261900",
+              "on-secondary": "#ffffff",
+              "on-background": "#191e1e",
+              "error-container": "#ffdad6",
+              "primary-container": "#0d4429",
+              "secondary-fixed": "#dae2fd",
+              "primary-fixed-dim": "#9cd3ae",
+              "tertiary-fixed": "#ffdea5",
+              "inverse-surface": "#2d3133",
+              "surface-container-highest": "#e0e3e5",
+              "primary": "#002c17",
+              "surface-container-low": "#f2f4f6",
+              "on-primary-container": "#7cb18e",
+              "outline-variant": "#c0c9c0",
+              "secondary-fixed-dim": "#bec6e0",
+              "secondary": "#565e74",
+              "on-primary-fixed-variant": "#1c5034",
+              "surface-bright": "#f7f9fb",
+              "primary-fixed": "#b8efc9",
+              "on-tertiary-container": "#c5a059",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#e9c176",
+              "inverse-primary": "#9cd3ae",
+              "on-surface-variant": "#414942",
+              "on-tertiary-fixed-variant": "#5d4201",
+              "surface-variant": "#e0e3e5",
+              "tertiary": "#332200",
+              "tertiary-container": "#4e3700",
+              "on-secondary-container": "#5c647a",
+              "surface-container-lowest": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed-variant": "#3f465c",
+              "inverse-on-surface": "#eff1f3",
+              "on-secondary-fixed": "#131b2e",
+              "on-surface": "#191c1e",
+              "on-primary-fixed": "#002110",
+              "on-primary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-[#002c17] dark:bg-[#002c17] flex flex-col py-6 shadow-2xl no-border bg-gradient-to-b from-[#002c17] to-[#0d4429] z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold text-[#e9c176] uppercase tracking-tighter">Victory Craft</h1>
+<p class="text-white/50 text-[10px] tracking-[0.2em] font-bold uppercase">Elite Performance</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-[#e9c176] text-[#002c17] rounded-md mx-4 mb-2 flex items-center px-4 py-3 transition-all font-['Inter'] font-semibold tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+                Scouting
+            </a>
+<a class="text-white/70 hover:text-white mx-4 mb-2 flex items-center px-4 py-3 transition-colors hover:bg-white/10 font-['Inter'] font-semibold tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="folder_special">folder_special</span>
+                Library
+            </a>
+<a class="text-white/70 hover:text-white mx-4 mb-2 flex items-center px-4 py-3 transition-colors hover:bg-white/10 font-['Inter'] font-semibold tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="person_search">person_search</span>
+                Player Profiles
+            </a>
+<a class="text-white/70 hover:text-white mx-4 mb-2 flex items-center px-4 py-3 transition-colors hover:bg-white/10 font-['Inter'] font-semibold tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="leaderboard">leaderboard</span>
+                Rankings
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/10">
+<button class="mx-4 mb-6 bg-[#e9c176] text-[#002c17] font-bold py-3 px-4 rounded-md text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+                New Scouting Report
+            </button>
+<a class="text-white/70 hover:text-white mx-4 mb-2 flex items-center px-4 py-2 transition-colors hover:bg-white/10 text-sm" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="text-white/70 hover:text-white mx-4 mb-2 flex items-center px-4 py-2 transition-colors hover:bg-white/10 text-sm" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="help">help</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 flex justify-between items-center px-8 w-full bg-white/70 dark:bg-[#191c1e]/70 backdrop-blur-xl no-border transition-all duration-300 ease-in-out">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary-container" placeholder="Search athletes, videos, reports..." type="text"/>
+</div>
+<nav class="flex gap-6">
+<a class="text-[#002c17] font-bold border-b-2 border-[#e9c176] pb-1 font-['Inter'] font-medium text-sm" href="#">Scouting</a>
+<a class="text-[#565e74] hover:text-[#002c17] font-['Inter'] font-medium text-sm" href="#">Videos</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary-container transition-colors">Create Report</button>
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container rounded-full" data-icon="notifications">notifications</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Close-up portrait of a professional sports scout in a modern office, cinematic lighting, sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxMu2NOsCuZOpQrRe3ux2XzCyIkq_l0wjYXTNwt7zbdsVBHVO5va1mxjSdWsGcRt69h-4cHXHeTQ2b9twUwQGWX3CZHqAnf0iPwouMt6MCbp7MPJfL0exhqJN9_wsM_6r5c8wUcbZy9m_FFhzuAM5KcrybZ6TrtsqxoqLymb5MFPGWxApTqeB_Dfbk-cfQ7r1pjAufeM4jJYa6kSlgEi8SO4EfXRmKXejnxMa_ZrUMS5wmTYdUf1yCHOUiebEgdiH1P3ISdYC3m-E"/>
+<span class="material-symbols-outlined text-secondary cursor-pointer" data-icon="logout">logout</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-16 min-h-screen">
+<!-- Scouting Workspace Hero -->
+<section class="p-8">
+<div class="relative h-[320px] rounded-xl overflow-hidden bg-primary shadow-2xl group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity transition-transform duration-700 group-hover:scale-105" data-alt="Cinematic wide shot of a professional football stadium at night under bright floodlights with atmospheric haze" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoUxw7FSE911QOrHaTqudbApuKpwNR48lRGIG1gdPqyi86nmXhHbxv7LHexDh8aXjflQQ7CR3XNALIHQt12At4qC5y53UZCJf-zO6OHM_EHtmhv3CkMHrDCKUuocCsWQqD9VBfJ7aWB7aj158fGRmCP1_kfHLz3TQoaV2LbBUGTaz_yOjPXwDDffqKzZu3BskN0J0_zu6LUbtxk6eety4KfFBsKRLIgMtEV9begKYJYWIz9P-X-Ak34qvRxCAXAbeRfjP_cbGdcmw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-end p-10 max-w-3xl">
+<span class="inline-block px-3 py-1 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] font-extrabold uppercase tracking-widest rounded mb-4">Elite Access</span>
+<h2 class="text-4xl font-extrabold text-white mb-4 tracking-tight leading-tight">Scouting Workspace</h2>
+<p class="text-primary-fixed/80 text-lg mb-8 leading-relaxed font-body">Analyze performance metrics, manage scouting pipelines, and discover the next generation of professional athletes with precision data.</p>
+<div class="flex gap-4">
+<button class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-6 py-3 rounded-md font-bold text-sm shadow-lg hover:brightness-110 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="rocket_launch">rocket_launch</span>
+                            Initialize Scan
+                        </button>
+<button class="bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-md font-bold text-sm hover:bg-white/20 transition-all">
+                            View Pipeline
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: Tools -->
+<section class="px-8 pb-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Library -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10 group hover:shadow-md transition-shadow">
+<div class="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="folder_managed">folder_managed</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3 tracking-tight">Library</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Centralized repository for all match footage, practice sessions, and technical drills organized by athlete.</p>
+<button class="text-primary font-extrabold text-xs uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Abrir <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Player Profiles -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10 group hover:shadow-md transition-shadow">
+<div class="w-12 h-12 bg-tertiary-fixed-dim/20 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-3xl" data-icon="badge">badge</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3 tracking-tight">Player Profiles</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Deep dive into biometric data, historical statistics, and professional scout annotations for over 500+ prospects.</p>
+<button class="text-primary font-extrabold text-xs uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Abrir <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Rankings -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10 group hover:shadow-md transition-shadow">
+<div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="military_tech">military_tech</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3 tracking-tight">Rankings</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Dynamic leaderboards calculated using our proprietary 'Victory Index' algorithm across all scouting categories.</p>
+<button class="text-primary font-extrabold text-xs uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all">
+                    Abrir <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Featured Section: Video Líder del Momento -->
+<section class="px-8 pb-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<div class="lg:col-span-8 bg-surface-container-high rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-lg">
+<div class="md:w-3/5 relative">
+<img class="h-full w-full object-cover" data-alt="Action shot of a young athlete performing a powerful kick on a soccer field, dynamic movement, blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU6u1TS6JbfxsItn_o-ANn_l7AjZEztkXZQ4_cojB86d55vyTEwBE4Prz__bRBLcU0S_77ecjb387IbELG4M71NngFFmz81MhQJ37HfBTE1AWNBoRj1miRx46YHCbk2h7KHDlaxu81Uu8M1zob4pg_tH2Vlh0XGzYQXYM2VSX1otLwbSZBxl5lK_22ytVgSoQ8F_xfKLKjO6KV1USjH6cjjLWdQ3o48QzKJ8e8GusD0laYgWPD8ubVRMeXPSWIQsPEJyWqTDFVx5A"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-20 h-20 bg-tertiary-fixed-dim/90 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-4xl" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="md:w-2/5 p-8 flex flex-col bg-primary text-white">
+<div class="flex justify-between items-start mb-6">
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">Video Líder del Momento</span>
+<span class="text-primary-fixed-dim font-bold text-2xl">TOP 1</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">Technical Mastery Drills</h3>
+<p class="text-white/60 text-sm mb-8">Performance analysis from the regional qualifiers featuring high-intensity ball control.</p>
+<div class="mt-auto grid grid-cols-2 gap-4">
+<div class="bg-white/5 p-4 rounded-lg border border-white/10">
+<p class="text-white/40 text-[10px] font-bold uppercase mb-1">Victory Score</p>
+<p class="text-2xl font-bold text-tertiary-fixed-dim">98.4</p>
+</div>
+<div class="bg-white/5 p-4 rounded-lg border border-white/10">
+<p class="text-white/40 text-[10px] font-bold uppercase mb-1">Net Votes</p>
+<p class="text-2xl font-bold text-tertiary-fixed-dim">12.5k</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Small Performance Metric Card -->
+<div class="lg:col-span-4 bg-tertiary-fixed-dim p-8 rounded-2xl flex flex-col justify-center relative overflow-hidden">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[160px] text-on-tertiary-fixed/10" data-icon="trending_up">trending_up</span>
+<h4 class="text-on-tertiary-fixed font-bold text-lg mb-2">Trend Analysis</h4>
+<p class="text-on-tertiary-fixed/80 text-sm mb-6">Engagement is up 24% this week across all youth academy footage.</p>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-on-tertiary-fixed">
+<span class="text-xs font-bold uppercase opacity-60">Global Reach</span>
+<span class="font-bold">Active</span>
+</div>
+<div class="w-full bg-on-tertiary-fixed/10 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Top Actual Table -->
+<section class="px-8 pb-12">
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
+<div class="px-8 py-6 border-b border-surface-container flex justify-between items-center">
+<h3 class="text-xl font-bold text-on-surface tracking-tight">Top actual</h3>
+<div class="flex gap-2">
+<button class="material-symbols-outlined p-2 hover:bg-surface-container rounded-lg text-secondary" data-icon="filter_list">filter_list</button>
+<button class="material-symbols-outlined p-2 hover:bg-surface-container rounded-lg text-secondary" data-icon="more_vert">more_vert</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant">
+<th class="px-8 py-4 font-bold text-xs uppercase tracking-widest">Video Content</th>
+<th class="px-8 py-4 font-bold text-xs uppercase tracking-widest text-center">Score</th>
+<th class="px-8 py-4 font-bold text-xs uppercase tracking-widest text-center">Net Votes</th>
+<th class="px-8 py-4 font-bold text-xs uppercase tracking-widest">Category</th>
+<th class="px-8 py-4 font-bold text-xs uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-4">
+<div class="w-16 h-10 rounded bg-primary-container/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Blurry motion shot of a futsal match inside a gym, dynamic energy, sports photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrVJBvh0FD9FShl76o1NHn5XEBYTX8YQXsQx8Mz2j-oVvzglOmATd3ZrubJayS-JScOTxX6uMG4vVgMbJYEJIKnbApc2C6D-vfoTb1BWy8o-ySVULZlZY3bevDR2R4DvIoDoh4Qx3QNu-GWOtKXE8MJkSrMx9uODvx2L_YiINnccv7E3ETQqBKciVMtVXhAEwUgE1j9drsayYqJsYCqmOlf1ePngUn6c3BUBy9KJuB0CUw4TZnaxh2sk52hTgv8P3-WLqJ6nCT2n0"/>
+</div>
+<span class="font-semibold text-on-surface">jugadita futsal</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center font-bold text-primary">94</td>
+<td class="px-8 py-5 text-center font-mono font-medium text-secondary">8,432</td>
+<td class="px-8 py-5">
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded uppercase">Academy</span>
+</td>
+<td class="px-8 py-5 text-right">
+<button class="px-4 py-1.5 bg-primary text-white text-[10px] font-bold rounded uppercase tracking-wider hover:bg-primary-container">Ver</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-4">
+<div class="w-16 h-10 rounded bg-primary-container/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Low angle shot of a soccer ball hitting the corner of a goal net, dramatic sunlight, professional sports style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3_3G2zFJd7LMtKWm8aA262V0YIvB23P6FBGVy7kBwlc_iOg7j2jnuNUQzkx-WyvXEGtcJ4g_XD1eOPGRbVfMTEVuxFiyM8FCj9E5hsbyyLJsTzE162eygh0snRPORrujAVQMbUOE-9ouTb5T6do5rINPUXzTCLrE_BoiwKnKKwaIYati_q6pxrUrXEhGJl7vxcW-g5OvUkg-BA_41NV5cbu4LgRAMPP9efGjwFaAgfnUQoRF8-ApIOexn5FKeejQl3bQCd-MW54M"/>
+</div>
+<span class="font-semibold text-on-surface">golazo</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center font-bold text-primary">91</td>
+<td class="px-8 py-5 text-center font-mono font-medium text-secondary">7,120</td>
+<td class="px-8 py-5">
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded uppercase">Elite</span>
+</td>
+<td class="px-8 py-5 text-right">
+<button class="px-4 py-1.5 bg-primary text-white text-[10px] font-bold rounded uppercase tracking-wider hover:bg-primary-container">Ver</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-4">
+<div class="w-16 h-10 rounded bg-primary-container/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Overhead view of a soccer training drill with orange cones on a bright green pitch, sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfYmL4jMapHDk8ApYAhN6iWq-n7wPODxRyALdezS1F8y3ky1MiIabV7BOp_C5yTJ99Yg1tLGtJSl9ZQDf9V4VnqzdhqlpHD5PNGvefvahGAx1NasWuQC7oUtueEvEwExqEaMFdIKJ3GKzd_uGEZXItwLyJS28D5XAmOZcp3zTdXAJYOb6BzUC2NQjB57fh_-0Ii8JpYEP2qeZ8OO5bdFXd4XberubLEeJxF6gfp6XfFj7NImYZy8vZcbfEmaDQqA0RFNB6S930D1o"/>
+</div>
+<span class="font-semibold text-on-surface">entrenamiento v3</span>
+</div>
+</td>
+<td class="px-8 py-5 text-center font-bold text-primary">88</td>
+<td class="px-8 py-5 text-center font-mono font-medium text-secondary">5,901</td>
+<td class="px-8 py-5">
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded uppercase">Tactics</span>
+</td>
+<td class="px-8 py-5 text-right">
+<button class="px-4 py-1.5 bg-primary text-white text-[10px] font-bold rounded uppercase tracking-wider hover:bg-primary-container">Ver</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-surface-container-low text-center">
+<button class="text-xs font-bold text-secondary uppercase tracking-widest hover:text-primary transition-colors">View All Top Performances</button>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB (Suppressed based on logic for Dashboard, but shown if 'New' is contextually relevant - rendering it as a subtle assist) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-tertiary-fixed-dim text-on-tertiary-fixed rounded-xl shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+<span class="material-symbols-outlined text-2xl" data-icon="add" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</body></html>

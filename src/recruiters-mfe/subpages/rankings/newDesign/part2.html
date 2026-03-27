@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Victory Craft Elite - Video Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-container": "#4e3700",
+                        "on-primary-fixed-variant": "#1c5034",
+                        "on-primary-fixed": "#002110",
+                        "background": "#f7f9fb",
+                        "surface": "#f7f9fb",
+                        "on-surface-variant": "#414942",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#b8efc9",
+                        "on-primary-container": "#7cb18e",
+                        "inverse-surface": "#2d3133",
+                        "inverse-primary": "#9cd3ae",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#c5a059",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#5c647a",
+                        "primary-fixed-dim": "#9cd3ae",
+                        "outline-variant": "#c0c9c0",
+                        "secondary-fixed": "#dae2fd",
+                        "outline": "#717972",
+                        "on-surface": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary": "#002c17",
+                        "primary-container": "#0d4429",
+                        "secondary-container": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary": "#565e74",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "surface-tint": "#35684a",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed": "#ffdea5",
+                        "tertiary": "#332200"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-tertiary-fixed-dim/30">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-[#002c17] dark:bg-[#001a0e] flex flex-col py-6 px-4 shadow-2xl shadow-[#000000]/20">
+<div class="mb-10 px-2">
+<h1 class="text-2xl font-bold tracking-tighter text-[#e9c176]">Victory Craft</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-[#e9c176]/60 font-semibold mt-1">Elite Performance</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white transition-colors hover:bg-[#0d4429]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white transition-colors hover:bg-[#0d4429]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm uppercase">Prospects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#0d4429] text-[#e9c176] border-r-4 border-[#e9c176] font-['Inter'] font-semibold tracking-tight text-sm uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+<span class="">Video Room</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white transition-colors hover:bg-[#0d4429]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm uppercase">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-400 hover:text-white transition-colors hover:bg-[#0d4429]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm uppercase">Reports</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full py-3 bg-tertiary-fixed-dim text-on-tertiary-fixed font-bold text-xs uppercase tracking-widest rounded-md shadow-lg shadow-tertiary-container/20">
+                New Scouting Report
+            </button>
+<div class="pt-6 border-t border-white/10 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white transition-colors text-sm font-semibold uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white transition-colors text-sm font-semibold uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span>Support</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar Component -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex justify-between items-center px-8 w-full border-b border-slate-100 dark:border-slate-800 bg-white/70 dark:bg-[#191c1e]/70 backdrop-blur-xl">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined text-xl">search</span>
+</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-[#e9c176] transition-all" placeholder="Global Search..." type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-slate-500 hover:text-[#0d4429] font-['Inter'] font-medium text-sm transition-colors" href="#">Watchlist</a>
+<a class="text-slate-500 hover:text-[#0d4429] font-['Inter'] font-medium text-sm transition-colors" href="#">Recruitment Pipeline</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded transition-all hover:bg-primary-container">
+                    Export Data
+                </button>
+<div class="flex items-center gap-2 text-slate-500">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-slate-200">
+<img alt="Elite Scout Avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional sports scout with a focused expression, high-end studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu2U8cJbhrr_Yn4_c_H9E2gR7RISvWfVvJSZh27OzJd4uPVEE2InJP2vGs9ZPDsoC4QZvqwGQx-U9-1Mqd5rzvVDb6ktNccu_mgdupKLZ0_CasSOgyG3DzBfZ06Z8du_2D2WW2sC6Y2GQL0ko_SHHNmTZMnoUAZOYjCJrhK8e8OYV1JO8rRPA18MoNN1iUm5OP9IZHUo8fUTPjcgJJWRPs4t-rv99-zWwnyFu5qZRQaamK1p-8Hyjzl4I88oHbU-4AvALSLOfJxCw"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="pt-24 px-8 pb-12">
+<!-- Top 3 Ranking Section (Editorial Asymmetry) -->
+<div class="grid grid-cols-12 gap-6 mb-12">
+<div class="col-span-12 lg:col-span-4">
+<div class="relative overflow-hidden group rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-500 border-l-4 border-tertiary-fixed-dim p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="text-4xl font-extrabold text-primary/10 tracking-tighter">01</span>
+<div class="flex flex-col items-end">
+<span class="text-2xl font-bold text-primary">53</span>
+<span class="text-[10px] font-bold text-on-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-full">+3 VOTES</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface tracking-tight mb-1">Mateo Silva</h3>
+<p class="text-sm font-medium text-secondary uppercase tracking-wider">Point Guard • U19</p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Explosive</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Playmaker</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 lg:mt-4">
+<div class="relative overflow-hidden group rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-500 border-l-4 border-slate-300 p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="text-4xl font-extrabold text-primary/10 tracking-tighter">02</span>
+<div class="flex flex-col items-end">
+<span class="text-2xl font-bold text-primary">48</span>
+<span class="text-[10px] font-bold text-on-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-full">+1 VOTES</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface tracking-tight mb-1">Lucas Weber</h3>
+<p class="text-sm font-medium text-secondary uppercase tracking-wider">Forward • U21</p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Reliable</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Defensive Specialist</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 lg:mt-8">
+<div class="relative overflow-hidden group rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-500 border-l-4 border-orange-200 p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="text-4xl font-extrabold text-primary/10 tracking-tighter">03</span>
+<div class="flex flex-col items-end">
+<span class="text-2xl font-bold text-primary">42</span>
+<span class="text-[10px] font-bold text-on-error-container bg-error-container/30 px-2 py-0.5 rounded-full">-1 VOTES</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface tracking-tight mb-1">Andre Chen</h3>
+<p class="text-sm font-medium text-secondary uppercase tracking-wider">Midfielder • U18</p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Technical</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-bold text-secondary uppercase">Visionary</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Compact Filter Bar -->
+<div class="flex items-center gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar">
+<div class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span>All Filters</span>
+</div>
+<div class="h-6 w-[1px] bg-slate-200"></div>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Sport</button>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Play type</button>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Tournament</button>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Country</button>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Position</button>
+<button class="px-4 py-2 bg-surface-container-low hover:bg-surface-container-high text-secondary text-xs font-semibold rounded-full transition-colors">Category</button>
+</div>
+<!-- Main Layout: Video Player & List -->
+<div class="grid grid-cols-12 gap-8 items-start">
+<!-- Center Viewport (Video Player) -->
+<div class="col-span-12 xl:col-span-8">
+<div class="relative aspect-video rounded-xl overflow-hidden bg-black group shadow-2xl">
+<img alt="Video Placeholder" class="w-full h-full object-cover opacity-80" data-alt="Cinematic wide shot of a futuristic indoor sports arena with dramatic stadium lighting and high-tech digital displays" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCta9PLeC1AePoUS36Ph_Hb46tZ2Nmbhb60PCtIgywEnBh1S5geuEWIxtWaLUvz1UCHgyFRHtMrdyZQRbYgyOG6Bye8b4voSLx_9OtS3zfon0keR5UVC3QqasSgHUgQ0sh7AaYaTsaXHdGvM-XD_NHUBb1qzjx1e2cHs2Mpw4WsyAeGHDsGNrryjm81TI37vK28K1-LRT9EQl3X18T5R9-WyVYbIIzveVQBVtrE4VIlkdccqdB0h6Dpwt0g4OkGlxuBliVsmQjTdmc"/>
+<!-- Video UI Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform group-hover:bg-[#e9c176] group-hover:text-primary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 inset-x-0 p-8 bg-gradient-to-t from-black/90 to-transparent">
+<div class="flex items-end justify-between">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] font-black uppercase rounded">Featured</span>
+<span class="text-white/60 text-xs font-medium uppercase tracking-widest">Tournament: Brazil Qualifiers</span>
+</div>
+<h2 class="text-3xl font-extrabold text-white tracking-tight">jugadita futsal</h2>
+<p class="text-white/80 mt-1 font-medium italic">Mateo Silva showing elite ball control in tight spaces.</p>
+</div>
+<div class="flex gap-4">
+<div class="text-center">
+<span class="block text-2xl font-bold text-[#e9c176]">53</span>
+<span class="block text-[10px] text-white/60 uppercase font-bold tracking-tighter">Scout Score</span>
+</div>
+<div class="h-10 w-[1px] bg-white/20"></div>
+<div class="text-center">
+<span class="block text-2xl font-bold text-white">8.4</span>
+<span class="block text-[10px] text-white/60 uppercase font-bold tracking-tighter">Impact</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Post-Video Info -->
+<div class="mt-8 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div>
+<h4 class="text-[10px] font-black uppercase text-secondary tracking-widest mb-4">Player Profile</h4>
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-xl bg-surface-container-high overflow-hidden">
+<img alt="Mateo Silva" class="w-full h-full object-cover" data-alt="Close-up headshot of a young athletic male athlete with a determined look, neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHxxHDYONV1aPyi7YhIvkXm3V7FLk8ZkSontjZxMUz7cVT2eZJ-bnjJUgtAk0yRSDef2NgbsurxhG2o5GjqKifhu51oHzPVd9FAE3uxzVofzaxAO-BMGHt2fRd83hYhiVSRbcPnfVwuT5cTiFAE-gUz5T8hsuVPdv3vhEG1t7PZwR6s2IsGpP1NeLi5FLTmiXqP9ze0PkYIPK7LhLKdC4AKkVXrCOZ70bdVmSB50g-u3XL8QNvCiXw5bLbrbNUU1k9US1sx-X_IUY"/>
+</div>
+<div>
+<div class="font-bold text-primary">Mateo Silva</div>
+<div class="text-xs text-secondary">Point Guard • 185cm</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] font-black uppercase text-secondary tracking-widest mb-4">Technical Breakdown</h4>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-sm">
+<span class="text-secondary">Dribbling</span>
+<span class="font-bold text-primary">92%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 92%"></div>
+</div>
+<div class="flex justify-between items-center text-sm mt-3">
+<span class="text-secondary">Decision Speed</span>
+<span class="font-bold text-primary">88%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 88%"></div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] font-black uppercase text-secondary tracking-widest mb-4">Scout Notes</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed italic">
+                                    "Exceptional lateral movement. Noticed a 12% increase in success rate during high-pressure defensive transitions."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Ranking List) -->
+<div class="col-span-12 xl:col-span-4 flex flex-col gap-4">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-xs font-black uppercase text-primary tracking-widest">Leaderboard Activity</h3>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary">more_horiz</span>
+</div>
+<!-- Rank Item 1 -->
+<div class="group bg-primary border-l-4 border-tertiary-fixed-dim rounded-xl p-4 flex items-center gap-4 transition-all shadow-lg">
+<span class="text-2xl font-black text-white/20">01</span>
+<div class="w-16 h-12 rounded-lg bg-white/10 overflow-hidden relative">
+<img alt="Video Thumb" class="w-full h-full object-cover opacity-80" data-alt="Close up action shot of a soccer ball being kicked, motion blur, green grass background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJPsUqFvDDfiQ6A6S49bOCNgSu1QKQG8W6-KA8foejubr4RqR8fSlAVxA05UfWxnNW1Zs6S5xHd9wDQ1eJ0v3E__eK3tq_upQR_JsUk5OsXc58e517GQiysSgA02iVL0ueC2uqYxU6k1Q4ZoAzw6lU7DoMqLVOxqsKrnaiMGW_JmfQKFrwdYRzHSjEJrguclkJPBgcC_r9esXAOea2Tq7QtdU5I_YoBKBfjJ6_R_a141K2Lt3vPjRP8EFEZURvtOpU_gRDUDZ8K0Q"/>
+<span class="absolute inset-0 flex items-center justify-center text-white text-xs">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</span>
+</div>
+<div class="flex-1">
+<div class="text-sm font-bold text-white">Mateo Silva</div>
+<div class="text-[10px] text-white/50 uppercase font-bold tracking-tighter">jugadita futsal</div>
+</div>
+<div class="text-right">
+<div class="text-lg font-black text-[#e9c176]">53</div>
+<div class="text-[8px] font-bold text-primary-fixed/60 uppercase">+3 V</div>
+</div>
+</div>
+<!-- Rank Item 2 -->
+<div class="group bg-surface-container-lowest hover:bg-surface-container-low rounded-xl p-4 flex items-center gap-4 transition-all cursor-pointer">
+<span class="text-2xl font-black text-slate-200 group-hover:text-primary/10">02</span>
+<div class="w-16 h-12 rounded-lg bg-surface-container overflow-hidden relative">
+<img alt="Video Thumb" class="w-full h-full object-cover grayscale opacity-50" data-alt="Blurred background of a basketball game in progress, stadium lights, warm colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_0kshYTwMXaGq1zQtDxu_2lDPJIHLfqbw6a9d5eeyd-RmRPPPjRrz3kEKTQkJjBx-mfn7aySJgS4dG2wDRWIfqTkziCGihn5kH1aBPXC4aQ8BLO26fCPyExV22uOS35Dd6u2pGFKl_Li_YN4i-GSAtmK-5RXq7sDwQ-WDQ2IkvAvg7bFTcUdL8Z37KUUa8wM4aIfA2opGHR0LoNLB2PUtB3Fv0yhnQ3ADXwFKIhL751XKK6RB5lz0f0QllJaEyp9eSyXGoo1E76o"/>
+</div>
+<div class="flex-1">
+<div class="text-sm font-bold text-primary">Lucas Weber</div>
+<div class="text-[10px] text-secondary uppercase font-bold tracking-tighter">Defensive Wall</div>
+</div>
+<div class="text-right">
+<div class="text-lg font-black text-primary">48</div>
+<div class="text-[8px] font-bold text-on-primary-container uppercase">+1 V</div>
+</div>
+</div>
+<!-- Rank Item 3 -->
+<div class="group bg-surface-container-lowest hover:bg-surface-container-low rounded-xl p-4 flex items-center gap-4 transition-all cursor-pointer">
+<span class="text-2xl font-black text-slate-200 group-hover:text-primary/10">03</span>
+<div class="w-16 h-12 rounded-lg bg-surface-container overflow-hidden relative">
+<img alt="Video Thumb" class="w-full h-full object-cover grayscale opacity-50" data-alt="Action shot of a athlete running on a track field, side view, focus on motion" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd4OO3PnVh7FIlfPkOGUQZroyThKdRpXtzqr8rRQER6roP9vDsZGbk4or0TznFmyg4mHmCFewx0kNn5MvWaZhCNKyZYlKyBSkKp4QulZoxbFLGH-Oq_mXc9v8tnaAbCDJIAqGWrMYaEBwb0SK4XKLesTz6ajTbFR1FD-koKzEU3AtfnB75WU_Yd86k9doN9Z-GlE_C-CXyUulQ7As2x5ZyydehXx5SEcUDrn9rF4J9nq0jq6XFjwVAdCfaw472qhz_b2DFwszSVFU"/>
+</div>
+<div class="flex-1">
+<div class="text-sm font-bold text-primary">Andre Chen</div>
+<div class="text-[10px] text-secondary uppercase font-bold tracking-tighter">Midfield Vision</div>
+</div>
+<div class="text-right">
+<div class="text-lg font-black text-primary">42</div>
+<div class="text-[8px] font-bold text-error uppercase">-1 V</div>
+</div>
+</div>
+<!-- Rank Item 4 -->
+<div class="group bg-surface-container-lowest hover:bg-surface-container-low rounded-xl p-4 flex items-center gap-4 transition-all cursor-pointer">
+<span class="text-2xl font-black text-slate-200 group-hover:text-primary/10">04</span>
+<div class="w-16 h-12 rounded-lg bg-surface-container overflow-hidden relative">
+<img alt="Video Thumb" class="w-full h-full object-cover grayscale opacity-50" data-alt="Close up of a soccer boot on grass, spotlight effect, dramatic sports vibe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwruMFRCMYvtMr04UT4aKXLcLnWArybGqd_fk4Mk-XKdUhE9ibnzHUbOLDFcperihwj6VIuiAKzU3Cs7fUa4_8R_X2iOjOAtsKb9h_yrnO69XriPZ52grD01YRyA3GNt8pbvQwF8ilMgSkwuii6GqxC6ZnR28I_HkaKWFCkSTuLg1B1u5NtjqbYc1_SXnjm295BgKuI10SseaPIJ83fg8E3x9BiKahB9DOu564sPjSkcc0Jdr0CNSdlT844svdSf75OQsMp9TUQao"/>
+</div>
+<div class="flex-1">
+<div class="text-sm font-bold text-primary">Sofia Rossi</div>
+<div class="text-[10px] text-secondary uppercase font-bold tracking-tighter">Sprint Finish</div>
+</div>
+<div class="text-right">
+<div class="text-lg font-black text-primary">39</div>
+<div class="text-[8px] font-bold text-on-primary-container uppercase">+5 V</div>
+</div>
+</div>
+<!-- CTA Sidebar -->
+<div class="mt-4 p-6 rounded-xl bg-primary-container text-on-primary-container relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="text-lg font-bold text-white mb-2 leading-tight">Advanced Player Search</h4>
+<p class="text-xs text-on-primary-container/80 mb-4 leading-relaxed">Filter over 15,000 verified athletes using AI-driven performance metrics.</p>
+<button class="w-full py-2 bg-[#e9c176] text-primary text-[10px] font-black uppercase tracking-widest rounded transition-transform group-hover:scale-[1.02]">
+                                Launch Finder
+                            </button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[100px]" data-icon="travel_explore">travel_explore</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

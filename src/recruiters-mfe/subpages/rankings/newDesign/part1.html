@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Victory Craft | Video Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#7cb18e",
+              "secondary": "#565e74",
+              "tertiary": "#332200",
+              "surface-dim": "#d8dadc",
+              "background": "#f7f9fb",
+              "on-primary-fixed-variant": "#1c5034",
+              "inverse-primary": "#9cd3ae",
+              "surface-tint": "#35684a",
+              "surface": "#f7f9fb",
+              "surface-container": "#eceef0",
+              "on-tertiary-fixed": "#261900",
+              "on-background": "#191c1e",
+              "surface-container-highest": "#e0e3e5",
+              "inverse-on-surface": "#eff1f3",
+              "tertiary-container": "#4e3700",
+              "on-secondary-container": "#5c647a",
+              "tertiary-fixed-dim": "#e9c176",
+              "surface-bright": "#f7f9fb",
+              "surface-variant": "#e0e3e5",
+              "surface-container-low": "#f2f4f6",
+              "inverse-surface": "#2d3133",
+              "on-primary-fixed": "#002110",
+              "primary-fixed": "#b8efc9",
+              "on-secondary-fixed-variant": "#3f465c",
+              "secondary-fixed-dim": "#bec6e0",
+              "primary-container": "#0d4429",
+              "outline": "#717972",
+              "on-surface-variant": "#414942",
+              "tertiary-fixed": "#ffdea5",
+              "primary-fixed-dim": "#9cd3ae",
+              "secondary-container": "#dae2fd",
+              "on-tertiary-container": "#c5a059",
+              "surface-container-high": "#e6e8ea",
+              "secondary-fixed": "#dae2fd",
+              "primary": "#002c17",
+              "outline-variant": "#c0c9c0",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#191c1e",
+              "on-tertiary-fixed-variant": "#5d4201",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed": "#131b2e",
+              "on-error": "#ffffff",
+              "error": "#ba1a1a",
+              "on-secondary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .tonal-stacking { background: linear-gradient(180deg, rgba(242, 244, 246, 0.8) 0%, rgba(236, 238, 240, 0.8) 100%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-tertiary-fixed-dim selection:text-on-tertiary-fixed">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-[#002c17] dark:bg-[#002c17] h-screen w-64 fixed left-0 top-0 overflow-y-auto shadow-2xl shadow-black/20 flex flex-col h-full py-8 z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div>
+<h1 class="text-xl font-bold text-[#e9c176] tracking-tighter">Victory Craft</h1>
+<p class="text-[10px] text-on-primary-container font-semibold uppercase tracking-widest">Elite Performance</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-white px-6 py-4 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50 transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Dashboard</span>
+</a>
+<a class="bg-[#0d4429] text-[#e9c176] border-r-4 border-[#e9c176] px-6 py-4 flex items-center gap-3 hover:bg-[#0d4429]/50 transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Video Library</span>
+</a>
+<a class="text-slate-400 hover:text-white px-6 py-4 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50 transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Recruitment</span>
+</a>
+<a class="text-slate-400 hover:text-white px-6 py-4 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50 transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Scouting</span>
+</a>
+<a class="text-slate-400 hover:text-white px-6 py-4 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50 transition-all duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto pt-8">
+<button class="w-full py-3 bg-tertiary-fixed-dim text-on-tertiary-fixed rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                New Scouting Report
+            </button>
+<div class="mt-8 flex items-center gap-3 p-3 bg-[#0d4429] rounded-xl">
+<img class="w-8 h-8 rounded-full bg-slate-700" data-alt="close up professional headshot of a sports scout in a modern office environment with soft focus sports equipment background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbFV9BCZ_rXli9ygjjg49DMTXyMDm6n2LgHy5Sn60epYjTp1LpucgsPGOpXgvwMOPE7MmgEMAaZaJ2GR5sxjs6IEth9aTxQXgpR5OLoVOnFkwZ1RIZJaftVxGhhp00vEgvVGd4bW_7qEdIQvtFkNaCptV8G091sC0JxUjM6S2gcw9jiWMjjr9Je0ox7ldweH0YnV24BtDkf_aHZvvGQpdzwy52xelSL7adW3a5yPdN9-I4PzU6a6kruaXo6h6Jtwmm7UiYCJA0QmE"/>
+<div class="overflow-hidden">
+<p class="text-white text-xs font-bold truncate">Lead Scout</p>
+<p class="text-slate-400 text-[10px] truncate">Scout Profile</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-[#f2f4f6]/80 dark:bg-[#002c17]/80 backdrop-blur-xl sticky top-0 z-40 w-full ml-64 flex justify-between items-center px-8 py-4 w-[calc(100%-16rem)] no-line tonal-stacking">
+<div class="flex items-center gap-4">
+<h2 class="text-[#002c17] dark:text-[#e9c176] font-['Inter'] font-bold text-lg uppercase tracking-widest">Elite Video Library</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm">search</span>
+<input class="bg-surface-container border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-tertiary-fixed-dim transition-all" placeholder="Search archive..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-[#002c17] dark:hover:text-[#e9c176] transition-opacity hover:opacity-80 transition-all">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="text-secondary hover:text-[#002c17] dark:hover:text-[#e9c176] transition-opacity hover:opacity-80 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-px h-6 bg-outline-variant/30"></div>
+<img class="w-8 h-8 rounded-full border-2 border-tertiary-fixed-dim" data-alt="Circular avatar profile picture of a professional sports analyst wearing a dark blazer with a subtle victory logo pin" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByPoLics0vGGbZw_NG8FfiAK5OjlRn5Js15lYe00JsIp-IvUzbLh6n4rGIguZoBNMTZYU5713iQfef9ef3vRrTH2t1RArt6oDkql80z-eRS8aEmlmWgvvmHX5SxPd_P5IiBAJkKRSUEN6mymWmcbiuD5-xZ6GQCWo4oNHjJBEMCSvwKa9VgBofGCzXfdyLtGuSmwYOGtSe0Bp7a1oN5CO3UMqL1NZoGDS4cvt22U4fHCnx00jVsAO5mEUwsJv0nljbbyOD3nYEcyk"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-8 min-h-screen">
+<!-- Top Row: Featured Highlights (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- TOP 1 -->
+<div class="bg-primary text-on-primary p-6 rounded-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary-fixed-dim/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">Top 1</span>
+<div class="text-right">
+<p class="text-xs text-on-primary-container font-medium uppercase">Score</p>
+<p class="text-2xl font-bold text-tertiary-fixed-dim tracking-tighter">9.8</p>
+</div>
+</div>
+<h3 class="text-xl font-bold mb-1 leading-tight">Lightning Break</h3>
+<p class="text-on-primary-container text-sm font-medium mb-4">Matheus Costa • Forward</p>
+<div class="flex justify-between items-center border-t border-primary-container pt-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">thumb_up</span>
+<span class="text-xs font-bold text-on-primary-container">+1,240 Votes</span>
+</div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim">play_arrow</span>
+</div>
+</div>
+</div>
+<!-- TOP 2 -->
+<div class="bg-surface-container-low p-6 rounded-xl group hover:bg-surface-container transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-primary text-white px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">Top 2</span>
+<div class="text-right">
+<p class="text-xs text-secondary font-medium uppercase">Score</p>
+<p class="text-2xl font-bold text-primary tracking-tighter">9.5</p>
+</div>
+</div>
+<h3 class="text-xl font-bold mb-1 leading-tight">Nutmeg Master</h3>
+<p class="text-secondary text-sm font-medium mb-4">Javier Ortiz • Winger</p>
+<div class="flex justify-between items-center border-t border-outline-variant/30 pt-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">thumb_up</span>
+<span class="text-xs font-bold text-secondary">+892 Votes</span>
+</div>
+<span class="material-symbols-outlined text-primary">play_arrow</span>
+</div>
+</div>
+<!-- TOP 3 -->
+<div class="bg-surface-container-low p-6 rounded-xl group hover:bg-surface-container transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary text-white px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">Top 3</span>
+<div class="text-right">
+<p class="text-xs text-secondary font-medium uppercase">Score</p>
+<p class="text-2xl font-bold text-primary tracking-tighter">9.2</p>
+</div>
+</div>
+<h3 class="text-xl font-bold mb-1 leading-tight">Iron Defense</h3>
+<p class="text-secondary text-sm font-medium mb-4">Leo Banks • CB</p>
+<div class="flex justify-between items-center border-t border-outline-variant/30 pt-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">thumb_up</span>
+<span class="text-xs font-bold text-secondary">+745 Votes</span>
+</div>
+<span class="material-symbols-outlined text-primary">play_arrow</span>
+</div>
+</div>
+</section>
+<!-- Main Workspace: Video & Editorial & Filters -->
+<div class="flex flex-col xl:flex-row gap-8">
+<!-- Left Sidebar: Filters -->
+<aside class="w-full xl:w-64 flex-shrink-0 space-y-8">
+<div>
+<h4 class="text-[10px] font-extrabold text-secondary uppercase tracking-[0.2em] mb-4">Filtros Pro</h4>
+<div class="space-y-4">
+<div>
+<label class="text-[11px] font-bold text-primary mb-1.5 block uppercase">Buscar</label>
+<input class="w-full bg-white border-none text-xs rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary shadow-sm" placeholder="Nome do Jogador..." type="text"/>
+</div>
+<div>
+<label class="text-[11px] font-bold text-primary mb-1.5 block uppercase">Deporte</label>
+<select class="w-full bg-white border-none text-xs rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary shadow-sm appearance-none">
+<option>Futsal</option>
+<option>Football 11</option>
+<option>Basketball</option>
+</select>
+</div>
+<div>
+<label class="text-[11px] font-bold text-primary mb-1.5 block uppercase">Jugada</label>
+<select class="w-full bg-white border-none text-xs rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary shadow-sm appearance-none">
+<option>Drible</option>
+<option>Golaço</option>
+<option>Assitência</option>
+</select>
+</div>
+<div>
+<label class="text-[11px] font-bold text-primary mb-1.5 block uppercase">Torneo</label>
+<select class="w-full bg-white border-none text-xs rounded-lg py-3 px-4 focus:ring-2 focus:ring-primary shadow-sm appearance-none">
+<option>National Cup</option>
+<option>Regional Pro</option>
+</select>
+</div>
+</div>
+</div>
+<div class="bg-primary p-6 rounded-2xl text-center">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-4xl mb-2" style="font-variation-settings: 'FILL' 1;">stars</span>
+<p class="text-white text-xs font-bold leading-relaxed">Unlock Premium Scouting Insights</p>
+<button class="mt-4 w-full py-2 bg-tertiary-fixed-dim text-on-tertiary-fixed rounded-full text-[10px] font-extrabold uppercase tracking-widest">Upgrade Now</button>
+</div>
+</aside>
+<!-- Center Content: Large Video Player -->
+<section class="flex-1">
+<div class="bg-surface-container-lowest rounded-2xl p-2 shadow-xl shadow-black/5 overflow-hidden">
+<div class="aspect-video relative rounded-xl overflow-hidden bg-black group">
+<img class="w-full h-full object-cover opacity-80" data-alt="dynamic wide shot of a high-speed futsal match in a professional arena with cinematic lighting and motion blur of players in action" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANJm9aapm5nvlWzBVsFyJ-sUQSIpZervqIV0eRDdfEzJR73ZMbiiIq3ZKTdasAyzzXXe6qdNCvFTLd1bqefZaJUQacZH1RNt2fzFNU9h0IONWOnBssaxupdrwWcNnsOJrP9BZP46sgPQeGn-3-6NBJvD943Ks787f-F3ug7RICJuSxLyc7kxQoDJKWYb24dmO5MJDVia6BZiabCIGs40Es3gqGX_SwxTojoGkYF7xbShYb24UrUMeNsb395OxDSl4WuXwgQSw5MHk"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+<button class="w-20 h-20 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed flex items-center justify-center shadow-2xl active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<!-- Video Overlay Controls -->
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div>
+<h2 class="text-white text-3xl font-bold tracking-tighter drop-shadow-lg">jugadita futsal</h2>
+<div class="flex gap-2 mt-2">
+<span class="bg-primary/80 text-white text-[10px] px-2 py-1 rounded-md backdrop-blur-md uppercase font-bold">Futsal</span>
+<span class="bg-tertiary-fixed-dim/80 text-on-tertiary-fixed text-[10px] px-2 py-1 rounded-md backdrop-blur-md uppercase font-bold">Elite Prospect</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/20"><span class="material-symbols-outlined">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/20"><span class="material-symbols-outlined">share</span></button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-6">
+<div class="flex-1 bg-surface-container-low p-6 rounded-xl">
+<h4 class="text-primary font-bold mb-4 uppercase text-xs tracking-widest">Scouting Breakdown</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-secondary font-medium">Ball Control</span>
+<div class="w-48 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed-dim h-full" style="width: 92%"></div>
+</div>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-secondary font-medium">Field Vision</span>
+<div class="w-48 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 85%"></div>
+</div>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-secondary font-medium">Acceleration</span>
+<div class="w-48 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 95%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-64 bg-surface-container-low p-6 rounded-xl flex flex-col justify-center items-center text-center">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Expert Verdict</p>
+<p class="text-4xl font-black text-primary tracking-tighter">S+</p>
+<p class="text-[10px] text-on-primary-container mt-2 font-medium">RECRUIT IMMEDIATELY</p>
+</div>
+</div>
+</section>
+<!-- Right Sidebar: Ranking Editorial -->
+<aside class="w-full xl:w-96 space-y-6">
+<div class="flex justify-between items-center">
+<h4 class="text-[10px] font-extrabold text-secondary uppercase tracking-[0.2em]">Ranking Editorial</h4>
+<span class="text-[10px] font-bold text-primary underline cursor-pointer">View All</span>
+</div>
+<div class="space-y-3">
+<!-- Rank Item 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex gap-4 group">
+<div class="flex-shrink-0 flex flex-col items-center">
+<span class="text-xl font-black text-tertiary-fixed-dim leading-none">#1</span>
+<div class="mt-2 text-[10px] font-bold text-secondary">+15</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-primary">Lucas Ferreira</p>
+<div class="flex gap-2 mt-1">
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Football</span>
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Dribble</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">Score: 9.8</p>
+<p class="text-[10px] text-secondary">1.2k Votes</p>
+</div>
+</div>
+<div class="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="flex-1 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg uppercase">View Profile</button>
+<button class="px-3 py-1.5 border-2 border-primary/10 text-primary text-[10px] font-bold rounded-lg uppercase">Neutralizar</button>
+</div>
+</div>
+</div>
+<!-- Rank Item 2 -->
+<div class="bg-white/40 p-4 rounded-xl border-2 border-transparent hover:border-outline-variant/20 transition-all flex gap-4">
+<div class="flex-shrink-0 flex flex-col items-center">
+<span class="text-xl font-black text-primary/40 leading-none">#2</span>
+<div class="mt-2 text-[10px] font-bold text-error">-3</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-primary">Enzo Silva</p>
+<div class="flex gap-2 mt-1">
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Futsal</span>
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Speed</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">Score: 9.5</p>
+<p class="text-[10px] text-secondary">892 Votes</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank Item 3 -->
+<div class="bg-white/40 p-4 rounded-xl border-2 border-transparent hover:border-outline-variant/20 transition-all flex gap-4">
+<div class="flex-shrink-0 flex flex-col items-center">
+<span class="text-xl font-black text-primary/40 leading-none">#3</span>
+<div class="mt-2 text-[10px] font-bold text-secondary">+2</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-primary">Marcus Vini</p>
+<div class="flex gap-2 mt-1">
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Football</span>
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Power</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">Score: 9.2</p>
+<p class="text-[10px] text-secondary">745 Votes</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank Item 4 -->
+<div class="bg-white/40 p-4 rounded-xl border-2 border-transparent hover:border-outline-variant/20 transition-all flex gap-4">
+<div class="flex-shrink-0 flex flex-col items-center">
+<span class="text-xl font-black text-primary/40 leading-none">#4</span>
+<div class="mt-2 text-[10px] font-bold text-secondary">0</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-primary">Daniel Kim</p>
+<div class="flex gap-2 mt-1">
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Basketball</span>
+<span class="text-[9px] font-bold uppercase bg-surface-container px-1.5 py-0.5 rounded text-secondary">Skill</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">Score: 8.9</p>
+<p class="text-[10px] text-secondary">620 Votes</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#0d4429] p-6 rounded-2xl relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+<div class="relative z-10">
+<h5 class="text-tertiary-fixed-dim font-bold text-sm mb-2">Editorial Note</h5>
+<p class="text-on-primary-container text-xs leading-relaxed italic">"Lucas Ferreira continues to dominate the technical charts. His recent futsal performance shows a level of close-control that is rare in this age bracket."</p>
+<div class="mt-4 flex items-center gap-2">
+<img class="w-6 h-6 rounded-full" data-alt="close up of an older expert scout with glasses looking intently at a digital tablet screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8jbVlpdFHApGMrqgqbsI-_qilYqv8ys0z2h2UXHa_oET8Inyi7UaH4MwEuGz097vbKfQ78yHR485LRIvRE24FF-gGd3icBIVc0PaLdAFCgEZdilrpnpBmV1VKfZtPNOomsMne56oUUZglssoiK2LaPkiCOqKdANc3fpABdnevhJQIdBBW7ySWBORvFu6GpM7xs_w5nH2Al4MOLrrzPUCZrfSrh_2wrnIXuqeDMJmss_b6BJlL1u2j3nDXYnB3kG8rj6gmId1MQK0"/>
+<span class="text-[10px] font-bold text-white uppercase tracking-widest">Alberto D. • Chief Editor</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</body></html>

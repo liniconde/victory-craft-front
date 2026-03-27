@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { FiActivity, FiBarChart2, FiFolder, FiUser } from "react-icons/fi";
 import { NavLink, Outlet } from "react-router-dom";
 import RecruitersOnboarding from "../../onboarding/RecruitersOnboarding";
 import "./RecruitersLayout.css";
@@ -7,7 +8,13 @@ import "./RecruitersLayout.css";
 const RecruitersLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const renderLink = (to: string, label: string, onboardingId: string) => (
+  const renderLink = (
+    to: string,
+    label: string,
+    onboardingId: string,
+    icon: React.ReactNode,
+    caption: string
+  ) => (
     <NavLink
       to={to}
       onClick={() => setIsMobileMenuOpen(false)}
@@ -16,7 +23,11 @@ const RecruitersLayout: React.FC = () => {
         `recruiters-sidebar__link ${isActive ? "is-active" : ""}`
       }
     >
-      {label}
+      <span className="recruiters-sidebar__link-icon">{icon}</span>
+      <span className="recruiters-sidebar__link-copy">
+        <strong>{label}</strong>
+        <small>{caption}</small>
+      </span>
     </NavLink>
   );
 
@@ -61,14 +72,34 @@ const RecruitersLayout: React.FC = () => {
             </div>
 
             <nav className="recruiters-sidebar__nav">
-              {renderLink("/scouting/subpages/dashboard", "Dashboard", "scouting-menu-dashboard")}
-              {renderLink("/scouting/subpages/library", "Library", "scouting-menu-library")}
+              {renderLink(
+                "/scouting/subpages/dashboard",
+                "Dashboard",
+                "scouting-menu-dashboard",
+                <FiActivity />,
+                "Scouting workspace"
+              )}
+              {renderLink(
+                "/scouting/subpages/library",
+                "Library",
+                "scouting-menu-library",
+                <FiFolder />,
+                "Video repository"
+              )}
               {renderLink(
                 "/scouting/subpages/player-profiles",
                 "Player Profiles",
-                "scouting-menu-player-profiles"
+                "scouting-menu-player-profiles",
+                <FiUser />,
+                "Athlete records"
               )}
-              {renderLink("/scouting/subpages/rankings", "Rankings", "scouting-menu-rankings")}
+              {renderLink(
+                "/scouting/subpages/rankings",
+                "Rankings",
+                "scouting-menu-rankings",
+                <FiBarChart2 />,
+                "Live leaderboard"
+              )}
             </nav>
           </aside>
         </div>
@@ -76,19 +107,39 @@ const RecruitersLayout: React.FC = () => {
 
       <aside className="recruiters-sidebar recruiters-sidebar--desktop">
         <div className="recruiters-sidebar__header" data-onboarding="scouting-sidebar-header">
-          <h1>Scouting</h1>
-          <p>Dominio separado para recruiter view, profiles y rankings.</p>
+          <h1>Victory Craft</h1>
+          <p>Elite Performance</p>
         </div>
 
         <nav className="recruiters-sidebar__nav">
-          {renderLink("/scouting/subpages/dashboard", "Dashboard", "scouting-menu-dashboard")}
-          {renderLink("/scouting/subpages/library", "Library", "scouting-menu-library")}
+          {renderLink(
+            "/scouting/subpages/dashboard",
+            "Dashboard",
+            "scouting-menu-dashboard",
+            <FiActivity />,
+            "Scouting workspace"
+          )}
+          {renderLink(
+            "/scouting/subpages/library",
+            "Library",
+            "scouting-menu-library",
+            <FiFolder />,
+            "Video repository"
+          )}
           {renderLink(
             "/scouting/subpages/player-profiles",
             "Player Profiles",
-            "scouting-menu-player-profiles"
+            "scouting-menu-player-profiles",
+            <FiUser />,
+            "Athlete records"
           )}
-          {renderLink("/scouting/subpages/rankings", "Rankings", "scouting-menu-rankings")}
+          {renderLink(
+            "/scouting/subpages/rankings",
+            "Rankings",
+            "scouting-menu-rankings",
+            <FiBarChart2 />,
+            "Live leaderboard"
+          )}
         </nav>
       </aside>
 

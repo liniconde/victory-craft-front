@@ -12,6 +12,7 @@ import {
 } from "../../../features/recruiters/api/client";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruiterRankingsMobileView from "../components/RecruiterRankingsMobileView";
+import "./RecruiterRankingsPage.desktop.css";
 import {
   RecruiterRankingsFiltersPanel,
   RecruiterRankingsList,
@@ -350,46 +351,21 @@ const RecruiterRankingsPage: React.FC = () => {
   }, [getVideoPlayback, items, selectedVideoId]);
 
   return (
-    <section className="recruiters-dashboard recruiters-board">
+    <section className="recruiters-dashboard recruiters-board recruiters-board-v2">
       <header className="recruiters-dashboard__hero">
         <div>
-          <p className="recruiters-dashboard__eyebrow">Scouting Board</p>
+          <p className="recruiters-dashboard__eyebrow">Performance Library</p>
+          <h2 className="recruiters-board-v2__hero-title">Elite weekly rankings</h2>
           <p>
-            Descubre tus mejores jugadas, compite con otros jugadores y haz que
-            tus clips destaquen en el scouting ranking.
+            Una lectura más unificada del board para revisar footage, detectar momentum
+            competitivo y decidir qué clips suben con fuego, bajan con hielo o quedan neutrales.
           </p>
         </div>
         <div className="recruiters-dashboard__stats">
           <strong>{pagination.total}</strong>
-          <span>videos publicados</span>
+          <span>live feed clips</span>
         </div>
       </header>
-
-      <section className="recruiters-board__summary">
-        <article>
-          <span>Orden actual</span>
-          <strong>Score desc + reciente desc</strong>
-        </article>
-        <article>
-          <span>Página</span>
-          <strong>
-            {pagination.page}/{pagination.totalPages}
-          </strong>
-        </article>
-        <article>
-          <span>Filtros activos</span>
-          <strong>
-            {
-              Object.values(query).filter(
-                (value) =>
-                  value !== undefined &&
-                  value !== null &&
-                  !(typeof value === "string" && value.trim() === ""),
-              ).length
-            }
-          </strong>
-        </article>
-      </section>
 
       <div className="recruiters-board--desktop">
         <RecruiterRankingsPodium
@@ -400,11 +376,6 @@ const RecruiterRankingsPage: React.FC = () => {
 
         <div className="recruiters-board__layout">
           <aside className="recruiters-board__filters recruiters-dashboard__table">
-            <div className="recruiters-dashboard__table-header recruiters-dashboard__table-header--stack">
-              <h3>Filtros</h3>
-              <span>Refina el board sin salir de scouting</span>
-            </div>
-
             <RecruiterRankingsFiltersPanel
               catalog={catalog}
               query={query}
@@ -413,10 +384,6 @@ const RecruiterRankingsPage: React.FC = () => {
           </aside>
 
           <aside className="recruiters-board__preview recruiters-dashboard__table">
-            <div className="recruiters-dashboard__table-header recruiters-dashboard__table-header--stack">
-              <h3>Preview</h3>
-            </div>
-
             <RecruiterRankingsPreview
               selectedItem={selectedItem}
               selectedVideoId={selectedVideoId}
@@ -434,9 +401,9 @@ const RecruiterRankingsPage: React.FC = () => {
 
           <section className="recruiters-board__list recruiters-dashboard__table">
             <div className="recruiters-dashboard__table-header">
-              <h3>Ranking editorial</h3>
+              <h3>Leaderboard extended</h3>
               <span>
-                Página {pagination.page} de {pagination.totalPages}
+                Updated live · page {pagination.page}
               </span>
             </div>
 
@@ -452,6 +419,32 @@ const RecruiterRankingsPage: React.FC = () => {
           </section>
         </div>
       </div>
+
+      <section className="recruiters-board__summary recruiters-board-v2__summary">
+        <article>
+          <span>Feed Mode</span>
+          <strong>Weekly ranking</strong>
+        </article>
+        <article>
+          <span>Board Page</span>
+          <strong>
+            {pagination.page}/{pagination.totalPages}
+          </strong>
+        </article>
+        <article>
+          <span>Live Filters</span>
+          <strong>
+            {
+              Object.values(query).filter(
+                (value) =>
+                  value !== undefined &&
+                  value !== null &&
+                  !(typeof value === "string" && value.trim() === ""),
+              ).length
+            }
+          </strong>
+        </article>
+      </section>
 
       <RecruiterRankingsMobileView
         catalog={catalog}

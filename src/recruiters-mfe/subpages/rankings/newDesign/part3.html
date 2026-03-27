@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Victory Craft | Performance Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#0d4429",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface": "#191c1e",
+                        "inverse-primary": "#9cd3ae",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#002110",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "surface-tint": "#35684a",
+                        "surface": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#dae2fd",
+                        "on-tertiary-container": "#c5a059",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "on-primary-container": "#7cb18e",
+                        "background": "#f7f9fb",
+                        "outline-variant": "#c0c9c0",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#4e3700",
+                        "on-secondary-container": "#5c647a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#261900",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "primary-fixed-dim": "#9cd3ae",
+                        "primary-fixed": "#b8efc9",
+                        "on-surface-variant": "#414942",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary": "#332200",
+                        "outline": "#717972",
+                        "secondary": "#565e74",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-primary-fixed-variant": "#1c5034",
+                        "tertiary-fixed": "#ffdea5",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#dae2fd",
+                        "primary": "#002c17",
+                        "on-secondary-fixed": "#131b2e",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="bg-[#002c17] h-screen w-64 fixed left-0 top-0 shadow-2xl shadow-black/20 flex flex-col py-8 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold tracking-tighter text-[#e9c176]">Victory Craft</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-[#e9c176]/60 font-semibold">Elite Performance</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-white/70 hover:text-white px-6 py-4 flex items-center gap-4 transition-all hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Dashboard</span>
+</a>
+<a class="bg-[#0d4429] text-[#e9c176] border-r-4 border-[#e9c176] px-6 py-4 flex items-center gap-4 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Video Library</span>
+</a>
+<a class="text-white/70 hover:text-white px-6 py-4 flex items-center gap-4 transition-all hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Recruitment</span>
+</a>
+<a class="text-white/70 hover:text-white px-6 py-4 flex items-center gap-4 transition-all hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Analytics</span>
+</a>
+<a class="text-white/70 hover:text-white px-6 py-4 flex items-center gap-4 transition-all hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] font-semibold tracking-tight text-sm">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 px-4 bg-[#e9c176] text-[#002110] font-bold text-xs rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Scouting Report
+            </button>
+<div class="mt-8 flex items-center gap-3">
+<img alt="Scout Profile" class="w-10 h-10 rounded-full object-cover grayscale brightness-125 border border-white/20" data-alt="portrait of a professional sports scout in a modern office with sharp features and analytical gaze" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB0Y7gqfS7ZaubkwB5kknTCOFO1BIT7uHPt2v94O7aWxfA1ooKxuI26qdx-aFZq6_-bJjWX4PCABinXJhPFjGV9bx9Ir-zPaJHq1xVaLpvvvb67Fj58gYGh-tTSjjNzO9hJFb3DCJCLPKkSCs4IyghE6AAqhZVl9LijcBv-ZHZ32eTDx3VFd2j-4OZdlZh4tX0BSXjhpvlQzvGfuXc8AoIeglIvnpGhEfQcBxCUlOCrYzlM-vmTMslLd9sYihHeFSgGl4RwLFC72A"/>
+<div>
+<p class="text-white text-xs font-bold">Marcus Thorne</p>
+<p class="text-white/40 text-[10px]">Head Scout</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-white/70 backdrop-blur-xl flex justify-between items-center px-12 h-20">
+<div class="flex items-center gap-10">
+<h2 class="font-['Inter'] font-bold text-[#002c17] text-lg">Performance Library</h2>
+<nav class="hidden md:flex gap-8">
+<a class="text-[#002c17] font-bold border-b-2 border-[#e9c176] pb-1 font-['Inter'] text-sm" href="#">All Footage</a>
+<a class="text-slate-500 hover:text-[#002c17] font-['Inter'] text-sm transition-colors" href="#">Game Film</a>
+<a class="text-slate-500 hover:text-[#002c17] font-['Inter'] text-sm transition-colors" href="#">Drills</a>
+<a class="text-slate-500 hover:text-[#002c17] font-['Inter'] text-sm transition-colors" href="#">Highlights</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-xs w-64 focus:ring-2 focus:ring-[#002c17]/20 transition-all" placeholder="Search athletes or plays..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:text-[#002c17] transition-colors" data-icon="notifications">notifications</button>
+<button class="bg-[#002c17] text-[#e9c176] px-5 py-2.5 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity">Upload Video</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-20 p-8 min-h-screen">
+<!-- Elite Top 3 Row -->
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400">Elite Weekly Rankings</h3>
+<span class="text-[10px] font-bold text-[#002c17] flex items-center gap-1">LIVE FEED <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span></span>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<!-- Rank 2 -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
+<div class="absolute -right-2 -bottom-2 text-6xl font-black text-black/[0.03]">2</div>
+<img class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" data-alt="headshot of a focused young latin athlete with athletic build and professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnssKvY8VH4pNPtb8lPX-RvZnhF2Sqif27KjCs_2EHVybIkT5i_5NXi8HBYarWvM9sD7K7zve19LbPGJ6ATps-9sY_HrbQMN3MHyLyl8lTf9MdprWJx5d2zNZ1QorGKomNv4Sh-4BHvzehfvCFKtV777pfPXEgFXO4g5K-rFNFSNvzC1uOK3uwiDISqjYoQVb4HSHIRxt2SGIJ9L8Zy3Wp-53EEI2lmpuKvwNEdYfNo8pIsh-VsDIZP1wyB0fT_IN7QZd0ofYAJS4"/>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[9px] font-bold text-white bg-slate-400 px-2 py-0.5 rounded-full uppercase">Forward</span>
+<span class="text-xs font-bold text-slate-700">9.4</span>
+</div>
+<h4 class="font-bold text-sm text-[#002c17]">Javier Ortiz</h4>
+<p class="text-[10px] text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-green-600" data-icon="trending_up">trending_up</span> +890 Votes</p>
+</div>
+</div>
+<!-- Rank 1 (Gold Accent) -->
+<div class="bg-[#0d4429] p-4 rounded-xl flex items-center gap-4 relative overflow-hidden ring-2 ring-[#e9c176] shadow-xl shadow-[#e9c176]/10">
+<div class="absolute -right-2 -bottom-2 text-6xl font-black text-white/[0.05]">1</div>
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover border-2 border-[#e9c176] shadow-sm" data-alt="determined young brazilian football player portrait with dramatic studio lighting and professional aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBHyxrntRNPrVYD2vYBiZ7du3Dbpe7TpQAHt2Uqx8BO9Taiic6Zz2AzfcmTiMjG5O6Y3jykSWKkJzh1FsNfj_OeAIznSEcgUR0bgNszi5UXFkIIYTDhh-PsQMwgjW8IXLKmG7hPF1TQ9hAGE341b10iXniBwPX80Pw4Ob2c2tLH4xlQJRpdVZ1XSbaciV4OZUXxXiLzddNEEJmN6JfZe8nN0lDZgDaZd9oDwq39frZaxkHtLipPfggjqC-nmgTTntK5gYbq-bNyHg"/>
+<span class="absolute -top-1 -right-1 material-symbols-outlined text-[#e9c176] text-lg bg-[#002c17] rounded-full" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[9px] font-bold text-[#002c17] bg-[#e9c176] px-2 py-0.5 rounded-full uppercase">Attacker</span>
+<span class="text-xs font-bold text-[#e9c176]">9.8</span>
+</div>
+<h4 class="font-bold text-sm text-white">Matheus Costa</h4>
+<p class="text-[10px] text-[#e9c176]/80 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]" data-icon="trending_up">trending_up</span> +1,240 Votes</p>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
+<div class="absolute -right-2 -bottom-2 text-6xl font-black text-black/[0.03]">3</div>
+<img class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" data-alt="side profile of a young professional athlete with a sharp analytical look and outdoor bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRXBX1scUDknkZL7RFYTqX2T80fr6fRSvazJ4zTSqZajEUeDo0rClD7Ebk_DHhXCmzszurjnvo-tPpBrTHRKOxvLSz3Jzpud_BFoQ0CvFV-tV-VHyURrPTJtW1wEFsQe4KPbUFzFEUPP7QAhkyxX5EIgrcYjjwziQ_RMl4hbhWmIxxdpIlkRJ7Iahh7qOzj9UnW0OXNzBwl0HW_piBdRY3MVIuv3tIiHFjqA56C4nAjQNye9DWqwsqGbvw6_9hP2BT4vrPMAu5TyU"/>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<span class="text-[9px] font-bold text-white bg-slate-400 px-2 py-0.5 rounded-full uppercase">Midfield</span>
+<span class="text-xs font-bold text-slate-700">9.2</span>
+</div>
+<h4 class="font-bold text-sm text-[#002c17]">Leo Banks</h4>
+<p class="text-[10px] text-slate-500 flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-green-600" data-icon="trending_up">trending_up</span> +512 Votes</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Workspace Grid -->
+<div class="grid grid-cols-12 gap-8 items-start">
+<!-- Center Content: Video & Stats -->
+<div class="col-span-12 lg:col-span-8">
+<!-- Filter Bar -->
+<div class="flex items-center gap-4 mb-4 bg-white p-3 rounded-lg shadow-sm">
+<div class="flex items-center gap-1 text-[11px] font-bold text-slate-400 px-2 border-r border-slate-100 uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                        Filters
+                    </div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-md text-[11px] font-semibold text-slate-600 hover:bg-surface-container-high transition-colors">
+                            Sport: Football <span class="material-symbols-outlined text-xs" data-icon="expand_more">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-md text-[11px] font-semibold text-slate-600 hover:bg-surface-container-high transition-colors">
+                            Play Type: Goal <span class="material-symbols-outlined text-xs" data-icon="expand_more">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-md text-[11px] font-semibold text-slate-600 hover:bg-surface-container-high transition-colors">
+                            Tournament: Elite U19 <span class="material-symbols-outlined text-xs" data-icon="expand_more">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-low rounded-md text-[11px] font-semibold text-slate-600 hover:bg-surface-container-high transition-colors">
+                            Country: Brazil <span class="material-symbols-outlined text-xs" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Video Player -->
+<div class="relative aspect-video bg-[#000] rounded-2xl overflow-hidden shadow-2xl mb-8 group">
+<img class="w-full h-full object-cover opacity-80" data-alt="action shot of a football player in a professional stadium performing a high-skill maneuver with motion blur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9vWMf9OWXUQphyAwDge9XNh-tfR1U0PvOHm6e-OUc3I8lf23FDbnIFj-PgQ1CHEngQgjVlbJfpjZPbk0xxtiiagEAF81yxB24s3ODE-QxNfxKeX3ZG3d_LfTk_aIHJz2yH2Qexn1p0OXI2WzZQLR_zze3i24ur3G8NU_myknD9iz1xl0THbu7qzPxQHOS94kekTb2yrs41FxhWj1oMyfa_EupU6J71E4hvglE7VHBRpuzxoGK8QgAh4GykimbL1TVOIP_80-KohM"/>
+<!-- Overlays -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<!-- Player Controls (Static Preview) -->
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="w-20 h-20 bg-[#e9c176]/90 rounded-full flex items-center justify-center text-[#002c17] shadow-xl hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute bottom-6 left-8 right-8">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="text-white font-bold text-2xl tracking-tight">Jugadita Futsal - Matheus Costa</h2>
+<p class="text-white/60 text-sm">International Youth Championship | Group Stage</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/20"><span class="material-symbols-outlined" data-icon="bookmark">bookmark</span></button>
+<button class="bg-white/10 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/20"><span class="material-symbols-outlined" data-icon="share">share</span></button>
+</div>
+</div>
+<div class="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-[#e9c176]"></div>
+</div>
+</div>
+</div>
+<!-- Scouting Breakdown Section -->
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-7">
+<div class="bg-white p-8 rounded-2xl shadow-sm">
+<h3 class="text-xs font-black uppercase tracking-[0.2em] text-[#002c17] mb-8">Scouting Breakdown</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500">Ball Control</span>
+<span class="text-[#002c17]">98%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-[#002c17] to-[#0d4429] rounded-full" style="width: 98%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500">Field Vision</span>
+<span class="text-[#002c17]">94%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-[#002c17] to-[#0d4429] rounded-full" style="width: 94%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-slate-500">Acceleration</span>
+<span class="text-[#002c17]">89%</span>
+</div>
+<div class="h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-[#002c17] to-[#0d4429] rounded-full" style="width: 89%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-5">
+<div class="bg-[#002c17] p-8 rounded-2xl shadow-xl relative overflow-hidden h-full">
+<div class="absolute -top-6 -right-6 w-32 h-32 bg-[#e9c176]/10 rounded-full blur-3xl"></div>
+<h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e9c176] mb-6">Expert Verdict</h3>
+<div class="flex items-end gap-4 mb-6">
+<div class="text-6xl font-black text-[#e9c176] leading-none">S+</div>
+<div class="pb-1">
+<p class="text-white/60 text-[10px] uppercase font-bold tracking-widest leading-none">Tier</p>
+<p class="text-white text-xs font-bold">World Class Prospect</p>
+</div>
+</div>
+<p class="text-white/70 text-xs leading-relaxed italic border-l-2 border-[#e9c176]/30 pl-4">
+                                "Matheus exhibits rare lateral agility combined with a technical floor that exceeds most U21 benchmarks. His ability to manipulate tight spaces makes him a priority recruitment target."
+                            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Rankings -->
+<div class="col-span-12 lg:col-span-4 sticky top-28">
+<div class="bg-white rounded-2xl shadow-sm p-6 max-h-[calc(100vh-160px)] flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-bold text-[#002c17]">Leaderboard Extended</h3>
+<span class="text-[10px] text-slate-400 font-medium">Updated 2m ago</span>
+</div>
+<div class="space-y-4 overflow-y-auto no-scrollbar flex-1">
+<!-- Player 4 -->
+<div class="group flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-surface-container-high hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-4">4</span>
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="athlete portrait with professional studio background, soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLiWAN8rfQGNQjikY1J9WHLqhy9w9yAy1-U5gYDKIfY3JHf9yRaGRc3tRNoHnMBCJOBCRqkJO7fo62X_ojwA6QKW3lN0fEt61f6fEn6HFR_g-Ei8sERY0-TP-JlCnNRSQjifAbnURIL3L3o83s14ntGsPTghEHNXZQhvjmtxOpgE4795OPcN4Q79ZKO9A5EkxhsXPl7010tSBqBYfqxWRpn_06jczYlIkIJuqQDLWKztyA59pCrB3yQJSFgChrlIkyuMcnNCzIMww"/>
+<div>
+<p class="text-xs font-bold text-[#002c17]">Aaron Kross</p>
+<p class="text-[10px] text-slate-500">LB | Munich Elite</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-black text-[#002c17]">8.9</p>
+<button class="text-[10px] font-bold text-[#e9c176] bg-[#002c17] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">View</button>
+</div>
+</div>
+<!-- Player 5 -->
+<div class="group flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-surface-container-high hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-4">5</span>
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="sharp portrait of a young professional athlete in focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpJszMj4TfXgms00fDKjVoV8_WF3fvKhw49JIqFunl1lrxKJgysOOYEg2uPwcMKuXTUE5E5rc1HqZEn1cxLBxjfrqWraCrZgf_SnYnp1buPhKadYUMMJS7Ffq5ti3bkU5thlhH9JvKMCJN1wo0wwaxF1hb0crAE1GsJFtzZxdkW4tFTASzk2J4TQvoiYsL_3go_kpF7mEUmzdzM7WXM30u3wbuSihtab0CfkPozwY2vh983dWhXXQYV2JIuY1TfStZyX0QTBWKY_Q"/>
+<div>
+<p class="text-xs font-bold text-[#002c17]">Santi Ramos</p>
+<p class="text-[10px] text-slate-500">GK | Madrid Sub-21</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-black text-[#002c17]">8.7</p>
+<button class="text-[10px] font-bold text-[#e9c176] bg-[#002c17] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">View</button>
+</div>
+</div>
+<!-- Player 6 -->
+<div class="group flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-surface-container-high hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-4">6</span>
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="athlete portrait with clean background and focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF7wcyOulzVqouyUgUV8QSY37wt6Q3HSr0TnkX0RMPwKmBqssW9bLGHbdkRrnIf9U0qg0yChZ-A2jmzIsn7q42Cij1dNLm1AUKON8mDc3WFcKGgkUUirAhVH4tl0M6uts9pMdxxxqOyYjwQzyWtmVcnzPinvlupD55C5i8jzrWIDNx-K3hxW34weeTlJ1egb2TsNIqa0euelC-iut7EXGpn31JKrTAPhx1nVJJihBY16VM4RyKgj2LK43pRZUkqdme6ZUCZr2Z-j4"/>
+<div>
+<p class="text-xs font-bold text-[#002c17]">Erik Jensen</p>
+<p class="text-[10px] text-slate-500">CB | Copenhagen</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-black text-[#002c17]">8.5</p>
+<button class="text-[10px] font-bold text-[#e9c176] bg-[#002c17] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">View</button>
+</div>
+</div>
+<!-- Player 7 -->
+<div class="group flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-surface-container-high hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-4">7</span>
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="high contrast portrait of a professional female athlete with a serious expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH_nu-CyyW2cD1YAvvfpjQ30KO1j4IpTC-WzwLhtsggbD2rbbckbmnULXKnCbugBia4qig8NxX1iS0FPZw3E49LR_mZ8AYqSHNPEPV-kiDZVj2neg6t0zrKN2KdqrRXAoE0plFI0V6ynBDuK6v38s7q3Sh0MK0-BNoQfzrQeHtNtXNk-iZzXLRigWA06fTpO34k01S2JAMfnPW5QKkKdd85XNMPJNFVY1CG7H0rDjQGWeGPGmFJcz4LH5fjk1QMi62cIbbujewTzE"/>
+<div>
+<p class="text-xs font-bold text-[#002c17]">Maya Chen</p>
+<p class="text-[10px] text-slate-500">MF | Shanghai Pro</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-black text-[#002c17]">8.4</p>
+<button class="text-[10px] font-bold text-[#e9c176] bg-[#002c17] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">View</button>
+</div>
+</div>
+<!-- Player 8 -->
+<div class="group flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-surface-container-high hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-slate-400 w-4">8</span>
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="close up headshot of a young male athlete with analytical look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfisAkyz9KtBhNonzieLPmXolgSdIJfyGq421Y4XjZbiWx5jTsxDozj9RFDeuZ-mqRIWhEHmlUfuSq5hdJvcj6AW2yk1oogo0Hmu6u7xx20SaxW1yS3l99VRgsaLZs7SvkbLxCQIH0HH5-dVdJnkx97wpCorNp8Epg0Qhc9tWcu6xl2Aa0S_AaW-DZVuFaqTRaXck2dpqHgCyXXgGeivf2-J_ePt4PGbUX_KDij_M0aCIgDeI5GfdSwD3SQnFh61Zu0-lYoScaXy4"/>
+<div>
+<p class="text-xs font-bold text-[#002c17]">Liam O'Neil</p>
+<p class="text-[10px] text-slate-500">RW | Dublin Celtic</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-black text-[#002c17]">8.2</p>
+<button class="text-[10px] font-bold text-[#e9c176] bg-[#002c17] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">View</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 border border-slate-200 text-slate-500 font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-colors">
+                        Expand All Rankings
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>
