@@ -26,7 +26,14 @@ const RecruiterRankingsInteractiveVideoCard: React.FC<
   onSelect,
 }) => {
   const title = item.scoutingProfile?.title || item.video.s3Key || "Untitled clip";
-  const playerName = getDisplayName(item);
+  const displayName = getDisplayName(item);
+  const playerName =
+    item.playerProfile?.fullName && item.playerProfile.fullName.trim()
+      ? item.playerProfile.fullName.trim()
+      : displayName;
+  const showPlayerName =
+    playerName.trim().length > 0 &&
+    playerName.trim().toLowerCase() !== title.trim().toLowerCase();
   const cardRef = useRef<HTMLElement | null>(null);
   const [isInViewport, setIsInViewport] = useState(false);
 
@@ -102,18 +109,24 @@ const RecruiterRankingsInteractiveVideoCard: React.FC<
       <div className="recruiters-board-interactive__video-meta">
         <div className="recruiters-board-interactive__video-copy">
           <strong>{title}</strong>
-          <span>{playerName}</span>
+          {showPlayerName ? <span>{playerName}</span> : null}
         </div>
 
-        <RecruiterVoteButtons
-          upvotes={item.ranking.upvotes}
-          downvotes={item.ranking.downvotes}
-          myVote={item.myVote}
-          pendingVote={pendingVote}
-          isPending={pendingVote !== null && pendingVote !== undefined}
-          onVote={(value) => onVote(item.video._id, value)}
-          className="recruiters-board-interactive__video-votes"
-        />
+        <div className="recruiters-board-interactive__video-actions">
+          <div className="recruiters-board-interactive__video-score" aria-label="Puntaje del video">
+            <strong>{item.ranking.score}</strong>
+          </div>
+
+          <RecruiterVoteButtons
+            upvotes={item.ranking.upvotes}
+            downvotes={item.ranking.downvotes}
+            myVote={item.myVote}
+            pendingVote={pendingVote}
+            isPending={pendingVote !== null && pendingVote !== undefined}
+            onVote={(value) => onVote(item.video._id, value)}
+            className="recruiters-board-interactive__video-votes"
+          />
+        </div>
       </div>
     </article>
   );

@@ -214,11 +214,6 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
         id="mobile-interactive-feed"
         className="recruiters-board-mobile__interactive-feed recruiters-dashboard__table"
       >
-        <div className="recruiters-dashboard__table-header recruiters-dashboard__table-header--stack">
-          <h3>Modo interactivo</h3>
-          <span>Scroll continuo con autoplay solo en el clip visible.</span>
-        </div>
-
         <div className="recruiters-board-mobile__interactive-list">
           {items.map((item) => (
             <div

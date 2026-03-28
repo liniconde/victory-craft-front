@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import useAppViewport from "../../hooks/useAppViewport";
 import {
   SCOUTING_SPOTLIGHT_STEPS,
   SPORT_OPTIONS,
@@ -96,6 +97,7 @@ const RecruitersOnboarding: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { authReady, email, userId, firstName, lastName } = useAuth();
+  const { isDesktop: isDesktopViewport } = useAppViewport({ mobileBreakpoint: 880 });
   const identity = getScoutingOnboardingIdentity(userId, email);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSport, setSelectedSport] = useState<OnboardingSportId | null>(null);
@@ -108,20 +110,8 @@ const RecruitersOnboarding: React.FC = () => {
   const isIntroEntryRoute = location.pathname === "/scouting/intro";
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-
-    const mediaQuery = window.matchMedia("(min-width: 881px)");
-    const syncDesktopMode = (event?: MediaQueryListEvent) => {
-      setIsDesktopOnboardingEnabled(event ? event.matches : mediaQuery.matches);
-    };
-
-    syncDesktopMode();
-    mediaQuery.addEventListener("change", syncDesktopMode);
-
-    return () => {
-      mediaQuery.removeEventListener("change", syncDesktopMode);
-    };
-  }, []);
+    setIsDesktopOnboardingEnabled(isDesktopViewport);
+  }, [isDesktopViewport]);
 
   useEffect(() => {
     if (!authReady || !isIntroEntryRoute || isDesktopOnboardingEnabled) return;

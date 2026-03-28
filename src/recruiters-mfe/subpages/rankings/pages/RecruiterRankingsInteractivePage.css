@@ -229,6 +229,28 @@
     font-size: 0.8rem;
   }
 
+  .recruiters-board-interactive__video-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.9rem;
+  }
+
+  .recruiters-board-interactive__video-score {
+    display: grid;
+    justify-items: end;
+    gap: 0.08rem;
+    min-width: 4.5rem;
+  }
+
+  .recruiters-board-interactive__video-score strong {
+    color: #002c17;
+    font-size: 1.2rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
   .recruiters-board-interactive__video-votes {
     justify-self: end;
   }
@@ -321,22 +343,76 @@
   }
 
   .recruiters-board-mobile--interactive .recruiters-board-interactive__video-meta {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    align-items: stretch;
   }
 
   .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy {
-    gap: 0.12rem;
+    gap: 0.16rem;
+    padding: 0 0.1rem;
   }
 
   .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy strong {
-    font-size: 0.98rem;
-    line-height: 1.2;
+    display: block;
+    font-size: 1.02rem;
+    line-height: 1.16;
+    letter-spacing: -0.03em;
   }
 
   .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy span {
-    font-size: 0.82rem;
+    display: block;
+    color: #7b8f99;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-actions {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-content: stretch;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0 0.1rem;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-score {
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-score strong {
+    font-size: 0.96rem;
+    line-height: 1;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-votes {
+    justify-self: end;
+    min-width: 0;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-votes.recruiter-vote-buttons {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .recruiters-board-mobile--interactive
+    .recruiters-board-interactive__video-votes
+    .recruiter-vote-buttons__action {
+    min-width: 3.45rem;
+    padding: 0.56rem 0.72rem;
+    gap: 0.3rem;
+  }
+
+  .recruiters-board-mobile--interactive
+    .recruiters-board-interactive__video-votes
+    .recruiter-vote-buttons__reset {
+    padding: 0.56rem 0.72rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
   }
 
   .recruiters-board-mobile--interactive .recruiters-board-interactive__video-votes {

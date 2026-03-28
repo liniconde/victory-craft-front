@@ -11,6 +11,7 @@ import {
   cacheRecruiterPlaybackUrl,
   getCachedRecruiterPlaybackUrl,
 } from "../../../features/recruiters/api/client";
+import useAppViewport from "../../../../hooks/useAppViewport";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersWorkspaceButton from "../../../components/RecruitersWorkspaceButton";
 import {
@@ -67,16 +68,9 @@ const sortRankingItems = (
   return sorted;
 };
 
-const getInitialIsMobileView = () => {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return false;
-  }
-
-  return window.matchMedia("(max-width: 880px)").matches;
-};
-
 const RecruiterRankingsInteractivePage: React.FC = () => {
   const navigate = useNavigate();
+  const { isMobile: isMobileView } = useAppViewport({ mobileBreakpoint: 880 });
   const {
     api: { getFiltersCatalog, getRankings, getVideoPlayback, voteVideo },
     feedback,
@@ -96,7 +90,6 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(getInitialIsMobileView);
   const [playbackByVideoId, setPlaybackByVideoId] = useState<Record<string, string>>({});
   const [pendingVotes, setPendingVotes] = useState<
     Record<string, -1 | 0 | 1 | null | undefined>
@@ -144,17 +137,6 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
   useEffect(() => {
     loadingMoreRef.current = isLoadingMore;
   }, [isLoadingMore]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-
-    const mediaQuery = window.matchMedia("(max-width: 880px)");
-    const sync = () => setIsMobileView(mediaQuery.matches);
-    sync();
-
-    mediaQuery.addEventListener("change", sync);
-    return () => mediaQuery.removeEventListener("change", sync);
-  }, []);
 
   useEffect(() => {
     trackTask(
@@ -408,15 +390,6 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
           </div>
 
           <section className="recruiters-board-interactive__feed recruiters-dashboard__table">
-            <div className="recruiters-dashboard__table-header recruiters-board-interactive__feed-header">
-              <div>
-                <h3>Interactive feed</h3>
-                <span>
-                  Clips {items.length} de {totalItems}
-                </span>
-              </div>
-            </div>
-
             <div className="recruiters-board-interactive__feed-list">
               {items.map((item) => (
                 <div
