@@ -57,6 +57,7 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
 }) => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const visibleVideoIdsRef = useRef<Set<string>>(new Set());
   const [activeVideoId, setActiveVideoId] = useState("");
 
   const scrollToVideoCard = (videoId: string) => {
@@ -108,6 +109,42 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
   }, [items]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    visibleVideoIdsRef.current = new Set();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const videoId = (entry.target as HTMLElement).dataset.videoId;
+          if (!videoId) return;
+
+          if (entry.isIntersecting) {
+            visibleVideoIdsRef.current.add(videoId);
+            return;
+          }
+
+          visibleVideoIdsRef.current.delete(videoId);
+        });
+      },
+      {
+        threshold: [0, 0.2, 0.5, 0.8],
+        rootMargin: "30% 0px 30% 0px",
+      }
+    );
+
+    items.forEach((item) => {
+      const card = cardRefs.current[item.video._id];
+      if (card) {
+        observer.observe(card);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [items]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
 
     let frameId = 0;
@@ -116,9 +153,12 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
       const viewportCenter = window.innerHeight / 2;
       let nextActiveVideoId = "";
       let bestDistance = Number.POSITIVE_INFINITY;
+      const visibleVideoIds = visibleVideoIdsRef.current;
+      const candidateVideoIds =
+        visibleVideoIds.size > 0 ? Array.from(visibleVideoIds) : items.map((item) => item.video._id);
 
-      items.forEach((item) => {
-        const card = cardRefs.current[item.video._id];
+      candidateVideoIds.forEach((videoId) => {
+        const card = cardRefs.current[videoId];
         if (!card) return;
 
         const rect = card.getBoundingClientRect();
@@ -130,11 +170,13 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
 
         if (distanceToCenter < bestDistance) {
           bestDistance = distanceToCenter;
-          nextActiveVideoId = item.video._id;
+          nextActiveVideoId = videoId;
         }
       });
 
-      setActiveVideoId((current) => nextActiveVideoId || current);
+      setActiveVideoId((current) =>
+        nextActiveVideoId && nextActiveVideoId !== current ? nextActiveVideoId : current
+      );
     };
 
     const schedulePickCenteredVideo = () => {
@@ -218,6 +260,7 @@ const RecruiterRankingsInteractiveMobileView: React.FC<
           {items.map((item) => (
             <div
               key={item.video._id}
+              data-video-id={item.video._id}
               ref={(node) => {
                 cardRefs.current[item.video._id] = node;
               }}
