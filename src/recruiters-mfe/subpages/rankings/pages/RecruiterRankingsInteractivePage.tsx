@@ -19,6 +19,7 @@ import {
   getPlayableUrl,
 } from "../components/RecruiterRankingsSections";
 import RecruiterRankingsInteractiveVideoCard from "../components/RecruiterRankingsInteractiveVideoCard";
+import RecruiterRankingsInteractiveMobileView from "../components/RecruiterRankingsInteractiveMobileView";
 import "./RecruiterRankingsPage.desktop.css";
 import "./RecruiterRankingsInteractivePage.css";
 
@@ -66,6 +67,14 @@ const sortRankingItems = (
   return sorted;
 };
 
+const getInitialIsMobileView = () => {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
+
+  return window.matchMedia("(max-width: 880px)").matches;
+};
+
 const RecruiterRankingsInteractivePage: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -86,6 +95,8 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(getInitialIsMobileView);
   const [playbackByVideoId, setPlaybackByVideoId] = useState<Record<string, string>>({});
   const [pendingVotes, setPendingVotes] = useState<
     Record<string, -1 | 0 | 1 | null | undefined>
@@ -101,14 +112,16 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
     const container = pageRef.current?.closest(".recruiters-content");
     const layout = pageRef.current?.closest(".recruiters-layout");
     const pageContainer = pageRef.current?.closest(".page-container");
-    if (container instanceof HTMLElement) {
-      container.classList.add("recruiters-content--interactive-ranking");
-    }
-    if (layout instanceof HTMLElement) {
-      layout.classList.add("recruiters-layout--interactive-ranking");
-    }
-    if (pageContainer instanceof HTMLElement) {
-      pageContainer.classList.add("page-container--interactive-ranking");
+    if (!isMobileView) {
+      if (container instanceof HTMLElement) {
+        container.classList.add("recruiters-content--interactive-ranking");
+      }
+      if (layout instanceof HTMLElement) {
+        layout.classList.add("recruiters-layout--interactive-ranking");
+      }
+      if (pageContainer instanceof HTMLElement) {
+        pageContainer.classList.add("page-container--interactive-ranking");
+      }
     }
 
     return () => {
@@ -122,7 +135,7 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
         pageContainer.classList.remove("page-container--interactive-ranking");
       }
     };
-  }, []);
+  }, [isMobileView]);
 
   useEffect(() => {
     playbackByVideoIdRef.current = playbackByVideoId;
@@ -131,6 +144,17 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
   useEffect(() => {
     loadingMoreRef.current = isLoadingMore;
   }, [isLoadingMore]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 880px)");
+    const sync = () => setIsMobileView(mediaQuery.matches);
+    sync();
+
+    mediaQuery.addEventListener("change", sync);
+    return () => mediaQuery.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     trackTask(
@@ -264,6 +288,8 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
   }, [currentPage, loadPage, totalPages]);
 
   useEffect(() => {
+    if (isMobileView) return;
+
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
@@ -278,7 +304,7 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [loadNextPage]);
+  }, [isMobileView, loadNextPage]);
 
   const updateVote = useCallback(async (videoId: string, value: -1 | 0 | 1) => {
     try {
@@ -344,6 +370,33 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
       ref={pageRef}
       className="recruiters-dashboard recruiters-board recruiters-board-v2 recruiters-board-interactive"
     >
+      {isMobileView ? (
+        <RecruiterRankingsInteractiveMobileView
+          catalog={catalog}
+          items={items}
+          topThree={topThree}
+          totalItems={totalItems}
+          query={query}
+          isFiltersOpen={isMobileFiltersOpen}
+          isLoadingMore={isLoadingMore}
+          hasMore={currentPage < totalPages}
+          pendingVotes={pendingVotes}
+          getPlayableUrlForVideo={(videoId, item) =>
+            playbackByVideoId[videoId] ||
+            getCachedRecruiterPlaybackUrl(videoId) ||
+            getPlayableUrl(item)
+          }
+          onSelectVideo={setSelectedVideoId}
+          onVote={updateVote}
+          onQueryChange={updateQuery}
+          onOpenFilters={() => setIsMobileFiltersOpen(true)}
+          onCloseFilters={() => setIsMobileFiltersOpen(false)}
+          onLoadMore={loadNextPage}
+          onExitInteractiveMode={() => navigate("/scouting/subpages/rankings")}
+        />
+      ) : null}
+
+      {!isMobileView ? (
       <div className="recruiters-board-interactive__layout">
         <div className="recruiters-board-interactive__main">
           <div className="recruiters-board-interactive__podium-shell recruiters-dashboard__table">
@@ -431,6 +484,7 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
           </RecruitersWorkspaceButton>
         </aside>
       </div>
+      ) : null}
     </section>
   );
 };

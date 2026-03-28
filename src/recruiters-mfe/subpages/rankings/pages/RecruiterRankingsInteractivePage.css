@@ -252,6 +252,113 @@
 }
 
 @media (max-width: 880px) {
+  .recruiters-board-interactive__layout {
+    display: none;
+  }
+
+  .recruiters-board-mobile--interactive {
+    display: grid;
+    gap: 0.9rem;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .recruiters-board-mobile__interactive-feed {
+    padding: 0.85rem;
+    overflow: visible;
+  }
+
+  .recruiters-board-mobile__interactive-list {
+    display: grid;
+    gap: 0.8rem;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-card {
+    gap: 0.65rem;
+    padding: 0.7rem;
+    border-radius: 18px;
+    border: 1px solid rgba(12, 68, 41, 0.08);
+    background: #ffffff;
+    box-shadow: 0 14px 28px rgba(16, 37, 48, 0.06);
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-shell {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    padding: 0.2rem;
+    border-radius: 16px;
+    background: #0f172a;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-video-player,
+  .recruiters-board-mobile--interactive .recruiters-video-player.is-landscape,
+  .recruiters-board-mobile--interactive .recruiters-video-player.is-portrait {
+    width: 100%;
+    min-height: 0;
+    border-radius: 14px;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-video-player.is-landscape video {
+    width: 100%;
+    height: auto;
+    max-height: min(32svh, 14rem);
+    object-fit: contain;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-video-player.is-portrait video {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: min(52svh, 25rem);
+    object-fit: contain;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-empty {
+    min-height: 11rem;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-meta {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    align-items: start;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy {
+    gap: 0.12rem;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy strong {
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-copy span {
+    font-size: 0.82rem;
+  }
+
+  .recruiters-board-mobile--interactive .recruiters-board-interactive__video-votes {
+    justify-self: start;
+  }
+
+  .recruiters-board-mobile__interactive-status {
+    margin: 0;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.82rem;
+  }
+
+  .recruiters-board-mobile__interactive-sentinel {
+    width: 100%;
+    height: 1px;
+  }
+
+  .recruiters-board-mobile__interactive-exit {
+    width: 100%;
+  }
+
   .recruiters-board-v2 .recruiters-board__interactive-link {
     display: none;
   }

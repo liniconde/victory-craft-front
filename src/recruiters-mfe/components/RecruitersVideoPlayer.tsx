@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SportsLoader from "../../components/loader/SportsLoader";
 
 interface RecruitersVideoPlayerProps {
@@ -10,6 +10,7 @@ interface RecruitersVideoPlayerProps {
   loop?: boolean;
   preload?: "none" | "metadata" | "auto";
   controls?: boolean;
+  isActive?: boolean;
 }
 
 const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
@@ -21,14 +22,33 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
   loop = false,
   preload = "metadata",
   controls = true,
+  isActive = true,
 }) => {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("landscape");
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     setIsVideoReady(false);
     setOrientation("landscape");
   }, [src]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!isActive) {
+      video.pause();
+      return;
+    }
+
+    if (!autoPlay) return;
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => undefined);
+    }
+  }, [autoPlay, isActive, src]);
 
   return (
     <div className={`recruiters-video-player is-${orientation}`}>
@@ -41,6 +61,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
         />
       ) : null}
       <video
+        ref={videoRef}
         className={className}
         src={src}
         controls={controls}
