@@ -2,11 +2,22 @@ import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { FiActivity, FiBarChart2, FiFolder, FiUser } from "react-icons/fi";
 import { NavLink, Outlet } from "react-router-dom";
+import useAppViewport from "../../../hooks/useAppViewport";
 import RecruitersOnboarding from "../../onboarding/RecruitersOnboarding";
 import "./RecruitersLayout.css";
 
 const RecruitersLayout: React.FC = () => {
+  const { isMobile } = useAppViewport({ mobileBreakpoint: 880 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const rankingsRoute = isMobile
+    ? "/scouting/subpages/rankings/interactive"
+    : "/scouting/subpages/rankings";
+
+  React.useEffect(() => {
+    if (!isMobile && isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  }, [isMobile, isMobileMenuOpen]);
 
   const renderLink = (
     to: string,
@@ -33,18 +44,20 @@ const RecruitersLayout: React.FC = () => {
 
   return (
     <div className="recruiters-layout recruiters-mfe-scope">
-      <button
-        type="button"
-        className="recruiters-mobile-menu-button"
-        onClick={() => setIsMobileMenuOpen(true)}
-        aria-label="Abrir menú de scouting"
-        data-onboarding="scouting-mobile-trigger"
-      >
-        <FaBars aria-hidden="true" />
-        <span>Scouting</span>
-      </button>
+      {isMobile ? (
+        <button
+          type="button"
+          className="recruiters-mobile-menu-button"
+          onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Abrir menú de scouting"
+          data-onboarding="scouting-mobile-trigger"
+        >
+          <FaBars aria-hidden="true" />
+          <span>Scouting</span>
+        </button>
+      ) : null}
 
-      {isMobileMenuOpen ? (
+      {isMobile && isMobileMenuOpen ? (
         <div className="recruiters-mobile-menu">
           <button
             type="button"
@@ -94,7 +107,7 @@ const RecruitersLayout: React.FC = () => {
                 "Athlete records"
               )}
               {renderLink(
-                "/scouting/subpages/rankings",
+                rankingsRoute,
                 "Rankings",
                 "scouting-menu-rankings",
                 <FiBarChart2 />,
@@ -134,7 +147,7 @@ const RecruitersLayout: React.FC = () => {
             "Athlete records"
           )}
           {renderLink(
-            "/scouting/subpages/rankings",
+            rankingsRoute,
             "Rankings",
             "scouting-menu-rankings",
             <FiBarChart2 />,

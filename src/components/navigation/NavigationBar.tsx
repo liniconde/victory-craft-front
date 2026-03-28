@@ -3,6 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../../assets/VICTORY CRAFT.png"; // ✅ Asegura que el logo se importa correctamente
+import useAppViewport from "../../hooks/useAppViewport";
 import { getVisibleNavItems, normalizeNavigationRole } from "./navigationConfig";
 import "./styles.css";
 
@@ -42,6 +43,7 @@ const NavigationBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isMobile } = useAppViewport({ mobileBreakpoint: 880 });
 
   const normalizedRole = normalizeNavigationRole(isAuthenticated, role);
 
@@ -81,7 +83,12 @@ const NavigationBar: React.FC = () => {
     `nav-link ${isActiveRoute(path) ? "nav-link-active" : ""}`;
 
   const handleNavigate = (path: string) => {
-    navigate(path);
+    const resolvedPath =
+      isMobile && path === "/scouting/subpages/dashboard"
+        ? "/scouting/subpages/rankings/interactive"
+        : path;
+
+    navigate(resolvedPath);
     setIsOpen(false);
   };
 

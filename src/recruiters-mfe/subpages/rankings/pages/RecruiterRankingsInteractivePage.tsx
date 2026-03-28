@@ -374,7 +374,11 @@ const RecruiterRankingsInteractivePage: React.FC = () => {
           onOpenFilters={() => setIsMobileFiltersOpen(true)}
           onCloseFilters={() => setIsMobileFiltersOpen(false)}
           onLoadMore={loadNextPage}
-          onExitInteractiveMode={() => navigate("/scouting/subpages/rankings")}
+          onExitInteractiveMode={() =>
+            navigate("/scouting/subpages/rankings", {
+              state: { forceEditorialMobile: true },
+            })
+          }
         />
       ) : null}
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
 import type {
   RecruiterFiltersCatalog,
@@ -11,6 +11,7 @@ import {
   cacheRecruiterPlaybackUrl,
   getCachedRecruiterPlaybackUrl,
 } from "../../../features/recruiters/api/client";
+import useAppViewport from "../../../../hooks/useAppViewport";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
 import RecruitersWorkspaceButton from "../../../components/RecruitersWorkspaceButton";
 import RecruiterRankingsMobileView from "../components/RecruiterRankingsMobileView";
@@ -124,6 +125,8 @@ const sortRankingItems = (
 
 const RecruiterRankingsPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isMobile: isMobileView } = useAppViewport({ mobileBreakpoint: 880 });
   const {
     api: { getFiltersCatalog, getRankings, getVideoPlayback, voteVideo },
     feedback,
@@ -150,6 +153,13 @@ const RecruiterRankingsPage: React.FC = () => {
     total: 0,
     limit: 12,
   });
+  const forceEditorialMobileView = Boolean(
+    (location.state as { forceEditorialMobile?: boolean } | null)?.forceEditorialMobile
+  );
+
+  if (isMobileView && !forceEditorialMobileView) {
+    return <Navigate to="/scouting/subpages/rankings/interactive" replace />;
+  }
 
   useEffect(() => {
     trackTask(
@@ -354,6 +364,8 @@ const RecruiterRankingsPage: React.FC = () => {
 
   return (
     <section className="recruiters-dashboard recruiters-board recruiters-board-v2">
+      {!isMobileView ? (
+        <>
       <header className="recruiters-dashboard__hero">
         <div>
           <p className="recruiters-dashboard__eyebrow">Performance Library</p>
@@ -457,31 +469,35 @@ const RecruiterRankingsPage: React.FC = () => {
           </strong>
         </article>
       </section>
+        </>
+      ) : null}
 
-      <RecruiterRankingsMobileView
-        catalog={catalog}
-        items={items}
-        topThree={topThree}
-        selectedItem={selectedItem}
-        selectedVideoId={selectedItem?.video._id || ""}
-        playableUrl={playableUrl}
-        pendingVotes={pendingVotes}
-        pagination={pagination}
-        query={query}
-        isFiltersOpen={isMobileFiltersOpen}
-        onSelectVideo={setSelectedVideoId}
-        onVote={updateVote}
-        onPageChange={changePage}
-        onQueryChange={updateQuery}
-        onOpenFilters={() => setIsMobileFiltersOpen(true)}
-        onCloseFilters={() => setIsMobileFiltersOpen(false)}
-        onOpenRecruiterView={(videoId) =>
-          navigate(`/scouting/subpages/video/${videoId}`)
-        }
-        onOpenProfile={(videoId) =>
-          navigate(`/scouting/subpages/profile/${videoId}`)
-        }
-      />
+      {isMobileView ? (
+        <RecruiterRankingsMobileView
+          catalog={catalog}
+          items={items}
+          topThree={topThree}
+          selectedItem={selectedItem}
+          selectedVideoId={selectedItem?.video._id || ""}
+          playableUrl={playableUrl}
+          pendingVotes={pendingVotes}
+          pagination={pagination}
+          query={query}
+          isFiltersOpen={isMobileFiltersOpen}
+          onSelectVideo={setSelectedVideoId}
+          onVote={updateVote}
+          onPageChange={changePage}
+          onQueryChange={updateQuery}
+          onOpenFilters={() => setIsMobileFiltersOpen(true)}
+          onCloseFilters={() => setIsMobileFiltersOpen(false)}
+          onOpenRecruiterView={(videoId) =>
+            navigate(`/scouting/subpages/video/${videoId}`)
+          }
+          onOpenProfile={(videoId) =>
+            navigate(`/scouting/subpages/profile/${videoId}`)
+          }
+        />
+      ) : null}
     </section>
   );
 };
