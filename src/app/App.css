@@ -65,8 +65,8 @@ body {
 }
 
 .page-container.page-container--interactive-ranking {
-  min-height: calc(100dvh - var(--app-navbar-height, 80px) - var(--app-footer-height, 10vh));
-  height: calc(100dvh - var(--app-navbar-height, 80px) - var(--app-footer-height, 10vh));
+  min-height: calc(100dvh - var(--app-footer-height, 10vh));
+  height: calc(100dvh - var(--app-footer-height, 10vh));
   overflow: hidden;
 }
 

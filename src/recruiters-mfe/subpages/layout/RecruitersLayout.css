@@ -118,8 +118,8 @@
 }
 
 .recruiters-layout.recruiters-layout--interactive-ranking {
-  min-height: calc(100dvh - var(--app-navbar-height, 80px) - var(--app-footer-height, 10vh));
-  height: calc(100dvh - var(--app-navbar-height, 80px) - var(--app-footer-height, 10vh));
+  min-height: 100%;
+  height: 100%;
   align-items: stretch;
 }
 
