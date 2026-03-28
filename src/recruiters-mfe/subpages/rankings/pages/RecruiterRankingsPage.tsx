@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiArrowRight } from "react-icons/fi";
 import type {
   RecruiterFiltersCatalog,
   RecruiterRankingItem,
@@ -11,6 +12,7 @@ import {
   getCachedRecruiterPlaybackUrl,
 } from "../../../features/recruiters/api/client";
 import { useRecruitersModule } from "../../../hooks/useRecruitersModule";
+import RecruitersWorkspaceButton from "../../../components/RecruitersWorkspaceButton";
 import RecruiterRankingsMobileView from "../components/RecruiterRankingsMobileView";
 import "./RecruiterRankingsPage.desktop.css";
 import {
@@ -401,10 +403,20 @@ const RecruiterRankingsPage: React.FC = () => {
 
           <section className="recruiters-board__list recruiters-dashboard__table">
             <div className="recruiters-dashboard__table-header">
-              <h3>Leaderboard extended</h3>
-              <span>
-                Updated live · page {pagination.page}
-              </span>
+              <div>
+                <h3>Leaderboard extended</h3>
+                <span>
+                  Updated live · page {pagination.page}
+                </span>
+              </div>
+              <RecruitersWorkspaceButton
+                className="recruiters-board__interactive-link"
+                onClick={() => navigate("/scouting/subpages/rankings/interactive")}
+                icon={<FiArrowRight aria-hidden="true" />}
+                caption="feed continuo + filtros fijos"
+              >
+                Modo interactivo
+              </RecruitersWorkspaceButton>
             </div>
 
             <RecruiterRankingsList

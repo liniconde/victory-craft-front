@@ -131,6 +131,11 @@ const NavigationBar: React.FC = () => {
           src={Logo}
           alt="Victory Craft Logo"
           className="logo cursor-pointer"
+          width={260}
+          height={56}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           onClick={() => navigate("/")}
         />
         {isAuthenticated && (

@@ -9,6 +9,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import type { RecruiterRankingItem } from "../../../features/recruiters/types";
+import RecruitersWorkspaceButton from "../../../components/RecruitersWorkspaceButton";
 import RecruitersVideoPlayer from "../../../components/RecruitersVideoPlayer";
 import {
   cacheRecruiterPlaybackUrl,
@@ -146,16 +147,25 @@ const RecruitersDashboardPage: React.FC = () => {
             debe moverse ahora mismo dentro del ecosistema de scouting.
           </p>
           <div className="recruiters-dashboard-v2__hero-actions">
-            <button type="button" onClick={() => navigate("/scouting/subpages/library")}>
+            <RecruitersWorkspaceButton
+              variant="dark"
+              size="sm"
+              icon={<FiArrowRight aria-hidden="true" />}
+              caption="video vault y sesiones"
+              onClick={() => navigate("/scouting/subpages/library")}
+            >
               Initialize Scan
-            </button>
-            <button
-              type="button"
+            </RecruitersWorkspaceButton>
+            <RecruitersWorkspaceButton
               className="recruiters-dashboard-v2__hero-action--ghost"
+              variant="gold"
+              size="sm"
+              icon={<FiArrowRight aria-hidden="true" />}
+              caption="ranking editorial"
               onClick={() => navigate("/scouting/subpages/rankings")}
             >
               View Pipeline
-            </button>
+            </RecruitersWorkspaceButton>
           </div>
         </div>
 

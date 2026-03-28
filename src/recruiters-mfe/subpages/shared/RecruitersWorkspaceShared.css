@@ -545,6 +545,131 @@
   opacity: 0.88;
 }
 
+.recruiters-workspace-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  min-width: 0;
+  border: 0;
+  border-radius: 18px;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.recruiters-workspace-button:hover {
+  transform: translateY(-1px);
+}
+
+.recruiters-workspace-button__copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.14rem;
+}
+
+.recruiters-workspace-button__copy strong,
+.recruiters-workspace-button__copy small {
+  display: block;
+}
+
+.recruiters-workspace-button__copy strong {
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recruiters-workspace-button__copy small {
+  font-size: 0.7rem;
+  line-height: 1.35;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.recruiters-workspace-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.recruiters-workspace-button--sm {
+  min-height: 2.9rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.recruiters-workspace-button--md {
+  min-height: 3.35rem;
+  padding: 0.8rem 1rem;
+}
+
+.recruiters-workspace-button--gold {
+  border: 1px solid rgba(141, 103, 33, 0.2);
+  background: linear-gradient(180deg, #fffaf0 0%, #f7ecd1 100%);
+  box-shadow: 0 14px 28px rgba(141, 103, 33, 0.12);
+}
+
+.recruiters-workspace-button--gold .recruiters-workspace-button__copy strong {
+  color: #8d6721;
+}
+
+.recruiters-workspace-button--gold .recruiters-workspace-button__copy small {
+  color: rgba(89, 64, 19, 0.8);
+}
+
+.recruiters-workspace-button--gold .recruiters-workspace-button__icon {
+  background: rgba(141, 103, 33, 0.12);
+  color: #8d6721;
+}
+
+.recruiters-workspace-button--dark {
+  border: 1px solid rgba(233, 193, 118, 0.18);
+  background: linear-gradient(145deg, #0d4429, #002c17 76%);
+  box-shadow: 0 18px 34px rgba(0, 44, 23, 0.18);
+}
+
+.recruiters-workspace-button--dark .recruiters-workspace-button__copy strong {
+  color: #e9c176;
+}
+
+.recruiters-workspace-button--dark .recruiters-workspace-button__copy small {
+  color: rgba(233, 193, 118, 0.78);
+}
+
+.recruiters-workspace-button--dark .recruiters-workspace-button__icon {
+  background: rgba(233, 193, 118, 0.12);
+  color: #e9c176;
+}
+
+.recruiters-workspace-button--ghost {
+  border: 1px solid rgba(12, 68, 41, 0.12);
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(16, 37, 48, 0.05);
+}
+
+.recruiters-workspace-button--ghost .recruiters-workspace-button__copy strong {
+  color: #002c17;
+}
+
+.recruiters-workspace-button--ghost .recruiters-workspace-button__copy small {
+  color: #64748b;
+}
+
+.recruiters-workspace-button--ghost .recruiters-workspace-button__icon {
+  background: rgba(12, 68, 41, 0.08);
+  color: #002c17;
+}
+
 @keyframes recruiter-vote-spin {
   to {
     transform: rotate(360deg);

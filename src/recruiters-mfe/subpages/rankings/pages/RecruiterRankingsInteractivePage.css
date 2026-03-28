@@ -1,0 +1,258 @@
+@media (min-width: 881px) {
+  .recruiters-board-interactive {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 1.2rem;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .recruiters-board-interactive__hero {
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .recruiters-board-interactive__hero-actions {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+  }
+
+  .recruiters-board-interactive__back-button {
+    min-width: 16.5rem;
+  }
+
+  .recruiters-board-v2 .recruiters-board__interactive-link {
+    min-width: 16rem;
+    align-self: stretch;
+  }
+
+  .recruiters-board-v2 .recruiters-board__interactive-link .recruiters-workspace-button__copy strong {
+    font-size: 0.76rem;
+  }
+
+  .recruiters-board-v2 .recruiters-board__interactive-link .recruiters-workspace-button__copy small {
+    font-size: 0.68rem;
+  }
+
+  .recruiters-board-interactive__layout {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.72fr);
+    align-items: stretch;
+    gap: 1.35rem;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .recruiters-board-interactive__main {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 1.1rem;
+    overflow: hidden;
+  }
+
+  .recruiters-board-interactive__podium-shell,
+  .recruiters-board-interactive__feed,
+  .recruiters-board-interactive__sidebar {
+    border-radius: 24px;
+    border: 1px solid rgba(12, 68, 41, 0.08);
+    box-shadow: 0 16px 40px rgba(16, 37, 48, 0.06);
+    background: #ffffff;
+  }
+
+  .recruiters-board-interactive__podium-shell {
+    padding: 1rem;
+    min-height: 0;
+  }
+
+  .recruiters-board-interactive__podium-shell .recruiters-board__top {
+    margin-bottom: 0;
+  }
+
+  .recruiters-board-interactive__feed {
+    padding: 1rem;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .recruiters-board-interactive__feed-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+  }
+
+  .recruiters-board-interactive__feed-list {
+    display: grid;
+    gap: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    padding-right: 0.3rem;
+    align-content: start;
+  }
+
+  .recruiters-board-interactive__sidebar {
+    align-self: start;
+    padding: 1rem;
+    min-height: auto;
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    gap: 0.8rem;
+    overflow: visible;
+  }
+
+  .recruiters-board-interactive__sidebar-header {
+    margin-bottom: 0;
+  }
+
+  .recruiters-board-interactive__sidebar-header h3 {
+    margin: 0;
+    color: #002c17;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .recruiters-board-interactive__sidebar .recruiters-board__filters-shell {
+    display: grid;
+    gap: 0.75rem;
+    min-height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .recruiters-board-interactive__sidebar .recruiters-board__filters-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .recruiters-board-interactive__sidebar .recruiters-board__filter--search {
+    grid-column: auto;
+  }
+
+  .recruiters-board-interactive__sidebar .recruiters-board__filters-advanced {
+    margin-top: 0;
+  }
+
+  .recruiters-board-interactive__sidebar-stats {
+    min-width: 0;
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #0d4429, #002c17 76%);
+  }
+
+  .recruiters-board-interactive__sidebar-stats strong {
+    color: #ffffff;
+    font-size: 1.55rem;
+  }
+
+  .recruiters-board-interactive__sidebar-stats span {
+    color: rgba(233, 193, 118, 0.82);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  .recruiters-board-interactive__back-button {
+    min-width: 100%;
+  }
+
+  .recruiters-board-interactive__video-card {
+    display: grid;
+    gap: 0.85rem;
+    padding: 0.85rem;
+    border-radius: 22px;
+    border: 1px solid rgba(12, 68, 41, 0.08);
+    background:
+      radial-gradient(circle at top right, rgba(233, 193, 118, 0.12), transparent 28%),
+      linear-gradient(180deg, #ffffff 0%, #f9fbfc 100%);
+    box-shadow: 0 12px 28px rgba(16, 37, 48, 0.05);
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    cursor: default;
+  }
+
+  .recruiters-board-interactive__video-card:hover {
+    box-shadow: 0 18px 36px rgba(16, 37, 48, 0.08);
+  }
+
+  .recruiters-board-interactive__video-card.is-active {
+    border-color: rgba(12, 68, 41, 0.24);
+    box-shadow: 0 22px 42px rgba(0, 44, 23, 0.1);
+  }
+
+  .recruiters-board-interactive__video-shell {
+    overflow: hidden;
+    border-radius: 18px;
+    background: #0f172a;
+    cursor: default;
+  }
+
+  .recruiters-board-interactive__video-empty {
+    min-height: 18rem;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+  }
+
+  .recruiters-board-interactive__video-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .recruiters-board-interactive__video-copy {
+    min-width: 0;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .recruiters-board-interactive__video-copy strong {
+    color: #002c17;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .recruiters-board-interactive__video-copy span {
+    color: #64748b;
+    font-size: 0.8rem;
+  }
+
+  .recruiters-board-interactive__video-votes {
+    justify-self: end;
+  }
+
+  .recruiters-board-interactive__video-votes .recruiter-vote-buttons__reset {
+    min-width: 96px;
+  }
+
+  .recruiters-board-interactive__status {
+    margin: 0;
+    padding: 0.95rem 0 0.15rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.8rem;
+  }
+
+  .recruiters-board-interactive__sentinel {
+    width: 100%;
+    height: 1px;
+  }
+}
+
+@media (max-width: 880px) {
+  .recruiters-board-v2 .recruiters-board__interactive-link {
+    display: none;
+  }
+}

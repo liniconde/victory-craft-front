@@ -77,7 +77,7 @@ const renderPlainOptions = (values: string[]) =>
     </option>
   ));
 
-const getDisplayName = (item: RecruiterRankingItem) =>
+export const getDisplayName = (item: RecruiterRankingItem) =>
   item.playerProfile?.fullName || item.scoutingProfile?.title || item.video.s3Key || "Player";
 
 const getInitials = (value: string) =>

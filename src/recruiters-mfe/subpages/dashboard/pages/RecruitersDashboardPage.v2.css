@@ -82,6 +82,7 @@
   margin-top: 1.4rem;
 }
 
+.recruiters-dashboard-v2__hero-actions .recruiters-workspace-button,
 .recruiters-dashboard-v2__hero-actions button,
 .recruiters-dashboard-v2__tool-card button,
 .recruiters-dashboard-v2__feature-button,
@@ -100,6 +101,7 @@
   transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
 }
 
+.recruiters-dashboard-v2__hero-actions .recruiters-workspace-button:hover,
 .recruiters-dashboard-v2__hero-actions button:hover,
 .recruiters-dashboard-v2__tool-card button:hover,
 .recruiters-dashboard-v2__feature-button:hover,
@@ -108,6 +110,7 @@
   transform: translateY(-1px);
 }
 
+.recruiters-dashboard-v2__hero-actions .recruiters-workspace-button,
 .recruiters-dashboard-v2__hero-actions button {
   background: var(--scout-gold);
   color: #1e2418;

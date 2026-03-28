@@ -12,6 +12,9 @@ const RecruitersDashboardPage = lazy(
 const RecruiterRankingsPage = lazy(
   () => import("./subpages/rankings/pages/RecruiterRankingsPage")
 );
+const RecruiterRankingsInteractivePage = lazy(
+  () => import("./subpages/rankings/pages/RecruiterRankingsInteractivePage")
+);
 const RecruitersLibraryPage = lazy(() => import("./subpages/library/pages/RecruitersLibraryPage"));
 const PlayerProfilesPage = lazy(
   () => import("./subpages/player-profiles/pages/PlayerProfilesPage")
@@ -37,6 +40,10 @@ const RecruitersModule: React.FC = () => {
             <Route path="subpages/library" element={<RecruitersLibraryPage />} />
             <Route path="subpages/player-profiles" element={<PlayerProfilesPage />} />
             <Route path="subpages/rankings" element={<RecruiterRankingsPage />} />
+            <Route
+              path="subpages/rankings/interactive"
+              element={<RecruiterRankingsInteractivePage />}
+            />
             <Route path="subpages/profile/:videoId" element={<RecruiterProfilePage />} />
             <Route path="subpages/video/:videoId" element={<RecruiterVideoPage />} />
             <Route index element={<Navigate to="subpages/dashboard" replace />} />

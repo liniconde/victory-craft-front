@@ -9,6 +9,7 @@ interface RecruitersVideoPlayerProps {
   muted?: boolean;
   loop?: boolean;
   preload?: "none" | "metadata" | "auto";
+  controls?: boolean;
 }
 
 const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
@@ -19,6 +20,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
   muted = false,
   loop = false,
   preload = "metadata",
+  controls = true,
 }) => {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("landscape");
@@ -41,7 +43,7 @@ const RecruitersVideoPlayer: React.FC<RecruitersVideoPlayerProps> = ({
       <video
         className={className}
         src={src}
-        controls
+        controls={controls}
         autoPlay={autoPlay}
         muted={muted}
         loop={loop}
