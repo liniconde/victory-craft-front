@@ -466,6 +466,273 @@ const PlayerProfilesPage: React.FC = () => {
     }
   };
 
+  const profileForm = (
+    <form className="scouting-form player-profiles-page__form" onSubmit={saveProfile}>
+      <section className="scouting-form__section">
+        <div className="scouting-form__section-header">
+          <div>
+            <p className="scouting-form__eyebrow">Identidad</p>
+            <h3>Ficha del jugador</h3>
+          </div>
+          <p>Este bloque define el perfil base que luego podrás asociar a uno o varios videos.</p>
+        </div>
+
+        <div className="scouting-form__grid">
+          {isElevated ? (
+            <>
+              <label className="scouting-form__field">
+                <span>User ID</span>
+                <input
+                  type="text"
+                  value={form.userId ?? ""}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, userId: event.target.value }))
+                  }
+                />
+              </label>
+              <label className="scouting-form__field">
+                <span>Email</span>
+                <input
+                  type="email"
+                  value={form.email ?? ""}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, email: event.target.value }))
+                  }
+                />
+              </label>
+            </>
+          ) : null}
+
+          <label className="scouting-form__field">
+            <span>Nombre completo</span>
+            <input
+              type="text"
+              value={form.fullName ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, fullName: event.target.value }))
+              }
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Deporte</span>
+            <select
+              value={form.sportType ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  sportType: normalizeRecruiterSportType(event.target.value) ?? "",
+                }))
+              }
+            >
+              <option value="">Selecciona deporte</option>
+              {catalog.sportTypes.map((value) => (
+                <option key={value} value={value}>
+                  {getRecruiterSportTypeLabel(value)}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Posición principal</span>
+            <select
+              value={form.primaryPosition ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, primaryPosition: event.target.value }))
+              }
+            >
+              <option value="">Selecciona posición</option>
+              {renderOptions(catalog.positions)}
+            </select>
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Posición secundaria</span>
+            <select
+              value={form.secondaryPosition ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, secondaryPosition: event.target.value }))
+              }
+            >
+              <option value="">Opcional</option>
+              {renderOptions(catalog.positions)}
+            </select>
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Equipo</span>
+            <input
+              type="text"
+              value={form.team ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, team: event.target.value }))
+              }
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Categoría</span>
+            <select
+              value={form.category ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, category: event.target.value }))
+              }
+            >
+              <option value="">Selecciona categoría</option>
+              {renderOptions(catalog.categories)}
+            </select>
+          </label>
+
+          <label className="scouting-form__field">
+            <span>País</span>
+            <select
+              value={form.country ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, country: event.target.value }))
+              }
+            >
+              <option value="">Selecciona país</option>
+              {renderOptions(countryOptions)}
+            </select>
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Ciudad</span>
+            <input
+              type="text"
+              value={form.city ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, city: event.target.value }))
+              }
+              placeholder="Ej: Madrid"
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Fecha de nacimiento</span>
+            <input
+              type="date"
+              value={form.birthDate ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, birthDate: event.target.value }))
+              }
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Perfil dominante</span>
+            <input
+              type="text"
+              value={form.dominantProfile ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, dominantProfile: event.target.value }))
+              }
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Foto del jugador</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarSelected}
+              disabled={isUploadingAvatar}
+            />
+            <small className="player-profile-upload__hint">
+              Opcional. Se sube a S3 y se guarda su `avatarUrl` en el perfil.
+            </small>
+          </label>
+
+          <article className="scouting-form__field scouting-form__field--placeholder">
+            <span>Vista previa del avatar</span>
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt={form.fullName ? `Avatar de ${form.fullName}` : "Avatar del jugador"}
+                className="player-profile-upload__preview"
+              />
+            ) : (
+              <div className="player-profile-upload__empty">
+                <FaUserCircle aria-hidden="true" />
+              </div>
+            )}
+            <p>
+              {isUploadingAvatar
+                ? "Subiendo foto..."
+                : avatarPreview
+                  ? "La foto quedará visible en la ficha del jugador."
+                  : "Si no subes una foto, mostraremos una silueta por defecto."}
+            </p>
+          </article>
+
+          <label className="scouting-form__field scouting-form__field--full">
+            <span>Avatar URL</span>
+            <input
+              type="url"
+              value={form.avatarUrl ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, avatarUrl: event.target.value }))
+              }
+              placeholder="Se completa automáticamente al subir una foto"
+            />
+          </label>
+
+          <label className="scouting-form__field">
+            <span>Estado</span>
+            <select
+              value={form.status ?? "active"}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  status: event.target.value as RecruiterPlayerProfilePayload["status"],
+                }))
+              }
+            >
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </label>
+
+          <label className="scouting-form__field scouting-form__field--full">
+            <span>Bio</span>
+            <textarea
+              rows={4}
+              value={form.bio ?? ""}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, bio: event.target.value }))
+              }
+            />
+          </label>
+        </div>
+      </section>
+
+      <div className="scouting-form__actions">
+        <button type="submit" disabled={isSaving || isLoading || isUploadingAvatar}>
+          {isUploadingAvatar
+            ? "Subiendo foto..."
+            : isSaving
+              ? "Guardando..."
+              : currentProfile?._id
+                ? "Actualizar perfil"
+                : "Crear perfil"}
+        </button>
+        {isElevated ? (
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentProfile(null);
+              setForm(emptyForm);
+            }}
+          >
+            Nuevo perfil
+          </button>
+        ) : null}
+      </div>
+    </form>
+  );
+
   return (
     <section className="recruiters-dashboard player-profiles-page">
       <header className="recruiters-dashboard__hero">
@@ -549,38 +816,24 @@ const PlayerProfilesPage: React.FC = () => {
           </section>
 
           <section className="player-profile-overview">
-            {showAlternativeCard ? (
-              <PlayerCard
-                fullName={form.fullName}
-                primaryPosition={form.primaryPosition}
-                secondaryPosition={form.secondaryPosition}
-                country={form.country}
-                team={form.team}
-                category={form.category}
-                dominantProfile={form.dominantProfile}
-                sportType={form.sportType}
-                avatarUrl={avatarPreview}
-                status={form.status}
-                profileVideosCount={profileVideosCount}
-              />
-            ) : (
-              <section className="player-profile-card">
-                <div className="player-profile-card__media">
-                  {avatarPreview ? (
-                    <img
-                      src={avatarPreview}
-                      alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
-                      className="player-profile-card__avatar"
-                    />
-                  ) : (
-                    <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
-                      <FaUserCircle aria-hidden="true" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="player-profile-card__body">
-                  <div>
+            <div className="player-profile-overview__main">
+              {showAlternativeCard ? (
+                <PlayerCard
+                  fullName={form.fullName}
+                  primaryPosition={form.primaryPosition}
+                  secondaryPosition={form.secondaryPosition}
+                  country={form.country}
+                  team={form.team}
+                  category={form.category}
+                  dominantProfile={form.dominantProfile}
+                  sportType={form.sportType}
+                  avatarUrl={avatarPreview}
+                  status={form.status}
+                  profileVideosCount={profileVideosCount}
+                />
+              ) : (
+                <section className="player-profile-card">
+                  <div className="player-profile-card__header">
                     <p className="player-profile-card__eyebrow">Ficha actual</p>
                     <h3>{form.fullName || "Jugador sin nombre"}</h3>
                     <p className="player-profile-card__subtitle">
@@ -590,57 +843,77 @@ const PlayerProfilesPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="player-profile-card__stats">
-                    <article>
-                      <span>Total Videos</span>
-                      <strong>{profileKpis.totalVideos || profileVideosCount}</strong>
-                    </article>
-                    <article>
-                      <span>Goals</span>
-                      <strong>{profileKpis.goals}</strong>
-                    </article>
-                    <article>
-                      <span>Assists</span>
-                      <strong>{profileKpis.assists}</strong>
-                    </article>
-                    <article>
-                      <span>Highlights</span>
-                      <strong>{profileKpis.highlights}</strong>
-                    </article>
-                  </div>
+                  <div className="player-profile-card__content">
+                    <div className="player-profile-card__media">
+                      {avatarPreview ? (
+                        <img
+                          src={avatarPreview}
+                          alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
+                          className="player-profile-card__avatar"
+                        />
+                      ) : (
+                        <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
+                          <FaUserCircle aria-hidden="true" />
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="player-profile-card__footer">
-                    <div>
-                      <span>Bloopers</span>
-                      <strong>{profileKpis.bloopers}</strong>
-                    </div>
-                    <div>
-                      <span>Published / Draft</span>
-                      <strong>{`${profileKpis.publishedVideos} / ${profileKpis.draftVideos}`}</strong>
+                    <div className="player-profile-card__body">
+                      <div className="player-profile-card__stats">
+                        <article>
+                          <span>Total Videos</span>
+                          <strong>{profileKpis.totalVideos || profileVideosCount}</strong>
+                        </article>
+                        <article>
+                          <span>Goals</span>
+                          <strong>{profileKpis.goals}</strong>
+                        </article>
+                        <article>
+                          <span>Assists</span>
+                          <strong>{profileKpis.assists}</strong>
+                        </article>
+                        <article>
+                          <span>Highlights</span>
+                          <strong>{profileKpis.highlights}</strong>
+                        </article>
+                      </div>
+
+                      <div className="player-profile-card__footer">
+                        <div>
+                          <span>Bloopers</span>
+                          <strong>{profileKpis.bloopers}</strong>
+                        </div>
+                        <div>
+                          <span>Published / Draft</span>
+                          <strong>{`${profileKpis.publishedVideos} / ${profileKpis.draftVideos}`}</strong>
+                        </div>
+                      </div>
+
+                      {currentProfile?._id ? (
+                        <div className="player-profile-share-actions player-profile-share-actions--inline">
+                          <button
+                            type="button"
+                            onClick={handleOpenSharedProfile}
+                            disabled={!sharedProfilePath}
+                          >
+                            Abrir perfil público
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCopySharedLink}
+                            disabled={!sharedProfilePath}
+                          >
+                            Copiar link público
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
+                </section>
+              )}
 
-                  {currentProfile?._id ? (
-                    <div className="player-profile-share-actions player-profile-share-actions--inline">
-                      <button
-                        type="button"
-                        onClick={handleOpenSharedProfile}
-                        disabled={!sharedProfilePath}
-                      >
-                        Abrir perfil público
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCopySharedLink}
-                        disabled={!sharedProfilePath}
-                      >
-                        Copiar link público
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-              </section>
-            )}
+              {profileForm}
+            </div>
 
             <aside className="player-profile-overview__side">
               <section className="player-profile-radar-section">
@@ -741,272 +1014,9 @@ const PlayerProfilesPage: React.FC = () => {
             </aside>
           </section>
         </>
-      ) : null}
-
-      <form className="scouting-form" onSubmit={saveProfile}>
-        <section className="scouting-form__section">
-          <div className="scouting-form__section-header">
-            <div>
-              <p className="scouting-form__eyebrow">Identidad</p>
-              <h3>Ficha del jugador</h3>
-            </div>
-            <p>Este bloque define el perfil base que luego podrás asociar a uno o varios videos.</p>
-          </div>
-
-          <div className="scouting-form__grid">
-            {isElevated ? (
-              <>
-                <label className="scouting-form__field">
-                  <span>User ID</span>
-                  <input
-                    type="text"
-                    value={form.userId ?? ""}
-                    onChange={(event) =>
-                      setForm((current) => ({ ...current, userId: event.target.value }))
-                    }
-                  />
-                </label>
-                <label className="scouting-form__field">
-                  <span>Email</span>
-                  <input
-                    type="email"
-                    value={form.email ?? ""}
-                    onChange={(event) =>
-                      setForm((current) => ({ ...current, email: event.target.value }))
-                    }
-                  />
-                </label>
-              </>
-            ) : null}
-
-            <label className="scouting-form__field">
-              <span>Nombre completo</span>
-              <input
-                type="text"
-                value={form.fullName ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, fullName: event.target.value }))
-                }
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Deporte</span>
-              <select
-                value={form.sportType ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    sportType: normalizeRecruiterSportType(event.target.value) ?? "",
-                  }))
-                }
-              >
-                <option value="">Selecciona deporte</option>
-                {catalog.sportTypes.map((value) => (
-                  <option key={value} value={value}>
-                    {getRecruiterSportTypeLabel(value)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Posición principal</span>
-              <select
-                value={form.primaryPosition ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, primaryPosition: event.target.value }))
-                }
-              >
-                <option value="">Selecciona posición</option>
-                {renderOptions(catalog.positions)}
-              </select>
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Posición secundaria</span>
-              <select
-                value={form.secondaryPosition ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, secondaryPosition: event.target.value }))
-                }
-              >
-                <option value="">Opcional</option>
-                {renderOptions(catalog.positions)}
-              </select>
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Equipo</span>
-              <input
-                type="text"
-                value={form.team ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, team: event.target.value }))
-                }
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Categoría</span>
-              <select
-                value={form.category ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, category: event.target.value }))
-                }
-              >
-                <option value="">Selecciona categoría</option>
-                {renderOptions(catalog.categories)}
-              </select>
-            </label>
-
-            <label className="scouting-form__field">
-              <span>País</span>
-              <select
-                value={form.country ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, country: event.target.value }))
-                }
-              >
-                <option value="">Selecciona país</option>
-                {renderOptions(countryOptions)}
-              </select>
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Ciudad</span>
-              <input
-                type="text"
-                value={form.city ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, city: event.target.value }))
-                }
-                placeholder="Ej: Madrid"
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Fecha de nacimiento</span>
-              <input
-                type="date"
-                value={form.birthDate ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, birthDate: event.target.value }))
-                }
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Perfil dominante</span>
-              <input
-                type="text"
-                value={form.dominantProfile ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, dominantProfile: event.target.value }))
-                }
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Foto del jugador</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarSelected}
-                disabled={isUploadingAvatar}
-              />
-              <small className="player-profile-upload__hint">
-                Opcional. Se sube a S3 y se guarda su `avatarUrl` en el perfil.
-              </small>
-            </label>
-
-            <article className="scouting-form__field scouting-form__field--placeholder">
-              <span>Vista previa del avatar</span>
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt={form.fullName ? `Avatar de ${form.fullName}` : "Avatar del jugador"}
-                  className="player-profile-upload__preview"
-                />
-              ) : (
-                <div className="player-profile-upload__empty">
-                  <FaUserCircle aria-hidden="true" />
-                </div>
-              )}
-              <p>
-                {isUploadingAvatar
-                  ? "Subiendo foto..."
-                  : avatarPreview
-                    ? "La foto quedará visible en la ficha del jugador."
-                    : "Si no subes una foto, mostraremos una silueta por defecto."}
-              </p>
-            </article>
-
-            <label className="scouting-form__field scouting-form__field--full">
-              <span>Avatar URL</span>
-              <input
-                type="url"
-                value={form.avatarUrl ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, avatarUrl: event.target.value }))
-                }
-                placeholder="Se completa automáticamente al subir una foto"
-              />
-            </label>
-
-            <label className="scouting-form__field">
-              <span>Estado</span>
-              <select
-                value={form.status ?? "active"}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    status: event.target.value as RecruiterPlayerProfilePayload["status"],
-                  }))
-                }
-              >
-                <option value="draft">Draft</option>
-                <option value="active">Active</option>
-                <option value="archived">Archived</option>
-              </select>
-            </label>
-
-            <label className="scouting-form__field scouting-form__field--full">
-              <span>Bio</span>
-              <textarea
-                rows={4}
-                value={form.bio ?? ""}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, bio: event.target.value }))
-                }
-              />
-            </label>
-          </div>
-        </section>
-
-        <div className="scouting-form__actions">
-          <button type="submit" disabled={isSaving || isLoading || isUploadingAvatar}>
-            {isUploadingAvatar
-              ? "Subiendo foto..."
-              : isSaving
-                ? "Guardando..."
-                : currentProfile?._id
-                  ? "Actualizar perfil"
-                  : "Crear perfil"}
-          </button>
-          {isElevated ? (
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentProfile(null);
-                setForm(emptyForm);
-              }}
-            >
-              Nuevo perfil
-            </button>
-          ) : null}
-        </div>
-      </form>
+      ) : (
+        profileForm
+      )}
 
       <PlayerProfileSearchModal
         isOpen={isModalOpen}
