@@ -3,8 +3,10 @@ import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
 import PlayerCard from "../../../../components/playerCard/playerCard";
+import PlayerProfileRadar from "../../../components/PlayerProfileRadar";
 import type {
   RecruiterPlayerProfile,
+  RecruiterPlayerProfilePublicProfileConfigResponse,
   RecruiterPlayerProfilesCatalog,
   RecruiterPlayerProfileListItem,
   RecruiterPlayerProfilePayload,
@@ -17,6 +19,8 @@ import {
   RECRUITER_SPORT_TYPES,
   sanitizeRecruiterSportTypes,
 } from "../../../features/recruiters/sportTypes";
+import { resolvePublicPlayerProfilePath } from "../playerProfileShare";
+import { getPlayerProfileKpis, getPlayerProfileRadarMetrics } from "../playerProfileStats";
 
 const emptyCatalog: RecruiterPlayerProfilesCatalog = {
   sportTypes: [],
@@ -87,6 +91,34 @@ const mapProfileToForm = (
   status: profile?.status ?? "active",
 });
 
+const mergePublicProfileIntoPlayerProfile = (
+  current: RecruiterPlayerProfile | null,
+  next?: RecruiterPlayerProfile | null
+): RecruiterPlayerProfile | null => {
+  if (!next && !current) return null;
+  if (!current) return next ?? null;
+  if (!next) return current;
+  return {
+    ...current,
+    ...next,
+    publicProfile: next.publicProfile ?? current.publicProfile ?? null,
+    scoutingStats: next.scoutingStats ?? current.scoutingStats ?? null,
+  };
+};
+
+const applyPublicProfileConfigResponse = (
+  current: RecruiterPlayerProfile | null,
+  response: RecruiterPlayerProfilePublicProfileConfigResponse
+) => {
+  const mergedProfile = mergePublicProfileIntoPlayerProfile(current, response.playerProfile);
+  if (!mergedProfile) return null;
+
+  return {
+    ...mergedProfile,
+    publicProfile: response.publicProfile ?? mergedProfile.publicProfile ?? null,
+  };
+};
+
 const PlayerProfilesPage: React.FC = () => {
   const navigate = useNavigate();
   const { actualRole, email } = useAuth();
@@ -98,6 +130,9 @@ const PlayerProfilesPage: React.FC = () => {
       getPlayerProfile,
       getPlayerProfileVideos,
       getPlayerProfilesCatalog,
+      createPlayerPublicProfile,
+      regeneratePlayerPublicProfile,
+      updatePlayerPublicProfile,
       uploadPlayerAvatar,
       updatePlayerProfile,
     },
@@ -115,6 +150,9 @@ const PlayerProfilesPage: React.FC = () => {
   const [profileVideosCount, setProfileVideosCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showAlternativeCard, setShowAlternativeCard] = useState(false);
+  const [publicSlugDraft, setPublicSlugDraft] = useState("");
+  const [isUpdatingPublicProfile, setIsUpdatingPublicProfile] = useState(false);
+  const [isRegeneratingPublicProfile, setIsRegeneratingPublicProfile] = useState(false);
 
   useEffect(() => {
     trackTask(
@@ -211,6 +249,10 @@ const PlayerProfilesPage: React.FC = () => {
       });
   }, [currentProfile?._id, getPlayerProfileVideos]);
 
+  useEffect(() => {
+    setPublicSlugDraft(currentProfile?.publicProfile?.publicSlug?.trim() || "");
+  }, [currentProfile?.publicProfile?.publicSlug]);
+
   const renderOptions = (values: string[]) =>
     values.map((value) => (
       <option key={value} value={value}>
@@ -222,9 +264,130 @@ const PlayerProfilesPage: React.FC = () => {
     if (currentProfile?._id) return "Editar player profile";
     return "Crear player profile";
   }, [currentProfile?._id]);
+  const profileKpis = useMemo(
+    () => getPlayerProfileKpis(currentProfile?.scoutingStats),
+    [currentProfile?.scoutingStats]
+  );
+  const radarMetrics = useMemo(
+    () => getPlayerProfileRadarMetrics(currentProfile?.scoutingStats),
+    [currentProfile?.scoutingStats]
+  );
 
   const profileCardVisible = Boolean(currentProfile?._id || form.fullName?.trim());
   const avatarPreview = form.avatarUrl?.trim() || currentProfile?.avatarUrl || "";
+  const sharedProfilePath = resolvePublicPlayerProfilePath(currentProfile?.publicProfile);
+  const canManagePublicProfile = Boolean(currentProfile?._id);
+  const isPublicProfileEnabled = Boolean(currentProfile?.publicProfile?.isPublic && sharedProfilePath);
+  const trimmedPublicSlugDraft = publicSlugDraft.trim();
+
+  const handleOpenSharedProfile = () => {
+    if (!sharedProfilePath) return;
+    navigate(sharedProfilePath);
+  };
+
+  const handleCopySharedLink = async () => {
+    if (!sharedProfilePath || typeof window === "undefined") return;
+
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${sharedProfilePath}`);
+      feedback.showLoading("Enlace del perfil copiado.");
+      window.setTimeout(() => feedback.hideLoading(), 1200);
+    } catch {
+      feedback.showError("No se pudo copiar el enlace del perfil.");
+    }
+  };
+
+  const handlePublicProfileUpdated = (profile: RecruiterPlayerProfile | null) => {
+    setCurrentProfile(profile);
+    setPublicSlugDraft(profile?.publicProfile?.publicSlug?.trim() || "");
+  };
+
+  const showTemporalMessage = (message: string) => {
+    feedback.showLoading(message);
+    window.setTimeout(() => feedback.hideLoading(), 1200);
+  };
+
+  const handleSavePublicProfile = async () => {
+    if (!currentProfile?._id) return;
+
+    setIsUpdatingPublicProfile(true);
+    try {
+      const payload = {
+        isPublic: true,
+        publicSlug: trimmedPublicSlugDraft || undefined,
+      };
+
+      const response = currentProfile.publicProfile
+        ? await updatePlayerPublicProfile(currentProfile._id, payload)
+        : await createPlayerPublicProfile(currentProfile._id, payload);
+
+      handlePublicProfileUpdated(applyPublicProfileConfigResponse(currentProfile, response));
+      showTemporalMessage(
+        currentProfile.publicProfile
+          ? "Configuración pública actualizada."
+          : "Perfil público activado."
+      );
+    } catch (error) {
+      feedback.showError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo guardar la configuración pública del perfil."
+      );
+    } finally {
+      setIsUpdatingPublicProfile(false);
+    }
+  };
+
+  const handleTogglePublicProfile = async (nextIsPublic: boolean) => {
+    if (!currentProfile?._id) return;
+
+    setIsUpdatingPublicProfile(true);
+    try {
+      const response = currentProfile.publicProfile
+        ? await updatePlayerPublicProfile(currentProfile._id, {
+            isPublic: nextIsPublic,
+            publicSlug: trimmedPublicSlugDraft || undefined,
+          })
+        : await createPlayerPublicProfile(currentProfile._id, {
+            isPublic: nextIsPublic,
+            publicSlug: trimmedPublicSlugDraft || undefined,
+          });
+
+      handlePublicProfileUpdated(applyPublicProfileConfigResponse(currentProfile, response));
+      showTemporalMessage(
+        nextIsPublic ? "Perfil público activado." : "Perfil público desactivado."
+      );
+    } catch (error) {
+      feedback.showError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar la visibilidad pública del perfil."
+      );
+    } finally {
+      setIsUpdatingPublicProfile(false);
+    }
+  };
+
+  const handleRegeneratePublicProfile = async () => {
+    if (!currentProfile?._id) return;
+
+    setIsRegeneratingPublicProfile(true);
+    try {
+      const response = await regeneratePlayerPublicProfile(currentProfile._id, {
+        regeneratePublicSlug: true,
+        regeneratePublicShareId: true,
+      });
+
+      handlePublicProfileUpdated(applyPublicProfileConfigResponse(currentProfile, response));
+      showTemporalMessage("Enlace público regenerado.");
+    } catch (error) {
+      feedback.showError(
+        error instanceof Error ? error.message : "No se pudo regenerar el enlace público."
+      );
+    } finally {
+      setIsRegeneratingPublicProfile(false);
+    }
+  };
 
   const handleAvatarSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -304,7 +467,7 @@ const PlayerProfilesPage: React.FC = () => {
   };
 
   return (
-    <section className="recruiters-dashboard">
+    <section className="recruiters-dashboard player-profiles-page">
       <header className="recruiters-dashboard__hero">
         <div>
           <p className="recruiters-dashboard__eyebrow">Player Profiles</p>
@@ -328,6 +491,33 @@ const PlayerProfilesPage: React.FC = () => {
           <button type="button" onClick={() => navigate("/scouting/subpages/library")}>
             Ir a library
           </button>
+        </article>
+        <article>
+          <h3>Perfil compartible</h3>
+          <p>
+            Activa la publicación pública y comparte un enlace estable basado en `publicSlug`.
+          </p>
+          <p className="player-profile-share-actions__hint">
+            Estado:{" "}
+            {isPublicProfileEnabled
+              ? "Publicado y listo para compartir."
+              : canManagePublicProfile
+                ? "Guardado, pero aún no publicado."
+                : "Guarda primero el perfil para publicar."}
+          </p>
+          <div className="player-profile-share-actions">
+            <button type="button" onClick={handleOpenSharedProfile} disabled={!sharedProfilePath}>
+              Ver subpágina
+            </button>
+            <button type="button" onClick={handleCopySharedLink} disabled={!sharedProfilePath}>
+              Copiar enlace
+            </button>
+          </div>
+          {!canManagePublicProfile ? (
+            <p className="player-profile-share-actions__hint">
+              Necesitas guardar el player profile antes de configurar su publicación pública.
+            </p>
+          ) : null}
         </article>
         {isElevated ? (
           <article>
@@ -358,79 +548,198 @@ const PlayerProfilesPage: React.FC = () => {
             </button>
           </section>
 
-          {showAlternativeCard ? (
-            <PlayerCard
-              fullName={form.fullName}
-              primaryPosition={form.primaryPosition}
-              secondaryPosition={form.secondaryPosition}
-              country={form.country}
-              team={form.team}
-              category={form.category}
-              dominantProfile={form.dominantProfile}
-              sportType={form.sportType}
-              avatarUrl={avatarPreview}
-              status={form.status}
-              profileVideosCount={profileVideosCount}
-            />
-          ) : (
-            <section className="player-profile-card">
-              <div className="player-profile-card__media">
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
-                    className="player-profile-card__avatar"
-                  />
-                ) : (
-                  <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
-                    <FaUserCircle aria-hidden="true" />
-                  </div>
-                )}
-              </div>
+          <section className="player-profile-overview">
+            {showAlternativeCard ? (
+              <PlayerCard
+                fullName={form.fullName}
+                primaryPosition={form.primaryPosition}
+                secondaryPosition={form.secondaryPosition}
+                country={form.country}
+                team={form.team}
+                category={form.category}
+                dominantProfile={form.dominantProfile}
+                sportType={form.sportType}
+                avatarUrl={avatarPreview}
+                status={form.status}
+                profileVideosCount={profileVideosCount}
+              />
+            ) : (
+              <section className="player-profile-card">
+                <div className="player-profile-card__media">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt={form.fullName ? `Foto de ${form.fullName}` : "Foto del jugador"}
+                      className="player-profile-card__avatar"
+                    />
+                  ) : (
+                    <div className="player-profile-card__avatar player-profile-card__avatar--fallback">
+                      <FaUserCircle aria-hidden="true" />
+                    </div>
+                  )}
+                </div>
 
-              <div className="player-profile-card__body">
-                <div>
-                  <p className="player-profile-card__eyebrow">Ficha actual</p>
-                  <h3>{form.fullName || "Jugador sin nombre"}</h3>
-                  <p className="player-profile-card__subtitle">
-                    {form.team || "Sin equipo"} ·{" "}
-                    {getRecruiterSportTypeLabel(form.sportType) || "Sin deporte"} ·{" "}
-                    {form.category || "Sin categoría"}
+                <div className="player-profile-card__body">
+                  <div>
+                    <p className="player-profile-card__eyebrow">Ficha actual</p>
+                    <h3>{form.fullName || "Jugador sin nombre"}</h3>
+                    <p className="player-profile-card__subtitle">
+                      {form.team || "Sin equipo"} ·{" "}
+                      {getRecruiterSportTypeLabel(form.sportType) || "Sin deporte"} ·{" "}
+                      {form.category || "Sin categoría"}
+                    </p>
+                  </div>
+
+                  <div className="player-profile-card__stats">
+                    <article>
+                      <span>Total Videos</span>
+                      <strong>{profileKpis.totalVideos || profileVideosCount}</strong>
+                    </article>
+                    <article>
+                      <span>Goals</span>
+                      <strong>{profileKpis.goals}</strong>
+                    </article>
+                    <article>
+                      <span>Assists</span>
+                      <strong>{profileKpis.assists}</strong>
+                    </article>
+                    <article>
+                      <span>Highlights</span>
+                      <strong>{profileKpis.highlights}</strong>
+                    </article>
+                  </div>
+
+                  <div className="player-profile-card__footer">
+                    <div>
+                      <span>Bloopers</span>
+                      <strong>{profileKpis.bloopers}</strong>
+                    </div>
+                    <div>
+                      <span>Published / Draft</span>
+                      <strong>{`${profileKpis.publishedVideos} / ${profileKpis.draftVideos}`}</strong>
+                    </div>
+                  </div>
+
+                  {currentProfile?._id ? (
+                    <div className="player-profile-share-actions player-profile-share-actions--inline">
+                      <button
+                        type="button"
+                        onClick={handleOpenSharedProfile}
+                        disabled={!sharedProfilePath}
+                      >
+                        Abrir perfil público
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCopySharedLink}
+                        disabled={!sharedProfilePath}
+                      >
+                        Copiar link público
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            )}
+
+            <aside className="player-profile-overview__side">
+              <section className="player-profile-radar-section">
+                <PlayerProfileRadar
+                  eyebrow="Scouting Radar"
+                  title="Radar del jugador"
+                  caption="Lectura rápida de tus KPIs clave."
+                  metrics={radarMetrics}
+                />
+              </section>
+
+              <section className="player-profile-public-card">
+                <div className="player-profile-public-card__header">
+                  <div>
+                    <p className="scouting-form__eyebrow">Publicación pública</p>
+                    <h3>Enlace compartible</h3>
+                  </div>
+                  <p>
+                    Activa la visibilidad pública, ajusta el `publicSlug` y comparte el perfil con
+                    reclutadores.
                   </p>
                 </div>
 
-                <div className="player-profile-card__stats">
-                  <article>
-                    <span>Posición</span>
-                    <strong>{form.primaryPosition || "N/D"}</strong>
+                <div className="player-profile-public-panel player-profile-public-panel--stacked">
+                  <article className="player-profile-public-panel__status">
+                    <span>Estado actual</span>
+                    <strong>{isPublicProfileEnabled ? "Publicado" : "Privado"}</strong>
+                    <p>
+                      {isPublicProfileEnabled
+                        ? "El perfil ya puede abrirse desde su URL pública."
+                        : canManagePublicProfile
+                          ? "El perfil existe, pero todavía no está visible para terceros."
+                          : "Primero guarda la ficha del jugador para habilitar esta configuración."}
+                    </p>
                   </article>
-                  <article>
-                    <span>Secundaria</span>
-                    <strong>{form.secondaryPosition || "N/D"}</strong>
-                  </article>
-                  <article>
-                    <span>Perfil</span>
-                    <strong>{form.dominantProfile || "N/D"}</strong>
-                  </article>
-                  <article>
-                    <span>Ubicación</span>
-                    <strong>{[form.city, form.country].filter(Boolean).join(", ") || "N/D"}</strong>
-                  </article>
-                </div>
 
-                <div className="player-profile-card__footer">
-                  <div>
-                    <span>Estado</span>
-                    <strong>{form.status || "active"}</strong>
-                  </div>
-                  <div>
-                    <span>Videos vinculados</span>
-                    <strong>{profileVideosCount}</strong>
+                  <div className="player-profile-public-panel__controls">
+                    <label className="scouting-form__field scouting-form__field--full">
+                      <span>Public slug</span>
+                      <input
+                        type="text"
+                        value={publicSlugDraft}
+                        onChange={(event) => setPublicSlugDraft(event.target.value)}
+                        placeholder="ej: juan-perez-forward"
+                        disabled={!canManagePublicProfile || isUpdatingPublicProfile}
+                      />
+                      <small className="player-profile-upload__hint">
+                        Si lo dejas vacío, backend generará uno automáticamente.
+                      </small>
+                    </label>
+
+                    <div className="player-profile-public-panel__link-box">
+                      <span>Enlace público</span>
+                      <code>{sharedProfilePath || "Aún no hay una URL pública disponible."}</code>
+                    </div>
+
+                    <div className="player-profile-share-actions">
+                      <button
+                        type="button"
+                        onClick={() => void handleTogglePublicProfile(!isPublicProfileEnabled)}
+                        disabled={!canManagePublicProfile || isUpdatingPublicProfile}
+                      >
+                        {isUpdatingPublicProfile
+                          ? "Actualizando..."
+                          : isPublicProfileEnabled
+                            ? "Desactivar perfil público"
+                            : "Activar perfil público"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSavePublicProfile()}
+                        disabled={!canManagePublicProfile || isUpdatingPublicProfile}
+                      >
+                        {isUpdatingPublicProfile ? "Guardando..." : "Guardar configuración"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleCopySharedLink()}
+                        disabled={!sharedProfilePath}
+                      >
+                        Copiar enlace
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleRegeneratePublicProfile()}
+                        disabled={
+                          !canManagePublicProfile ||
+                          !currentProfile?.publicProfile ||
+                          isRegeneratingPublicProfile
+                        }
+                      >
+                        {isRegeneratingPublicProfile ? "Regenerando..." : "Regenerar enlace"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
-          )}
+              </section>
+            </aside>
+          </section>
         </>
       ) : null}
 

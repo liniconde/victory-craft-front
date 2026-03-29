@@ -1,4 +1,5 @@
 import React from "react";
+import "./RecruitersWorkspaceButton.css";
 
 interface RecruitersWorkspaceButtonProps {
   type?: "button" | "submit" | "reset";

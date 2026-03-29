@@ -14,6 +14,14 @@ import type {
   RecruiterPlayerProfileVideoLink,
   RecruiterPlayerProfileVideoLinkPayload,
   RecruiterPlayerProfileVideoLinkResponse,
+  RecruiterPlayerProfileVideoScoutingSummary,
+  RecruiterPlayerProfilePublicProfile,
+  RecruiterPlayerProfilePublicProfileConfigResponse,
+  RecruiterPlayerProfilePublicProfileRegeneratePayload,
+  RecruiterPlayerProfilePublicProfileUpsertPayload,
+  RecruiterPlayerProfileStatsBody,
+  RecruiterPlayerProfileStatsResponse,
+  RecruiterPublicPlayerProfileResponse,
   RecruiterPlayerProfileVideosResponse,
   RecruiterRankingsQuery,
   RecruiterRankingsResponse,
@@ -303,12 +311,190 @@ const normalizePlayerProfile = (value: unknown): RecruiterPlayerProfile => {
     dominantProfile:
       typeof raw.dominantProfile === "string" ? raw.dominantProfile : undefined,
     bio: typeof raw.bio === "string" ? raw.bio : undefined,
+    publicProfile: raw.publicProfile ? normalizePlayerProfilePublicProfile(raw.publicProfile) : null,
+    scoutingStats: raw.scoutingStats ? normalizePlayerProfileStatsBody(raw.scoutingStats) : null,
     createdBy:
       typeof raw.createdBy === "string" ? raw.createdBy : raw.createdBy === null ? null : undefined,
     updatedBy:
       typeof raw.updatedBy === "string" ? raw.updatedBy : raw.updatedBy === null ? null : undefined,
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : undefined,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizePlayerProfilePublicProfile = (
+  value: unknown
+): RecruiterPlayerProfilePublicProfile => {
+  const raw = toRecord(value);
+  return {
+    isPublic: typeof raw.isPublic === "boolean" ? raw.isPublic : undefined,
+    publicSlug:
+      typeof raw.publicSlug === "string" ? raw.publicSlug : raw.publicSlug === null ? null : undefined,
+    publicShareId:
+      typeof raw.publicShareId === "string"
+        ? raw.publicShareId
+        : raw.publicShareId === null
+          ? null
+          : undefined,
+    publicPath:
+      typeof raw.publicPath === "string" ? raw.publicPath : raw.publicPath === null ? null : undefined,
+    sharePath:
+      typeof raw.sharePath === "string" ? raw.sharePath : raw.sharePath === null ? null : undefined,
+    createdAt:
+      typeof raw.createdAt === "string" ? raw.createdAt : raw.createdAt === null ? null : undefined,
+    updatedAt:
+      typeof raw.updatedAt === "string" ? raw.updatedAt : raw.updatedAt === null ? null : undefined,
+  };
+};
+
+const normalizePlayerProfileVideoScoutingSummary = (
+  value: unknown
+): RecruiterPlayerProfileVideoScoutingSummary => {
+  const raw = toRecord(value);
+  const publicationStatus = raw.publicationStatus;
+  return {
+    _id: typeof raw._id === "string" ? raw._id : undefined,
+    videoId: typeof raw.videoId === "string" ? raw.videoId : undefined,
+    playerProfileId:
+      typeof raw.playerProfileId === "string"
+        ? raw.playerProfileId
+        : raw.playerProfileId === null
+          ? null
+          : undefined,
+    publicationStatus:
+      publicationStatus === "draft" ||
+      publicationStatus === "published" ||
+      publicationStatus === "archived"
+        ? publicationStatus
+        : undefined,
+    playType: typeof raw.playType === "string" ? raw.playType : raw.playType === null ? null : undefined,
+    title: typeof raw.title === "string" ? raw.title : raw.title === null ? null : undefined,
+    recordedAt:
+      typeof raw.recordedAt === "string" ? raw.recordedAt : raw.recordedAt === null ? null : undefined,
+    updatedAt:
+      typeof raw.updatedAt === "string" ? raw.updatedAt : raw.updatedAt === null ? null : undefined,
+  };
+};
+
+const normalizePlayerProfileStatsSummary = (value: unknown) => {
+  const raw = toRecord(value);
+  return {
+    totalVideos: numberOrZero(raw.totalVideos),
+    publishedVideos: numberOrZero(raw.publishedVideos),
+    draftVideos: numberOrZero(raw.draftVideos),
+    archivedVideos: numberOrZero(raw.archivedVideos),
+    videosWithoutScoutingProfile: numberOrZero(raw.videosWithoutScoutingProfile),
+    videosWithoutPlayType: numberOrZero(raw.videosWithoutPlayType),
+  };
+};
+
+const normalizePlayerProfilePlayTypeItems = (value: unknown) =>
+  Array.isArray(value)
+    ? value.map((item) => {
+        const raw = toRecord(item);
+        return {
+          playType: typeof raw.playType === "string" ? raw.playType : undefined,
+          count: numberOrZero(raw.count),
+        };
+      })
+    : [];
+
+const normalizePlayerProfilePlayTypeStats = (value: unknown): Record<string, number> =>
+  Object.fromEntries(
+    Object.entries(toRecord(value)).map(([key, item]) => [key, numberOrZero(item)])
+  );
+
+const normalizePlayerProfileStatsBody = (
+  value: unknown
+): RecruiterPlayerProfileStatsBody => {
+  const raw = toRecord(value);
+  return {
+    summary: normalizePlayerProfileStatsSummary(raw.summary),
+    playTypeStats: normalizePlayerProfilePlayTypeStats(raw.playTypeStats),
+    playTypeItems: normalizePlayerProfilePlayTypeItems(raw.playTypeItems),
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+  };
+};
+
+const normalizePlayerProfileStatsResponse = (
+  value: unknown
+): RecruiterPlayerProfileStatsResponse => {
+  const raw = toRecord(value);
+  const playerProfileRaw = toRecord(raw.playerProfile);
+  return {
+    playerProfile: raw.playerProfile
+      ? {
+          _id: typeof playerProfileRaw._id === "string" ? playerProfileRaw._id : undefined,
+          fullName:
+            typeof playerProfileRaw.fullName === "string" ? playerProfileRaw.fullName : undefined,
+        }
+      : undefined,
+    ...normalizePlayerProfileStatsBody(value),
+  };
+};
+
+const normalizePlayerProfilePublicProfileConfigResponse = (
+  value: unknown
+): RecruiterPlayerProfilePublicProfileConfigResponse => {
+  const raw = toRecord(value);
+  return {
+    playerProfile: raw.playerProfile ? normalizePlayerProfile(raw.playerProfile) : undefined,
+    publicProfile: raw.publicProfile ? normalizePlayerProfilePublicProfile(raw.publicProfile) : null,
+  };
+};
+
+const normalizePublicPlayerProfileResponse = (
+  value: unknown
+): RecruiterPublicPlayerProfileResponse => {
+  const raw = toRecord(value);
+  const profileRaw = toRecord(raw.profile);
+  const videosRaw = Array.isArray(raw.videos) ? raw.videos : [];
+
+  return {
+    profile: raw.profile
+      ? {
+          fullName: typeof profileRaw.fullName === "string" ? profileRaw.fullName : undefined,
+          sportType: normalizeRecruiterSportType(profileRaw.sportType),
+          primaryPosition:
+            typeof profileRaw.primaryPosition === "string" ? profileRaw.primaryPosition : undefined,
+          secondaryPosition:
+            typeof profileRaw.secondaryPosition === "string" ? profileRaw.secondaryPosition : undefined,
+          team: typeof profileRaw.team === "string" ? profileRaw.team : undefined,
+          category: typeof profileRaw.category === "string" ? profileRaw.category : undefined,
+          country: typeof profileRaw.country === "string" ? profileRaw.country : undefined,
+          city: typeof profileRaw.city === "string" ? profileRaw.city : undefined,
+          avatarUrl: typeof profileRaw.avatarUrl === "string" ? profileRaw.avatarUrl : undefined,
+          bio: typeof profileRaw.bio === "string" ? profileRaw.bio : undefined,
+          dominantProfile:
+            typeof profileRaw.dominantProfile === "string" ? profileRaw.dominantProfile : undefined,
+          publicSlug:
+            typeof profileRaw.publicSlug === "string"
+              ? profileRaw.publicSlug
+              : profileRaw.publicSlug === null
+                ? null
+                : undefined,
+        }
+      : undefined,
+    scoutingStats: raw.scoutingStats ? normalizePlayerProfileStatsBody(raw.scoutingStats) : null,
+    videos: videosRaw.map((item) => {
+      const itemRaw = toRecord(item);
+      return {
+        title: typeof itemRaw.title === "string" ? itemRaw.title : itemRaw.title === null ? null : undefined,
+        playType:
+          typeof itemRaw.playType === "string"
+            ? itemRaw.playType
+            : itemRaw.playType === null
+              ? null
+              : undefined,
+        publicationStatus: itemRaw.publicationStatus === "published" ? "published" : undefined,
+        recordedAt:
+          typeof itemRaw.recordedAt === "string"
+            ? itemRaw.recordedAt
+            : itemRaw.recordedAt === null
+              ? null
+              : undefined,
+      };
+    }),
   };
 };
 
@@ -588,6 +774,78 @@ export const recruitersApi = {
       throw mapError(error, "No se pudo cargar el player profile.");
     }
   },
+  getPlayerProfileStats: async (
+    profileId: string
+  ): Promise<RecruiterPlayerProfileStatsResponse> => {
+    try {
+      const response = await api.get(`/recruiters/player-profiles/${profileId}/stats`);
+      return normalizePlayerProfileStatsResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudieron cargar las estadísticas del player profile.");
+    }
+  },
+  createPlayerPublicProfile: async (
+    profileId: string,
+    payload: RecruiterPlayerProfilePublicProfileUpsertPayload = {}
+  ): Promise<RecruiterPlayerProfilePublicProfileConfigResponse> => {
+    try {
+      const response = await api.post(
+        `/recruiters/player-profiles/${profileId}/public-profile`,
+        payload
+      );
+      return normalizePlayerProfilePublicProfileConfigResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo activar la publicación pública del player profile.");
+    }
+  },
+  updatePlayerPublicProfile: async (
+    profileId: string,
+    payload: RecruiterPlayerProfilePublicProfileUpsertPayload = {}
+  ): Promise<RecruiterPlayerProfilePublicProfileConfigResponse> => {
+    try {
+      const response = await api.patch(
+        `/recruiters/player-profiles/${profileId}/public-profile`,
+        payload
+      );
+      return normalizePlayerProfilePublicProfileConfigResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo actualizar la publicación pública del player profile.");
+    }
+  },
+  regeneratePlayerPublicProfile: async (
+    profileId: string,
+    payload: RecruiterPlayerProfilePublicProfileRegeneratePayload = {}
+  ): Promise<RecruiterPlayerProfilePublicProfileConfigResponse> => {
+    try {
+      const response = await api.post(
+        `/recruiters/player-profiles/${profileId}/public-profile/regenerate`,
+        payload
+      );
+      return normalizePlayerProfilePublicProfileConfigResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo regenerar el enlace público del player profile.");
+    }
+  },
+  getPublicPlayerProfileBySlug: async (
+    publicSlug: string
+  ): Promise<RecruiterPublicPlayerProfileResponse> => {
+    try {
+      const response = await api.get(`/public/player-profiles/${publicSlug}`);
+      return normalizePublicPlayerProfileResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar el perfil público.");
+    }
+  },
+  getPublicPlayerProfileByShareId: async (
+    publicShareId: string
+  ): Promise<RecruiterPublicPlayerProfileResponse> => {
+    try {
+      const response = await api.get(`/public/player-profiles/share/${publicShareId}`);
+      return normalizePublicPlayerProfileResponse(response.data);
+    } catch (error) {
+      throw mapError(error, "No se pudo cargar el perfil público.");
+    }
+  },
   createPlayerProfile: async (
     payload: RecruiterPlayerProfilePayload
   ): Promise<RecruiterPlayerProfile> => {
@@ -653,6 +911,9 @@ export const recruitersApi = {
           return {
             link: itemRaw.link ? normalizePlayerProfileVideoLink(itemRaw.link) : undefined,
             video: itemRaw.video ? normalizeVideo(itemRaw.video) : undefined,
+            scoutingProfile: itemRaw.scoutingProfile
+              ? normalizePlayerProfileVideoScoutingSummary(itemRaw.scoutingProfile)
+              : null,
           };
         }),
         pagination: normalizePagination(raw.pagination),

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Victory Craft Elite | Athlete Profile Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-effect { backdrop-filter: blur(24px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .radar-grid {
+            background-image: radial-gradient(circle, #c0c9c0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-bright": "#f7f9fb",
+                        "on-primary-fixed": "#002110",
+                        "surface-tint": "#35684a",
+                        "on-surface-variant": "#414942",
+                        "primary-fixed-dim": "#9cd3ae",
+                        "primary-container": "#0d4429",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#5c647a",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dae2fd",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-surface": "#191c1e",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "outline-variant": "#c0c9c0",
+                        "on-primary-container": "#7cb18e",
+                        "tertiary-fixed": "#ffdea5",
+                        "inverse-surface": "#2d3133",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#c5a059",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#565e74",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "tertiary-container": "#4e3700",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed": "#b8efc9",
+                        "on-primary-fixed-variant": "#1c5034",
+                        "inverse-primary": "#9cd3ae",
+                        "secondary-container": "#dae2fd",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "surface-variant": "#e0e3e5",
+                        "outline": "#717972",
+                        "on-background": "#191c1e",
+                        "tertiary": "#332200",
+                        "primary": "#002c17",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-container-highest": "#e0e3e5",
+                        "background": "#f7f9fb"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-8 h-16 bg-emerald-950/70 backdrop-blur-xl dark:bg-emerald-950/80 z-50 shadow-2xl shadow-emerald-950/20">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-amber-400">Victory Craft Elite</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-emerald-100/70 hover:text-white transition-colors font-sans font-semibold tracking-tight" href="#">Athletes</a>
+<a class="text-emerald-100/70 hover:text-white transition-colors font-sans font-semibold tracking-tight" href="#">Scouting</a>
+<a class="text-emerald-100/70 hover:text-white transition-colors font-sans font-semibold tracking-tight" href="#">Analytics</a>
+<a class="text-amber-400 border-b-2 border-amber-400 pb-1 font-sans font-semibold tracking-tight" href="#">Recruitment</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-4 py-1.5 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-amber-300 transition-all active:opacity-80">
+<span class="material-symbols-outlined text-sm" data-icon="share">share</span>
+                Share Profile
+            </button>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-emerald-100/70 cursor-pointer p-2 hover:bg-white/5 rounded-full" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-emerald-100/70 cursor-pointer p-2 hover:bg-white/5 rounded-full" data-icon="settings">settings</span>
+</div>
+<img alt="Elite Athlete Profile" class="w-8 h-8 rounded-full border border-amber-400/30" data-alt="Close-up professional portrait of a athletic man with focused expression, sharp lighting, sports apparel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiurttPkAQtjWgYDCHXJ-EjcTgdxjUwV2x42_BxlXwv1JP41-HC3Nofjwj-IHirfLYKLoLaHsZgG0gzfMFcu9uovAOOtUgKFwd0FucySuJXB06JBK_tNJjGhw9w6vy6EUHncfxcqXBXYTYCMRbv14u7j7BJYqkVsAP3YMfpMOS5dKyMEHf3oLn2cir00Ag2uxIHQ1-HTaINvN2ntWQXJhwtKgYqf0FKvvaKSpwSTx02DetVy3cCgm_hI9QzOXaM4jMs386_lvzi4Y"/>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col pt-20 pb-8 bg-emerald-950 w-20 hover:w-64 transition-all duration-500 overflow-hidden group">
+<div class="flex flex-col gap-2 px-2 flex-grow">
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</div>
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Performance</span>
+</div>
+<div class="flex items-center gap-4 bg-emerald-900 text-amber-400 rounded-r-full mr-2 py-3 px-4">
+<span class="material-symbols-outlined" data-icon="movie">movie</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Media</span>
+</div>
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Network</span>
+</div>
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</div>
+</div>
+<div class="mt-auto px-4">
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Support</span>
+</div>
+<div class="flex items-center gap-4 text-emerald-500 hover:text-emerald-100 py-3 px-4 transition-colors">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Logout</span>
+</div>
+</div>
+</aside>
+<main class="pl-20 pt-16 min-h-screen bg-surface">
+<div class="max-w-[1600px] mx-auto p-8 flex flex-col gap-8">
+<!-- Hero Section -->
+<section class="relative h-[400px] rounded-xl overflow-hidden bg-primary shadow-2xl">
+<div class="absolute inset-0 bg-gradient-to-r from-emerald-950 via-emerald-950/40 to-transparent z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Cinematic wide shot of a football player standing on a stadium pitch at night under bright spotlights, dramatic atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1GyQGKSbMY79bUpAHUwaBx8LoZ2IZPuWyqqDoOUylP_B1KldcyENJ9dTkM2Hof4uGvqbG41iqLiIdVgdTw3agWCN9lqQDvB423jUq3kfNJJ4ng78p3PbD4UrRa2X4byTzBw1LMTDD_hsXQ1qAFDQsPzp9K5L9RROccxb61XRU9X06s-zxib8xltAORlUNSaqHC5wLgdAANL_N4sbhPNPlpAYFq365YIsmpJIAtXiqhBdb7jOOrBEo1FVUATOulmSuqCpGFIVqu0I"/>
+<div class="relative z-20 h-full flex flex-col justify-end p-12">
+<div class="flex items-center gap-4 mb-4">
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+                            Victory Verified
+                        </span>
+<span class="text-emerald-100/80 text-sm font-medium">Forward • Madrid, Spain</span>
+</div>
+<h1 class="text-6xl font-extrabold text-white tracking-tighter mb-2">Julián Valderrama</h1>
+<p class="text-amber-400 text-xl font-semibold tracking-tight">Elite Tier 1 Prospect • Available for 2024 Scouting</p>
+</div>
+</section>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Content Area (Main Stats & Bio) -->
+<div class="col-span-8 flex flex-col gap-8">
+<!-- High-Density KPI Grid (Apex Performance Theme) -->
+<div class="grid grid-cols-6 gap-0 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/10 overflow-hidden">
+<div class="p-6 border-r border-outline-variant/10 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Total Videos</span>
+<span class="text-3xl font-bold text-primary">24</span>
+<div class="mt-2 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+</div>
+<div class="p-6 border-r border-outline-variant/10 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Goals (GLS)</span>
+<span class="text-3xl font-bold text-primary">18</span>
+<span class="text-[10px] text-emerald-600 font-bold">+12% vs LY</span>
+</div>
+<div class="p-6 border-r border-outline-variant/10 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Assists (AST)</span>
+<span class="text-3xl font-bold text-primary">09</span>
+<span class="text-[10px] text-emerald-600 font-bold">Elite Tier</span>
+</div>
+<div class="p-6 border-r border-outline-variant/10 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Highlights</span>
+<span class="text-3xl font-bold text-primary">142</span>
+<span class="text-[10px] text-secondary font-medium">Verified Clips</span>
+</div>
+<div class="p-6 border-r border-outline-variant/10 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Bloopers</span>
+<span class="text-3xl font-bold text-primary">02</span>
+<span class="text-[10px] text-error font-medium">Low Margin</span>
+</div>
+<div class="p-6 bg-primary text-white flex flex-col justify-center gap-1">
+<span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Status</span>
+<span class="text-xl font-bold">4 / 0</span>
+<span class="text-[10px] opacity-70">Published / Draft</span>
+</div>
+</div>
+<!-- Professional Trajectory & Video Reels -->
+<div class="grid grid-cols-2 gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm">
+<h3 class="text-lg font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+                                Professional Trajectory
+                            </h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+                                Explosive winger with exceptional tactical intelligence. Developed in the prestigious La Masia academy, Julián has demonstrated a unique ability to find pockets of space between lines. A consistent performer in high-pressure derby situations.
+                            </p>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="school">school</span>
+</div>
+<div>
+<p class="text-sm font-bold text-primary">FC Barcelona Juvenil A</p>
+<p class="text-[10px] text-secondary">2021 — 2023</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="sports_soccer">sports_soccer</span>
+</div>
+<div>
+<p class="text-sm font-bold text-primary">Spain U19 National Team</p>
+<p class="text-[10px] text-secondary">8 Caps • 3 Goals</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Reels -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm flex flex-col">
+<h3 class="text-lg font-bold text-primary mb-6 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="video_library">video_library</span>
+                                Tactical Video Reels
+                            </h3>
+<div class="grid grid-cols-1 gap-4">
+<div class="relative group rounded-xl overflow-hidden aspect-video bg-surface-container-high">
+<img class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Cinematic shot of a soccer player kicking the ball towards a goal, blurred background stadium" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHB1Xn6jjBkmkzRiVXaaJOSY9-Zw0NaiAAtuwMHrZGphxn1LfJikA_rLGfsY9hfbpLLhMPtypHaPQEKVW0A31M2dcwNgDsVK74ZY0OEPjLMnefsuZTrf5W33h1yjzkytVjlCfCmTDrYArYr4PAg69H32WwMwJdLe15lUcR_p32H6Hbk3pSHqvSo1COZ7-eXCRW7sM-xlP6RdMzj9FeAmgAxw3e7OYsCdC5pBw5E1EQqjIwm5XccmbUbiZ0xCuQZu5eQtXkFwcbkl0"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors">
+<span class="material-symbols-outlined text-white text-5xl" data-icon="play_circle" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-3 left-3 bg-primary/90 px-3 py-1 rounded-lg">
+<span class="text-[10px] font-bold text-white uppercase tracking-widest">Best Goals 23/24</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="analytics">analytics</span>
+<span class="text-xs font-bold text-primary">Tactical Positioning Analysis</span>
+</div>
+<span class="text-[10px] font-medium text-secondary">12:45</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Skills & Growth -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm">
+<div class="flex justify-between items-end mb-8">
+<h3 class="text-lg font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                                Technical Skill Assessment
+                            </h3>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Verified by Scout ID #829</span>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-xs font-bold text-primary">Dribbling &amp; Ball Control</span>
+<span class="text-xs font-bold text-primary">94/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[94%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-xs font-bold text-primary">Finishing Accuracy</span>
+<span class="text-xs font-bold text-primary">88/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[88%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-xs font-bold text-primary">Tactical Awareness</span>
+<span class="text-xs font-bold text-primary">91/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[91%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar (Radar, Profile Management, Interactions) -->
+<div class="col-span-4 flex flex-col gap-8">
+<!-- Attribute Radar Section -->
+<div class="bg-primary text-white p-8 rounded-xl shadow-xl overflow-hidden relative">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl" data-icon="radar">radar</span>
+</div>
+<h3 class="text-lg font-bold text-amber-400 mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                            Scouting Radar
+                        </h3>
+<div class="relative w-full aspect-square flex items-center justify-center radar-grid rounded-full">
+<!-- Visual representation of a radar chart using SVG/CSS -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="30" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="15" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"></circle>
+<path d="M 50 5 L 95 50 L 50 95 L 5 50 Z" fill="rgba(233, 193, 118, 0.4)" stroke="#e9c176" stroke-width="1"></path>
+<!-- Metrics Labels -->
+<text fill="#e9c176" font-size="3" font-weight="bold" text-anchor="middle" transform="rotate(90 50 3)" x="50" y="3">GLS</text>
+<text fill="#e9c176" font-size="3" font-weight="bold" text-anchor="middle" transform="rotate(90 97 50)" x="97" y="50">AST</text>
+<text fill="#e9c176" font-size="3" font-weight="bold" text-anchor="middle" transform="rotate(90 50 97)" x="50" y="97">HL</text>
+<text fill="#e9c176" font-size="3" font-weight="bold" text-anchor="middle" transform="rotate(90 3 50)" x="3" y="50">PUB</text>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-amber-400 font-bold text-2xl">Elite</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="bg-emerald-900/50 p-3 rounded-lg border border-white/10">
+<p class="text-[10px] text-emerald-300 font-bold uppercase">Consistency</p>
+<p class="text-lg font-bold">92%</p>
+</div>
+<div class="bg-emerald-900/50 p-3 rounded-lg border border-white/10">
+<p class="text-[10px] text-emerald-300 font-bold uppercase">Potential</p>
+<p class="text-lg font-bold">98%</p>
+</div>
+</div>
+</div>
+<!-- Public Profile Management -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="text-sm font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="link">link</span>
+                            Public Profile
+                        </h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Public Slug</label>
+<div class="flex bg-surface-container rounded-lg px-3 py-2 border border-outline-variant/20">
+<span class="text-xs text-secondary-fixed-dim select-none">vcraft.elite/</span>
+<input class="bg-transparent border-none p-0 text-xs font-bold text-primary focus:ring-0 w-full" type="text" value="j-v"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Profile URL</label>
+<div class="bg-surface-container-low p-2 rounded text-[10px] font-mono text-secondary truncate">
+                                    /public/player-profiles/j-v
+                                </div>
+</div>
+<div class="grid grid-cols-2 gap-3 pt-2">
+<button class="flex items-center justify-center gap-2 bg-surface-container-highest text-primary py-2 rounded-lg text-xs font-bold hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="content_copy">content_copy</span>
+                                    Copy Link
+                                </button>
+<button class="flex items-center justify-center gap-2 bg-primary text-white py-2 rounded-lg text-xs font-bold hover:bg-emerald-900 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span>
+                                    Open
+                                </button>
+</div>
+</div>
+</div>
+<!-- Recent Interactions -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="text-sm font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+                            Recent Interactions
+                        </h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-3 bg-surface-container-low rounded-lg">
+<div class="w-8 h-8 bg-surface-container-highest rounded-full flex items-center justify-center">
+<img class="w-full h-full rounded-full object-cover" data-alt="Real Madrid professional sports logo badge on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFMZ9umnhkJ43YSvwSnnO0hHNvrIiebpbZAhWXuHAKu2xkJ_pAkJw_hlAtqV5IQoFuKBkikHPXCPXwLpAyaekIWfrQd-hJZegbeZaSuzMvlIYpfmFoP5J57Ap9u1K9zLhetMrgYG_NUYcvsLuYYaTFJRRBPa1DJwA3v1VG_Aye35kKO6xzj4Ha6W4fou34GZLQBvKUH8KkZCkZL3xEaakRAzIfcyP_eG0ambTV4qKSnghCHwY0Vz__NIi-p-8D-LrLGthGH4D5vZY"/>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">Real Madrid Castilla</p>
+<p class="text-[10px] text-secondary">Viewed profile • 2h ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-3 bg-surface-container-low rounded-lg">
+<div class="w-8 h-8 bg-surface-container-highest rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="person_search">person_search</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">Manchester City Scout</p>
+<p class="text-[10px] text-secondary">Downloaded PDF • 5h ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-3 bg-surface-container-low rounded-lg opacity-60">
+<div class="w-8 h-8 bg-surface-container-highest rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="mail">mail</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">AC Milan Recruitment</p>
+<p class="text-[10px] text-secondary">Sent inquiry • 1d ago</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 text-primary text-[10px] font-bold uppercase tracking-widest hover:underline">View All Activities</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Navigation Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-emerald-950 flex justify-around items-center py-4 z-50">
+<span class="material-symbols-outlined text-amber-400" data-icon="dashboard">dashboard</span>
+<span class="material-symbols-outlined text-emerald-500" data-icon="insights">insights</span>
+<div class="bg-amber-400 p-3 rounded-full -mt-10 shadow-lg border-4 border-emerald-950">
+<span class="material-symbols-outlined text-emerald-950" data-icon="add" style="font-variation-settings: 'wght' 700;">add</span>
+</div>
+<span class="material-symbols-outlined text-emerald-500" data-icon="group">group</span>
+<span class="material-symbols-outlined text-emerald-500" data-icon="person">person</span>
+</nav>
+</body></html>

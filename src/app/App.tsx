@@ -29,6 +29,7 @@ import { ReservationFormEnum } from "../pages/reservations/form/ReservationForm"
 import { AppFeedbackProvider } from "../context/AppFeedbackProvider";
 import ReservationsPage from "../pages/reservations/ReservationsPage";
 import { RemoteVideosModule } from "../microfrontends/videos/RemoteVideosModule";
+import { RecruitersModuleProvider } from "../recruiters-mfe/features/recruiters/RecruitersModuleContext";
 const SlotList = lazy(() => import("../pages/slots/components/list/SlotList"));
 const Login = lazy(() => import("../components/login/Login"));
 const Register = lazy(() => import("../components/register/Register"));
@@ -39,6 +40,9 @@ const TournamentsModule = lazy(
 );
 const RecruitersModule = lazy(
   () => import("../recruiters-mfe/RecruitersModule")
+);
+const SharedPlayerProfilePage = lazy(
+  () => import("../recruiters-mfe/subpages/player-profiles/pages/SharedPlayerProfilePage")
 );
 const ReservationsList = lazy(
   () => import("../pages/fields/reservationsList/ReservationsList")
@@ -86,7 +90,9 @@ function AppRoutes() {
   const navigate = useNavigate();
   const { authReady, isAuthenticated } = useAuth();
   const hideNavbarPaths = ["/login", "/register", "/auth/callback"];
-  const shouldHideNavbarBase = hideNavbarPaths.includes(location.pathname);
+  const shouldHideNavbarBase =
+    hideNavbarPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/public/player-profiles/");
 
   // 📌 Componente para manejar las rutas
   return (
@@ -112,6 +118,22 @@ function AppRoutes() {
             <Route path="/auth/callback" element={<OAuthCallback />} />
             <Route path="/" element={<Home />} />
             <Route path="/fields" element={<FieldsList />} />
+            <Route
+              path="/public/player-profiles/:publicSlug"
+              element={
+                <RecruitersModuleProvider>
+                  <SharedPlayerProfilePage />
+                </RecruitersModuleProvider>
+              }
+            />
+            <Route
+              path="/public/player-profiles/share/:publicShareId"
+              element={
+                <RecruitersModuleProvider>
+                  <SharedPlayerProfilePage />
+                </RecruitersModuleProvider>
+              }
+            />
 
             {/* ✅ Rutas Privadas (Requieren autenticación) */}
             <Route

@@ -148,7 +148,7 @@ const RecruitersDashboardPage: React.FC = () => {
           </p>
           <div className="recruiters-dashboard-v2__hero-actions">
             <RecruitersWorkspaceButton
-              variant="dark"
+              variant="gold"
               size="sm"
               icon={<FiArrowRight aria-hidden="true" />}
               caption="video vault y sesiones"
@@ -157,7 +157,6 @@ const RecruitersDashboardPage: React.FC = () => {
               Initialize Scan
             </RecruitersWorkspaceButton>
             <RecruitersWorkspaceButton
-              className="recruiters-dashboard-v2__hero-action--ghost"
               variant="gold"
               size="sm"
               icon={<FiArrowRight aria-hidden="true" />}
@@ -167,25 +166,25 @@ const RecruitersDashboardPage: React.FC = () => {
               View Pipeline
             </RecruitersWorkspaceButton>
           </div>
-        </div>
 
-        <aside className="recruiters-dashboard-v2__hero-stats">
-          <article>
-            <span>Scouting board</span>
-            <strong>{isTopListLoading ? "..." : topVideos.length}</strong>
-            <p>piezas líderes visibles en la lectura rápida de esta sesión.</p>
-          </article>
-          <article>
-            <span>Published assets</span>
-            <strong>{isTopListLoading ? "..." : publishedCount}</strong>
-            <p>videos ya listos para competir dentro de ranking y recruiter view.</p>
-          </article>
-          <article>
-            <span>Net votes</span>
-            <strong>{isTopListLoading ? "..." : totalNetVotes}</strong>
-            <p>pulso agregado del top actual que está empujando el board.</p>
-          </article>
-        </aside>
+          <div className="recruiters-dashboard-v2__hero-stats">
+            <article>
+              <span>Scouting board</span>
+              <strong>{isTopListLoading ? "..." : topVideos.length}</strong>
+              <p>Piezas líderes visibles en la lectura rápida de esta sesión.</p>
+            </article>
+            <article>
+              <span>Published assets</span>
+              <strong>{isTopListLoading ? "..." : publishedCount}</strong>
+              <p>Videos listos para competir dentro de ranking y recruiter view.</p>
+            </article>
+            <article>
+              <span>Net votes</span>
+              <strong>{isTopListLoading ? "..." : totalNetVotes}</strong>
+              <p>Pulso agregado del top actual que está empujando el board.</p>
+            </article>
+          </div>
+        </div>
       </header>
 
       <section className="recruiters-dashboard-v2__tools">

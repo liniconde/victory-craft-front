@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#eceef0",
+              "on-tertiary-fixed-variant": "#5d4201",
+              "surface-tint": "#35684a",
+              "surface-container-low": "#f2f4f6",
+              "secondary-container": "#dae2fd",
+              "background": "#f7f9fb",
+              "on-surface": "#191c1e",
+              "on-secondary-fixed": "#131b2e",
+              "outline": "#717972",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#dae2fd",
+              "tertiary-fixed-dim": "#e9c176",
+              "surface-dim": "#d8dadc",
+              "on-secondary-fixed-variant": "#3f465c",
+              "primary-container": "#0d4429",
+              "outline-variant": "#c0c9c0",
+              "tertiary": "#332200",
+              "on-primary-fixed-variant": "#1c5034",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e0e3e5",
+              "surface-bright": "#f7f9fb",
+              "secondary-fixed-dim": "#bec6e0",
+              "on-primary-fixed": "#002110",
+              "primary-fixed": "#b8efc9",
+              "on-tertiary-container": "#c5a059",
+              "on-primary-container": "#7cb18e",
+              "secondary": "#565e74",
+              "tertiary-fixed": "#ffdea5",
+              "surface-variant": "#e0e3e5",
+              "tertiary-container": "#4e3700",
+              "primary": "#002c17",
+              "error-container": "#ffdad6",
+              "on-surface-variant": "#414942",
+              "inverse-primary": "#9cd3ae",
+              "error": "#ba1a1a",
+              "surface-container-high": "#e6e8ea",
+              "on-secondary-container": "#5c647a",
+              "surface": "#f7f9fb",
+              "on-tertiary": "#ffffff",
+              "on-background": "#191c1e",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed": "#261900",
+              "primary-fixed-dim": "#9cd3ae",
+              "inverse-surface": "#2d3133",
+              "inverse-on-surface": "#eff1f3"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#002c17] dark:bg-emerald-950 shadow-2xl shadow-black/20 flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-[#e9c176] font-bold tracking-tighter text-xl uppercase">Victory Craft</h1>
+<p class="text-on-primary-container text-xs font-['Inter'] tracking-tight font-semibold opacity-80">Elite Performance</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-400 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] tracking-tight font-semibold">Dashboard</span>
+</a>
+<a class="text-slate-400 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="video_library">video_library</span>
+<span class="font-['Inter'] tracking-tight font-semibold">Library</span>
+</a>
+<!-- Active Tab: Player Profiles -->
+<a class="bg-[#0d4429] text-[#e9c176] border-r-4 border-[#e9c176] px-4 py-3 flex items-center gap-3 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="person_search" style="font-variation-settings: 'FILL' 1;">person_search</span>
+<span class="font-['Inter'] tracking-tight font-semibold">Player Profiles</span>
+</a>
+<a class="text-slate-400 hover:text-white px-4 py-3 flex items-center gap-3 transition-colors hover:bg-[#0d4429]/50" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-['Inter'] tracking-tight font-semibold">Rankings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-[#e9c176]/30">
+<img alt="Elite Scout Profile" data-alt="Professional headshot of an elite sports scout with a confident expression in a high-end corporate setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPpcaf3P1E9MQ4DkxGDS62BZgsGJMMEoXXD9NLqwVUNS5_lO8XxIg8g6jQsT5X1h6Fa2_2_BlmpdckAdiJuQkBFSaxlGEMB0qvLXWPp6UkmLMleUBRbmAY1WGcZBtzgY2lvAWEMOVAxVumqeXk55-j5FrwotAM1OMFxYlV7XvYHHwloCZ2BGSrXesgXZOekJFHoJsCnSpjzN3crGg50Xi9HLvHH402GIbDtFo10N6LDy1TuX806O_bVeyKCeE0N5QyNUZywAOS7yo"/>
+</div>
+<div>
+<p class="text-[#e9c176] text-xs font-bold">LEAD SCOUT</p>
+<p class="text-white text-[10px] opacity-60">ID: VC-99281</p>
+</div>
+</div>
+</aside>
+<!-- TopAppBar Component -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 backdrop-blur-xl flex justify-between items-center px-8 w-full">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="bg-slate-100 border-none rounded-xl py-2 pl-10 pr-4 w-full text-sm focus:ring-2 focus:ring-[#e9c176]/50 transition-all outline-none" placeholder="Search elite prospects..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-500">
+<button class="hover:text-[#e9c176] transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-[#e9c176] transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<button class="hover:text-[#e9c176] transition-colors"><span class="material-symbols-outlined" data-icon="help">help</span></button>
+</div>
+<button class="bg-[#e9c176] text-[#261900] px-4 py-2 rounded-lg font-bold text-sm shadow-lg shadow-[#e9c176]/20 hover:scale-105 transition-transform">
+                Add Prospect
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-8">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Hero Header Section -->
+<section class="relative h-[480px] rounded-xl overflow-hidden bg-primary shadow-2xl">
+<img alt="Action shot of player" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity" data-alt="Dynamic close-up of a professional soccer player in a green jersey during a night match, stadium lights creating dramatic bokeh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoS71DcPUD7ucXx26nP4mqh5gXifLNfL2NqfbDKbWqGt_kJLR0F_JcQ8GYZ-qO2KTiQSWTxxl4Yg7FT4CXjuYp3CMz7uS5LWCq7jhuN3GV4mQWsqVthsaRNX0xZiKAYZLEGmO024Bg9SuDMqScCaAUAcEenNeWTiZVTIwbNlJD8GAdy1j1j4MOrTsO-Tfg-md8KzZINsKB66-9e3hFRMWrsqhjcUUzKY0HFD534kkhSgWKru63waL3pJDnkAVcNQNfaibeULzsrqQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-12 flex flex-col md:flex-row items-end justify-between gap-8">
+<div class="flex items-start gap-8">
+<div class="relative group">
+<div class="absolute -inset-1 bg-[#e9c176] rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+<div class="relative w-40 h-52 bg-slate-200 rounded-xl overflow-hidden border-2 border-[#e9c176]/50 shadow-2xl">
+<img alt="J.V. Profile" class="w-full h-full object-cover" data-alt="Sharp portrait of a young athletic male athlete with focused expression, studio lighting with dark moody background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2NHdsQUYZraX082VEK0RsVDWfWRpkuJo0qDLcigsQF0Ig7dLC-Orj8QnCI_aj4i37Sd8WRrvs4gr0jLDblwtQN6GrS48e1voBW0Pz-sRGCG74QPt-3r00W9MVHVETQDUW2CJTI0XdypK5LkAuXB3Th4FTPYeEleaaIzNHwpLLaxx2_thgtmEnVcznL1Uj8kuS7RvnAQDFuMnif7hW4bdGppEugaACb1FMcAXafiwkX__e8DlRYWjS-wALJRnV6k8-8WDyBQZ3_-g"/>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-[#e9c176] text-[#261900] text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">Victory Verified</span>
+<div class="flex items-center gap-1 text-[#e9c176]">
+<span class="material-symbols-outlined text-sm" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h2 class="text-6xl font-black text-white tracking-tighter mb-1">J.V.</h2>
+<div class="flex items-center gap-4 text-on-primary-container font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="sports_soccer">sports_soccer</span> Forward</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#e9c176]/40"></span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Bogota, Colombia</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4 mb-4">
+<button class="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md text-white font-bold rounded-lg border border-white/20 hover:bg-white/20 transition-all">
+<span class="material-symbols-outlined" data-icon="share">share</span> Share Profile
+                        </button>
+<button class="flex items-center gap-2 px-8 py-3 bg-[#e9c176] text-[#261900] font-bold rounded-lg shadow-xl shadow-[#e9c176]/20 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="mail" style="font-variation-settings: 'FILL' 1;">mail</span> Contact Scout
+                        </button>
+</div>
+</div>
+</section>
+<!-- KPI Dashboard Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<p class="text-secondary font-bold text-xs uppercase tracking-widest mb-4 flex items-center justify-between">
+                        Games Played
+                        <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" data-icon="stadium">stadium</span>
+</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-primary tracking-tighter">24</span>
+<span class="text-on-surface-variant font-medium text-sm">Season</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-4/5"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<p class="text-secondary font-bold text-xs uppercase tracking-widest mb-4 flex items-center justify-between">
+                        Goals
+                        <span class="material-symbols-outlined text-slate-300 group-hover:text-[#e9c176] transition-colors" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-[#e9c176] tracking-tighter">18</span>
+<span class="text-on-surface-variant font-medium text-sm">Finishes</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-[#e9c176] h-full w-3/4"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<p class="text-secondary font-bold text-xs uppercase tracking-widest mb-4 flex items-center justify-between">
+                        Assists
+                        <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" data-icon="handshake">handshake</span>
+</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-primary tracking-tighter">10</span>
+<span class="text-on-surface-variant font-medium text-sm">Key Passes</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/2"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all group">
+<p class="text-secondary font-bold text-xs uppercase tracking-widest mb-4 flex items-center justify-between">
+                        Minutes
+                        <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" data-icon="timer">timer</span>
+</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-primary tracking-tighter">2,150</span>
+<span class="text-on-surface-variant font-medium text-sm">Total</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[92%]"></div>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid (Asymmetric) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Content: Bio & Trajectory (Col 1-8) -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Professional Bio -->
+<div class="bg-surface-container-lowest p-10 rounded-xl shadow-sm">
+<h3 class="text-2xl font-black text-primary tracking-tight mb-6">Professional Trajectory</h3>
+<p class="text-on-surface-variant leading-relaxed text-lg mb-8">
+                            Rising talent from the youth academies of Bogota, J.V. has demonstrated exceptional tactical intelligence and explosive pace. Known for his ability to drop deep and link play before accelerating into the final third, he has become a cornerstone of his current squad's offensive strategy. His 1.2 goal-involvement-per-game ratio ranks him in the 98th percentile for players under 21.
+                        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-surface-container">
+<div>
+<h4 class="text-xs font-black text-secondary uppercase tracking-[0.2em] mb-6">Technical Skills</h4>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-bold text-primary">Dribbling</span>
+<span class="font-black text-[#e9c176]">95%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[95%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-bold text-primary">Finishing</span>
+<span class="font-black text-[#e9c176]">92%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[92%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-black text-secondary uppercase tracking-[0.2em] mb-6">Education &amp; Growth</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5" data-icon="school">school</span>
+<div>
+<p class="font-bold text-primary">Elite Performance Academy</p>
+<p class="text-xs text-on-surface-variant">Class of 2022 • High Honors</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5" data-icon="language">language</span>
+<div>
+<p class="font-bold text-primary">Multilingual Proficiencies</p>
+<p class="text-xs text-on-surface-variant">Spanish (Native), English (Advanced)</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Video Reel Section -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-2xl font-black text-primary tracking-tight">Technical Video Reels</h3>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:underline">View All Library <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span></button>
+</div>
+<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+<div class="flex-none w-80 group cursor-pointer">
+<div class="relative h-48 rounded-xl overflow-hidden mb-3 bg-slate-900 shadow-lg">
+<img alt="Best Goals" class="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-500" data-alt="Cinematic still of a soccer ball hitting the back of the net in a packed stadium under bright floodlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQXGEqlPTrUGuoxV-nyK9VvaQmU3l0zqGirfSavpV_ftTL_-4wRQnioaszSUYleGFbk_vrM0lfKrzmjPkcAzEi7cmQkSTL4rF0m3Ov2F5hGLSX_5izm8H0bLTkCZ17mLgfYCku-yV1VKpzOLMoqVUxGIkOcKvYQzjjjDv0_YK3L6cmZFAxCq3msJwp54hu89hUEK9AB-TWTaoLJo_2XgTz7UUKogxsN07l5ZF2uRxHKw4iOFiVcyLKpg8rNgMrhQ63w9NwAoT2KFw"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 bg-[#e9c176] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<span class="absolute bottom-3 right-3 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-white">03:45</span>
+</div>
+<h4 class="font-black text-primary group-hover:text-[#e9c176] transition-colors">Best Goals</h4>
+<p class="text-xs text-on-surface-variant">2023/24 Season Compilation</p>
+</div>
+<div class="flex-none w-80 group cursor-pointer">
+<div class="relative h-48 rounded-xl overflow-hidden mb-3 bg-slate-900 shadow-lg">
+<img alt="Tactical Analysis" class="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-500" data-alt="Strategic overlay lines on a green soccer pitch from a high-angle drone perspective" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRCZv_lLvKpJmx9fzigEpn8om4it4fnG1qz4owIF_vhLDtDndj1HyGR32nwwdHHlljztKSed_Mv6Q_lQEfiEJ8wwNG2l4AW6NU1uUmLfXzhuDCJFPohXPyZs-PJwXghGGcij7O-Op59i9cviIbeWkSj0IDUkTYj0fgHWmBXpNCebeZQKxjbwDzHWcVzeBVR8fzRg3sG_735_H2kIponNommF3XblD343VRbP-udG6cK0DTVJK2Q4ByLalk6I-kMrSXmYoeHXNUCvk"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 bg-[#e9c176] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<span class="absolute bottom-3 right-3 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-white">12:20</span>
+</div>
+<h4 class="font-black text-primary group-hover:text-[#e9c176] transition-colors">Tactical Analysis</h4>
+<p class="text-xs text-on-surface-variant">Movement Off the Ball Breakdown</p>
+</div>
+<div class="flex-none w-80 group cursor-pointer">
+<div class="relative h-48 rounded-xl overflow-hidden mb-3 bg-slate-900 shadow-lg">
+<img alt="Speed Drills" class="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-500" data-alt="Blurred action of an athlete's legs sprinting through agility cones on an indoor turf field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnV5fc0KhYYtt6FEFDfJifsHBiQLYbTizHEOchIUSWuJqsvbAfz0cTcxjZCCavEn8kMk_RLgrNlSoaI-xL0lGLpDdYUlReOvoGdm2Zy8xYvyqtxUcex6NDCe_34ZA3ZGjy43jx8rHkKGuu2hoZA1ltkERiefr7x9NKzPujvPUv5eptdWYlXD3V42Ad6ydj7Ou0FS2sLPsEXNqu_HNfx-NKN_H8afI_7Yw6X1IQAKrXNOqEcIfft3BCSVrXg1X2KNFw8gaNgy5p84o"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 bg-[#e9c176] rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<span class="absolute bottom-3 right-3 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-white">08:15</span>
+</div>
+<h4 class="font-black text-primary group-hover:text-[#e9c176] transition-colors">Speed Drills</h4>
+<p class="text-xs text-on-surface-variant">Velocity &amp; Quick-Change Testing</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Verification & Quick Insights (Col 9-12) -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Scout Verification Badge Card -->
+<div class="bg-primary p-8 rounded-xl relative overflow-hidden shadow-2xl">
+<div class="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-[#e9c176]/10 rounded-full blur-2xl"></div>
+<div class="relative z-10 flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-[#e9c176] rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(233,193,118,0.4)]">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<h4 class="text-white text-xl font-black mb-2 tracking-tight">Victory Verified</h4>
+<p class="text-on-primary-container text-sm leading-relaxed mb-6">This profile has undergone a 12-point professional screening including video verification and physical testing.</p>
+<div class="bg-primary-container border border-[#e9c176]/30 px-4 py-2 rounded text-[10px] text-[#e9c176] font-black uppercase tracking-widest">
+                                Status: Active Elite
+                            </div>
+</div>
+</div>
+<!-- Scouting Network Interaction -->
+<div class="bg-white p-8 rounded-xl shadow-sm border border-surface-container">
+<h4 class="text-xs font-black text-secondary uppercase tracking-[0.2em] mb-6">Recent Interactions</h4>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-primary font-black text-xs">RM</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none">Real Madrid Castilla</p>
+<p class="text-[10px] text-on-surface-variant">Viewed profile 2h ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-primary font-black text-xs">AJ</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none">Ajax Amsterdam</p>
+<p class="text-[10px] text-on-surface-variant">Scouting report requested</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-primary font-black text-xs">MC</div>
+<div>
+<p class="text-sm font-bold text-primary leading-none">Manchester City</p>
+<p class="text-[10px] text-on-surface-variant">Added to Watchlist</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 rounded-lg border-2 border-primary text-primary font-black text-sm hover:bg-primary hover:text-white transition-all">
+                            Export PDF Resume
+                        </button>
+</div>
+<!-- Performance Radar Mock -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col items-center">
+<h4 class="text-xs font-black text-secondary uppercase tracking-[0.2em] mb-8 w-full text-left">Attribute Radar</h4>
+<div class="relative w-48 h-48 border-2 border-primary/10 rounded-full flex items-center justify-center">
+<div class="absolute inset-0 bg-primary opacity-5 rounded-full"></div>
+<div class="w-32 h-32 border border-primary/20 rounded-full"></div>
+<div class="w-16 h-16 border border-primary/20 rounded-full"></div>
+<!-- Minimalist radar representation -->
+<div class="absolute inset-0 flex items-center justify-center">
+<svg class="w-full h-full text-primary fill-[#e9c176]/40" viewbox="0 0 100 100">
+<polygon points="50,10 85,35 75,80 25,80 15,35" stroke="currentColor" stroke-width="2"></polygon>
+</svg>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 w-full mt-8 text-center">
+<div>
+<p class="text-[10px] text-secondary font-black uppercase">Speed</p>
+<p class="text-xl font-black text-primary">A+</p>
+</div>
+<div>
+<p class="text-[10px] text-secondary font-black uppercase">IQ</p>
+<p class="text-xl font-black text-primary">B</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

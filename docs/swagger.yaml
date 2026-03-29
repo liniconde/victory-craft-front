@@ -1488,6 +1488,81 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /recruiters/player-profiles/{profileId}/stats:
+    get:
+      tags: [Recruiters]
+      summary: Obtener estadisticas agregadas de scouting para un player profile
+      description: |
+        Devuelve KPIs agregados del perfil del jugador sin requerir llamadas por cada video.
+        `summary.totalVideos` cuenta todos los videos vinculados al perfil.
+        `summary.publishedVideos`, `summary.draftVideos` y `summary.archivedVideos` solo cuentan
+        videos que tienen scouting profile asociado; por compatibilidad, un scouting profile sin
+        `publicationStatus` se considera `published`.
+
+        `playTypeStats` y `playTypeItems` cuentan todos los videos vinculados que tienen scouting
+        profile y un `playType` no vacio, sin filtrar por `publicationStatus`.
+        Los videos sin scouting profile o sin `playType` se reflejan en
+        `summary.videosWithoutScoutingProfile` y `summary.videosWithoutPlayType`.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: profileId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estadisticas agregadas del perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProfileStatsResponse"
+              examples:
+                default:
+                  value:
+                    playerProfile:
+                      _id: "67ed8f71cf3e27c5fe0ce248"
+                      fullName: "Alex Forward"
+                    summary:
+                      totalVideos: 12
+                      publishedVideos: 9
+                      draftVideos: 2
+                      archivedVideos: 1
+                      videosWithoutScoutingProfile: 1
+                      videosWithoutPlayType: 2
+                    playTypeStats:
+                      Goal: 5
+                      Assist: 3
+                      Blooper: 1
+                      Defense: 4
+                      Dribble: 2
+                      Save: 0
+                      Free kick: 1
+                      Highlight: 6
+                    playTypeItems:
+                      - playType: "Highlight"
+                        count: 6
+                      - playType: "Goal"
+                        count: 5
+                      - playType: "Defense"
+                        count: 4
+                    updatedAt: "2026-03-29T12:30:00.000Z"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Sin permiso para ver este perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /recruiters/player-profiles/{profileId}/videos:
     post:
       tags: [Recruiters]
@@ -1626,6 +1701,196 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           $ref: "#/components/responses/NotFound"
+
+  /recruiters/player-profiles/{profileId}/public-profile:
+    post:
+      tags: [Recruiters]
+      summary: Crear o activar la configuracion publica de un player profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: profileId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerProfilePublicProfileUpsertRequest"
+      responses:
+        "200":
+          description: Configuracion publica actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProfilePublicProfileConfigResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Sin permiso para editar el perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Slug publico o shareId en conflicto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      tags: [Recruiters]
+      summary: Modificar la configuracion publica de un player profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: profileId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerProfilePublicProfileUpsertRequest"
+      responses:
+        "200":
+          description: Configuracion publica actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProfilePublicProfileConfigResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Sin permiso para editar el perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Slug publico o shareId en conflicto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /recruiters/player-profiles/{profileId}/public-profile/regenerate:
+    post:
+      tags: [Recruiters]
+      summary: Regenerar shareId y opcionalmente el slug publico
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: profileId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerProfilePublicProfileRegenerateRequest"
+      responses:
+        "200":
+          description: Configuracion publica regenerada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProfilePublicProfileConfigResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Token requerido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Sin permiso para editar el perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Slug publico o shareId en conflicto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /public/player-profiles/{publicSlug}:
+    get:
+      tags: [Recruiters]
+      summary: Obtener un player profile publico por slug
+      parameters:
+        - in: path
+          name: publicSlug
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perfil publico encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicPlayerProfileResponse"
+        "404":
+          description: Perfil publico no encontrado o no publicado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /public/player-profiles/share/{publicShareId}:
+    get:
+      tags: [Recruiters]
+      summary: Obtener un player profile publico por shareId
+      parameters:
+        - in: path
+          name: publicShareId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perfil publico encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicPlayerProfileResponse"
+        "404":
+          description: Perfil publico no encontrado o no publicado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /videos/{id}:
     put:
@@ -5059,6 +5324,14 @@ components:
               format: date-time
             dominantProfile: { type: string }
             bio: { type: string }
+            publicProfile:
+              allOf:
+                - $ref: "#/components/schemas/PlayerProfilePublicProfile"
+              nullable: true
+            scoutingStats:
+              allOf:
+                - $ref: "#/components/schemas/PlayerProfileStatsResponseBody"
+              nullable: true
             createdBy:
               type: string
               nullable: true
@@ -5175,8 +5448,219 @@ components:
                 $ref: "#/components/schemas/PlayerProfileVideoLink"
               video:
                 $ref: "#/components/schemas/VideoLibraryListItem"
+              scoutingProfile:
+                allOf:
+                  - $ref: "#/components/schemas/PlayerProfileVideoScoutingSummary"
+                nullable: true
         pagination:
           $ref: "#/components/schemas/PaginationMeta"
+
+    PlayerProfileVideoScoutingSummary:
+      type: object
+      properties:
+        _id: { type: string }
+        videoId: { type: string }
+        playerProfileId:
+          type: string
+          nullable: true
+        publicationStatus:
+          type: string
+          enum: [draft, published, archived]
+        playType:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        recordedAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    PlayerProfilePublicProfile:
+      type: object
+      properties:
+        isPublic: { type: boolean }
+        publicSlug:
+          type: string
+          nullable: true
+        publicShareId:
+          type: string
+          nullable: true
+        publicPath:
+          type: string
+          nullable: true
+        sharePath:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    PlayerProfilePublicProfileUpsertRequest:
+      type: object
+      properties:
+        isPublic: { type: boolean }
+        publicSlug:
+          type: string
+          nullable: true
+
+    PlayerProfilePublicProfileRegenerateRequest:
+      type: object
+      properties:
+        regeneratePublicShareId:
+          type: boolean
+          default: true
+        regeneratePublicSlug:
+          type: boolean
+          default: false
+        publicSlug:
+          type: string
+          nullable: true
+
+    PlayerProfilePublicProfileConfigResponse:
+      type: object
+      properties:
+        playerProfile:
+          $ref: "#/components/schemas/PlayerProfile"
+        publicProfile:
+          $ref: "#/components/schemas/PlayerProfilePublicProfile"
+
+    PlayerProfileStatsSummary:
+      type: object
+      properties:
+        totalVideos: { type: integer }
+        publishedVideos: { type: integer }
+        draftVideos: { type: integer }
+        archivedVideos: { type: integer }
+        videosWithoutScoutingProfile: { type: integer }
+        videosWithoutPlayType: { type: integer }
+
+    PlayerProfilePlayTypeStatItem:
+      type: object
+      properties:
+        playType: { type: string }
+        count: { type: integer }
+
+    PlayerProfileStatsResponse:
+      type: object
+      properties:
+        playerProfile:
+          type: object
+          properties:
+            _id: { type: string }
+            fullName: { type: string }
+        summary:
+          $ref: "#/components/schemas/PlayerProfileStatsSummary"
+        playTypeStats:
+          type: object
+          additionalProperties:
+            type: integer
+        playTypeItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerProfilePlayTypeStatItem"
+        updatedAt:
+          type: string
+          format: date-time
+
+    PlayerProfileStatsResponseBody:
+      type: object
+      properties:
+        summary:
+          $ref: "#/components/schemas/PlayerProfileStatsSummary"
+        playTypeStats:
+          type: object
+          additionalProperties:
+            type: integer
+        playTypeItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerProfilePlayTypeStatItem"
+        updatedAt:
+          type: string
+          format: date-time
+
+    PublicPlayerProfile:
+      type: object
+      properties:
+        fullName: { type: string }
+        sportType: { type: string }
+        primaryPosition: { type: string }
+        secondaryPosition: { type: string }
+        team: { type: string }
+        category: { type: string }
+        country: { type: string }
+        city: { type: string }
+        avatarUrl: { type: string }
+        bio: { type: string }
+        dominantProfile: { type: string }
+        publicSlug:
+          type: string
+          nullable: true
+
+    PublicPlayerProfileStatsSummary:
+      type: object
+      properties:
+        totalVideos: { type: integer }
+        publishedVideos: { type: integer }
+
+    PublicPlayerProfileStats:
+      type: object
+      properties:
+        summary:
+          $ref: "#/components/schemas/PublicPlayerProfileStatsSummary"
+        playTypeStats:
+          type: object
+          additionalProperties:
+            type: integer
+        playTypeItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerProfilePlayTypeStatItem"
+        updatedAt:
+          type: string
+          format: date-time
+
+    PublicPlayerProfileVideoItem:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        playType:
+          type: string
+          nullable: true
+        publicationStatus:
+          type: string
+          enum: [published]
+        recordedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    PublicPlayerProfileResponse:
+      type: object
+      properties:
+        profile:
+          $ref: "#/components/schemas/PublicPlayerProfile"
+        scoutingStats:
+          allOf:
+            - $ref: "#/components/schemas/PublicPlayerProfileStats"
+          nullable: true
+        videos:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicPlayerProfileVideoItem"
 
     PlayerProfilesCatalogResponse:
       type: object

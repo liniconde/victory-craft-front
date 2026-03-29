@@ -20,6 +20,8 @@ import {
 
 const PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MS = 400;
+const LINKED_VIDEOS_PAGE_SIZE = 50;
+const LINKED_VIDEOS_PREVIEW_LIMIT = 6;
 const emptyFiltersCatalog: RecruiterFiltersCatalog = {
   sportTypes: [],
   playTypes: [],
@@ -86,6 +88,7 @@ const RecruitersLibraryPage: React.FC = () => {
   const [selectedPlayerProfile, setSelectedPlayerProfile] = useState<RecruiterPlayerProfile | null>(null);
   const [isResolvingOwnProfile, setIsResolvingOwnProfile] = useState(false);
   const [linkedVideos, setLinkedVideos] = useState<RecruiterVideoLibraryItem[]>([]);
+  const [linkedVideoIds, setLinkedVideoIds] = useState<string[]>([]);
   const [isLinking, setIsLinking] = useState(false);
   const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState<RecruiterScoutingProfilePayload>(emptyUploadForm);
@@ -196,27 +199,51 @@ const RecruitersLibraryPage: React.FC = () => {
       .catch(() => setSummaryText(""));
   }, [getVotesSummary, selectedVideo?._id]);
 
+  const loadLinkedVideosForProfile = async (profileId: string) => {
+    const collectedIds = new Set<string>();
+    const previewItems: RecruiterVideoLibraryItem[] = [];
+    let currentPage = 1;
+    let totalLinkedPages = 1;
+
+    do {
+      const response = await getPlayerProfileVideos(
+        profileId,
+        currentPage,
+        LINKED_VIDEOS_PAGE_SIZE
+      );
+
+      response.items.forEach((item) => {
+        if (!item.video?._id || collectedIds.has(item.video._id)) return;
+        collectedIds.add(item.video._id);
+        if (previewItems.length < LINKED_VIDEOS_PREVIEW_LIMIT) {
+          previewItems.push(item.video);
+        }
+      });
+
+      totalLinkedPages = Math.max(1, response.pagination.totalPages);
+      currentPage += 1;
+    } while (currentPage <= totalLinkedPages);
+
+    setLinkedVideoIds(Array.from(collectedIds));
+    setLinkedVideos(previewItems);
+  };
+
   useEffect(() => {
     if (!selectedPlayerProfile?._id) {
       setLinkedVideos([]);
+      setLinkedVideoIds([]);
       return;
     }
 
-    getPlayerProfileVideos(selectedPlayerProfile._id, 1, 6)
-      .then((response) => {
-        setLinkedVideos(
-          response.items
-            .map((item) => item.video)
-            .filter((item): item is RecruiterVideoLibraryItem => Boolean(item?._id))
-        );
-      })
+    loadLinkedVideosForProfile(selectedPlayerProfile._id)
       .catch(() => {
         setLinkedVideos([]);
+        setLinkedVideoIds([]);
       });
   }, [getPlayerProfileVideos, selectedPlayerProfile?._id]);
 
   const selectedVideoAlreadyLinked = Boolean(
-    selectedVideo?._id && linkedVideos.some((item) => item._id === selectedVideo._id)
+    selectedVideo?._id && linkedVideoIds.includes(selectedVideo._id)
   );
 
   const handleProfileSelected = async (profile: RecruiterPlayerProfileListItem) => {
@@ -241,12 +268,7 @@ const RecruitersLibraryPage: React.FC = () => {
       await linkVideoToPlayerProfile(selectedPlayerProfile._id, {
         videoId: selectedVideo._id,
       });
-      const response = await getPlayerProfileVideos(selectedPlayerProfile._id, 1, 6);
-      setLinkedVideos(
-        response.items
-          .map((item) => item.video)
-          .filter((item): item is RecruiterVideoLibraryItem => Boolean(item?._id))
-      );
+      await loadLinkedVideosForProfile(selectedPlayerProfile._id);
       feedback.showLoading(
         "Video vinculado al jugador. Completa la metadata editorial para publicarlo en el ranking."
       );
@@ -278,12 +300,21 @@ const RecruitersLibraryPage: React.FC = () => {
         await linkVideoToPlayerProfile(selectedPlayerProfile._id, {
           videoId: selectedVideo._id,
         });
+        await loadLinkedVideosForProfile(selectedPlayerProfile._id);
       }
 
       navigate(
         `/scouting/subpages/profile/${selectedVideo._id}?playerProfileId=${selectedPlayerProfile._id}`
       );
     } catch (error) {
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+      if (message.includes("existe") || message.includes("already")) {
+        await loadLinkedVideosForProfile(selectedPlayerProfile._id);
+        navigate(
+          `/scouting/subpages/profile/${selectedVideo._id}?playerProfileId=${selectedPlayerProfile._id}`
+        );
+        return;
+      }
       feedback.showError(
         error instanceof Error ? error.message : "No se pudo preparar el video para ranking."
       );
@@ -296,7 +327,7 @@ const RecruitersLibraryPage: React.FC = () => {
     if (!selectedPlayerProfile?._id) return;
     try {
       await unlinkVideoFromPlayerProfile(selectedPlayerProfile._id, videoId);
-      setLinkedVideos((current) => current.filter((item) => item._id !== videoId));
+      await loadLinkedVideosForProfile(selectedPlayerProfile._id);
     } catch (error) {
       feedback.showError(
         error instanceof Error ? error.message : "No se pudo desvincular el video."
@@ -383,9 +414,9 @@ const RecruitersLibraryPage: React.FC = () => {
       setDebouncedSearchTerm("");
       setSportTypeFilter("");
       const loader = isElevated ? getLibrary : getMyLibrary;
-      const [libraryResponse, linkedResponse] = await Promise.all([
+      const [libraryResponse] = await Promise.all([
         loader(1, PAGE_SIZE),
-        getPlayerProfileVideos(selectedPlayerProfile._id, 1, 6),
+        loadLinkedVideosForProfile(selectedPlayerProfile._id),
       ]);
 
       setItems(libraryResponse.items);
@@ -393,11 +424,6 @@ const RecruitersLibraryPage: React.FC = () => {
       setTotalPages(Math.max(1, libraryResponse.pagination.totalPages));
       setPage(libraryResponse.pagination.page);
       setSelectedVideoId(createdVideo._id);
-      setLinkedVideos(
-        linkedResponse.items
-          .map((item) => item.video)
-          .filter((item): item is RecruiterVideoLibraryItem => Boolean(item?._id))
-      );
       setUploadForm({
         ...emptyUploadForm,
         sportType: normalizeRecruiterSportType(uploadForm.sportType) ?? "",
@@ -558,10 +584,14 @@ const RecruitersLibraryPage: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={handleLinkSelectedVideo}
+                    onClick={
+                      selectedVideoAlreadyLinked
+                        ? handlePublishToRanking
+                        : handleLinkSelectedVideo
+                    }
                     disabled={!selectedPlayerProfile || !selectedVideo || isLinking}
                   >
-                    {selectedVideoAlreadyLinked ? "Actualizar vínculo" : "Vincular al jugador"}
+                    {selectedVideoAlreadyLinked ? "Abrir metadata" : "Vincular al jugador"}
                   </button>
                   <button
                     type="button"

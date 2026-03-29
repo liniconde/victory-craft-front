@@ -196,6 +196,8 @@ export interface RecruiterPlayerProfile extends RecruiterPlayerProfileSummary {
   birthDate?: string;
   dominantProfile?: string;
   bio?: string;
+  publicProfile?: RecruiterPlayerProfilePublicProfile | null;
+  scoutingStats?: RecruiterPlayerProfileStatsBody | null;
   createdBy?: string | null;
   updatedBy?: string | null;
   createdAt?: string;
@@ -280,6 +282,112 @@ export interface RecruiterPlayerProfileVideosResponse {
   items: Array<{
     link?: RecruiterPlayerProfileVideoLink;
     video?: RecruiterVideoLibraryItem;
+    scoutingProfile?: RecruiterPlayerProfileVideoScoutingSummary | null;
   }>;
   pagination: RecruiterPagination;
+}
+
+export interface RecruiterPlayerProfileVideoScoutingSummary {
+  _id?: string;
+  videoId?: string;
+  playerProfileId?: string | null;
+  publicationStatus?: "draft" | "published" | "archived";
+  playType?: string | null;
+  title?: string | null;
+  recordedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface RecruiterPlayerProfileStatsSummary {
+  totalVideos?: number;
+  publishedVideos?: number;
+  draftVideos?: number;
+  archivedVideos?: number;
+  videosWithoutScoutingProfile?: number;
+  videosWithoutPlayType?: number;
+}
+
+export interface RecruiterPlayerProfilePlayTypeStatItem {
+  playType?: string;
+  count?: number;
+}
+
+export interface RecruiterPlayerProfileStatsBody {
+  summary?: RecruiterPlayerProfileStatsSummary;
+  playTypeStats?: Record<string, number>;
+  playTypeItems?: RecruiterPlayerProfilePlayTypeStatItem[];
+  updatedAt?: string;
+}
+
+export interface RecruiterPlayerProfileStatsResponse extends RecruiterPlayerProfileStatsBody {
+  playerProfile?: {
+    _id?: string;
+    fullName?: string;
+  };
+}
+
+export interface RecruiterPlayerProfilePublicProfile {
+  isPublic?: boolean;
+  publicSlug?: string | null;
+  publicShareId?: string | null;
+  publicPath?: string | null;
+  sharePath?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface RecruiterPlayerProfilePublicProfileUpsertPayload {
+  isPublic?: boolean;
+  publicSlug?: string | null;
+}
+
+export interface RecruiterPlayerProfilePublicProfileRegeneratePayload {
+  regeneratePublicShareId?: boolean;
+  regeneratePublicSlug?: boolean;
+  publicSlug?: string | null;
+}
+
+export interface RecruiterPlayerProfilePublicProfileConfigResponse {
+  playerProfile?: RecruiterPlayerProfile;
+  publicProfile?: RecruiterPlayerProfilePublicProfile | null;
+}
+
+export interface RecruiterPublicPlayerProfile {
+  fullName?: string;
+  sportType?: string;
+  primaryPosition?: string;
+  secondaryPosition?: string;
+  team?: string;
+  category?: string;
+  country?: string;
+  city?: string;
+  avatarUrl?: string;
+  bio?: string;
+  dominantProfile?: string;
+  publicSlug?: string | null;
+}
+
+export interface RecruiterPublicPlayerProfileStatsSummary {
+  totalVideos?: number;
+  publishedVideos?: number;
+}
+
+export interface RecruiterPublicPlayerProfileStats {
+  summary?: RecruiterPublicPlayerProfileStatsSummary;
+  playTypeStats?: Record<string, number>;
+  playTypeItems?: RecruiterPlayerProfilePlayTypeStatItem[];
+  updatedAt?: string;
+}
+
+export interface RecruiterPublicPlayerProfileVideoItem {
+  title?: string | null;
+  playType?: string | null;
+  publicationStatus?: "published";
+  recordedAt?: string | null;
+}
+
+export interface RecruiterPublicPlayerProfileResponse {
+  profile?: RecruiterPublicPlayerProfile;
+  scoutingStats?: RecruiterPublicPlayerProfileStats | null;
+  videos?: RecruiterPublicPlayerProfileVideoItem[];
 }
